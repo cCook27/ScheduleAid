@@ -12,7 +12,7 @@
         "--timeout",
         "999999",
         "--colors",
-        "${workspaceFolder}/test/test.js" // Update the file path to your test file
+        "${workspaceFolder}/backend/test/test.js" // Update the file path to your test file
       ],
       "internalConsoleOptions": "openOnSessionStart"
     }
