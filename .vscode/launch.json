@@ -15,6 +15,14 @@
         "${workspaceFolder}/backend/test/test.js" // Update the file path to your test file
       ],
       "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Express Backend",
+      "program": "${workspaceFolder}/backend/server.js",
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/backend/**/*.js"]
     }
   ]
 }
