@@ -1,6 +1,5 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import { fetchDataRequest, fetchHomesSuccess, fetchDataError } from '../reducers/actions';
+import { useDispatch } from 'react-redux';
+import { fetchDataRequest, fetchHomesSuccess, fetchDataError, saveNewHome } from '../reducers/actions';
 
 
 function useRequestMaker () {
@@ -18,8 +17,27 @@ function useRequestMaker () {
     }
   };
 
+  const addNewHome = async (home) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',},
+        body: JSON.stringify(home)
+      };
+
+      const response = await fetch('/homes', options);
+      const resData = await response.json();
+
+      dispatch(saveNewHome());
+
+    } catch (error) {
+        dispatch(fetchDataError(error.message));
+    }
+  };
+
   return {
-   getHomes, 
+   getHomes,
+   addNewHome 
   }
 }
 
