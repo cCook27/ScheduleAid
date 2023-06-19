@@ -17,16 +17,7 @@ function DisplayHomes() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newHome]);
 
-  const addressToString = (address) => {
-    let stringAddress = '';
-    const addressValues = Object.values(address);
 
-    addressValues.forEach((parcel) => {
-      stringAddress = stringAddress + parcel + ',' + ' '; 
-    });
-
-    return stringAddress;
-  }
 
   return (
     <div>
@@ -34,7 +25,7 @@ function DisplayHomes() {
       <Card className="card" key={home._id}>
         <Card.Body>
           <Card.Title>{home.name}</Card.Title>
-          <Card.Text>{addressToString(home.address)}</Card.Text>
+          <Card.Text>{home.address.number}, {home.address.street}, {home.address.city}, {home.address.state}, {home.address.zip}</Card.Text>
         </Card.Body>
       </Card>
     ))}
@@ -44,3 +35,14 @@ function DisplayHomes() {
 
 export default DisplayHomes;
 
+
+//   // const addressToString = (address) => {
+  //   let stringAddress = '';
+  //   const addressValues = Object.values(address);
+
+  //   addressValues.forEach((parcel) => {
+  //     stringAddress = stringAddress + parcel + ',' + ' '; 
+  //   });
+
+  //   return stringAddress;
+  // }
