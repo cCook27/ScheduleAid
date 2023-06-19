@@ -11,7 +11,7 @@ function CreateHomes() {
 
   const [formData, setFormData] = useState({
     name: '',
-    address: '',
+    street: '',
     city: '',
     state: '',
     zip: ''
@@ -25,10 +25,14 @@ function CreateHomes() {
     }));
   };
 
+  const handleSubmit = () => {
+    addNewHome(formData);
+  }
+
 
 
   return (
-    <Form>
+    <Form onSubmit={handleSubmit}>
       <Row className="mb-3">
         <Form.Group as={Col} controlId="formGridName">
           <Form.Label>Name</Form.Label>
@@ -38,26 +42,23 @@ function CreateHomes() {
 
       <Form.Group className="mb-3" controlId="formGridAddress1">
         <Form.Label>Address</Form.Label>
-        <Form.Control placeholder="1234 Main St" name='' />
+        <Form.Control placeholder="1234 Main St" name='street' value={formData.street} onChange={handleState} />
       </Form.Group>
 
       <Row className="mb-3">
         <Form.Group as={Col} controlId="formGridCity">
           <Form.Label>City</Form.Label>
-          <Form.Control />
+          <Form.Control name='city' value={formData.city} onChange={handleState} />
         </Form.Group>
 
         <Form.Group as={Col} controlId="formGridState">
           <Form.Label>State</Form.Label>
-          <Form.Select defaultValue="Choose...">
-            <option>Choose...</option>
-            <option>...</option>
-          </Form.Select>
+          <Form.Control name='state' value={formData.state} onChange={handleState}></Form.Control>
         </Form.Group>
 
         <Form.Group as={Col} controlId="formGridZip">
           <Form.Label>Zip</Form.Label>
-          <Form.Control />
+          <Form.Control name='zip' value={formData.zip} onChange={handleState} />
         </Form.Group>
       </Row>
 

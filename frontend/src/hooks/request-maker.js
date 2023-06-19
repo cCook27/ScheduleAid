@@ -4,11 +4,12 @@ import { fetchDataRequest, fetchHomesSuccess, fetchDataError, saveNewHome } from
 
 function useRequestMaker () {
   const dispatch = useDispatch();
+  const url = 'http://localhost:3001'
 
   const getHomes = async () => {
     try {
       dispatch(fetchDataRequest())
-      const response = await fetch('http://localhost:3001/homes');
+      const response = await fetch(`${url}/homes`);
       const homeData = await response.json();
       dispatch(fetchHomesSuccess(homeData));
 
@@ -25,11 +26,14 @@ function useRequestMaker () {
         body: JSON.stringify(home)
       };
 
-      const response = await fetch('/homes', options);
+      const response = await fetch(`${url}/homes`, options);
       const resData = await response.json();
 
-      dispatch(saveNewHome());
+      if(resData) {
+        dispatch(saveNewHome());
+      }
 
+      
     } catch (error) {
         dispatch(fetchDataError(error.message));
     }

@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const HomeSchema = new Schema({
   name: String,
   address: {
-    street: String,
+    street: Schema.Types.Mixed,
     city: String,
     state: String,
     zip: Number,

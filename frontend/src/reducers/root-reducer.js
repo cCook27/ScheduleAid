@@ -21,7 +21,7 @@ function rootReducer(state = initialState, action) {
         ...state,
         error: action.payload
       };
-    case saveNewHome: 
+    case 'SAVE_NEW_HOME': 
       return {
         ...state,
         newHome: true,

@@ -54,10 +54,10 @@ router.post('/homes', async (req, res) => {
     const homeToAdd = new Home({
       name: newHomeInfo.name,
       address: {
-        street: newHomeInfo.address.street,
-        city: newHomeInfo.address.city,
-        state: newHomeInfo.address.state,
-        zip: newHomeInfo.address.zip,
+        street: newHomeInfo.street,
+        city: newHomeInfo.city,
+        state: newHomeInfo.state,
+        zip: newHomeInfo.zip,
       },
       pairs: newHomeInfo.pairs
     });
