@@ -54,7 +54,6 @@ router.post('/homes', async (req, res) => {
     const homeToAdd = new Home({
       name: newHomeInfo.name,
       address: {
-        number: newHomeInfo.address.number,
         street: newHomeInfo.address.street,
         city: newHomeInfo.address.city,
         state: newHomeInfo.address.state,

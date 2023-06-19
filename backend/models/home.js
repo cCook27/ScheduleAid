@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const HomeSchema = new Schema({
   name: String,
   address: {
-    number: Number,
     street: String,
     city: String,
     state: String,

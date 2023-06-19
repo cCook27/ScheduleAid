@@ -13,8 +13,7 @@ describe('Homes and Pairs', () => {
       const homeToAdd = {
         name: faker.name.firstName(),
         address: {
-          number: faker.commerce.price(),
-          street: faker.commerce.productName(),
+          street: faker.commerce.price() + ' ' + faker.commerce.productName(),
           city: faker.commerce.department(),
           state: faker.commerce.productName(),
           zip: faker.commerce.price(),
