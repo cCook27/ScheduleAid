@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { fetchDataRequest, fetchHomesSuccess, fetchDataError, saveNewHome } from '../reducers/actions';
+import { fetchDataRequest, fetchHomesSuccess, fetchDataError, saveNewHome, updatePair } from '../reducers/actions';
 
 
 function useRequestMaker () {
@@ -39,9 +39,38 @@ function useRequestMaker () {
     }
   };
 
+  const getPairDistance = async (pair) => {
+    try {
+      let origin = pair.origin.address;
+      let destination = pair.destination.address;
+
+      const addressToString = (address) => {
+        const { street, city, state, zip } = address;
+        const addressComponents = [street, city, state, zip];
+        return addressComponents.map(component => encodeURIComponent(component)).join(' ');
+      }
+
+      const encodedOrigin = addressToString(origin);
+      const encodedDestination = addressToString(destination);
+
+      const response = await fetch(`${url}/homes/distanceMatrix?origin=${encodedOrigin}&destination=${encodedDestination}`);
+
+      const pairData = await response.json();
+
+      console.log(pairData);
+
+      dispatch(updatePair(pairData));
+
+
+    } catch (error) {
+      dispatch(fetchDataError(error.message));
+    }
+  }
+
   return {
    getHomes,
-   addNewHome 
+   addNewHome, 
+   getPairDistance
   }
 }
 

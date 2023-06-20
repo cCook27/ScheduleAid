@@ -19,6 +19,13 @@ export const saveNewHome = () => {
   }
 };
 
+export const updatePair = (data) => {
+  return {
+    type: 'UPDATE_PAIR',
+    payload: data
+  }
+};
+
 
 export const fetchDataRequest = () => {
   return {

@@ -1,3 +1,7 @@
 .address-container {
   display: flex;
 }
+
+.btn:active {
+  transform: translateY(2px) !important;
+}

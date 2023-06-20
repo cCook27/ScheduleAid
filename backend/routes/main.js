@@ -28,8 +28,8 @@ router.get('/homes/distanceMatrix', async (req, res) => {
       return res.status(400).send('An origin and a destination are required.');
     }
 
-    const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}destinations=${destination}&units=imperial&key=AIzaSyAWH9MKNEKtg2LMmFtGyj9xxkrPH5pdOxQ`);
-
+    const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=AIzaSyAWH9MKNEKtg2LMmFtGyj9xxkrPH5pdOxQ`)
+        
     const distanceData = response.data;
 
     res.json(distanceData);
