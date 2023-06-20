@@ -12,12 +12,8 @@ function App() {
   return (
     <div className='container'>
       <Header />
-      <Schedule />
-      <div className="bottom">
-        <DisplayHomes />
-        <CreateHomes />
-      </div>
-      
+      <DisplayHomes className="bottom" />
+      <CreateHomes />
     </div>
   );
 }
