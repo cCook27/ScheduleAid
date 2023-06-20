@@ -19,9 +19,9 @@ export const saveNewHome = () => {
   }
 };
 
-export const updatePair = (data) => {
+export const updateCurrentSchedule = (data) => {
   return {
-    type: 'UPDATE_PAIR',
+    type: 'UPDATE_CURRENT_SCHEDULE',
     payload: data
   }
 };

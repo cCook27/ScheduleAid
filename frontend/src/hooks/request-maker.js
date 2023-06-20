@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { fetchDataRequest, fetchHomesSuccess, fetchDataError, saveNewHome, updatePair } from '../reducers/actions';
+import { fetchDataRequest, fetchHomesSuccess, fetchDataError, saveNewHome, updateCurrentSchedule } from '../reducers/actions';
 
 
 function useRequestMaker () {
@@ -38,29 +38,32 @@ function useRequestMaker () {
         dispatch(fetchDataError(error.message));
     }
   };
-
-  const getPairDistance = async (pair) => {
+  const getTimeDistances = async (homes) => {
     try {
-      let origin = pair.origin.address;
-      let destination = pair.destination.address;
+      let timeDistances = [];
 
-      const addressToString = (address) => {
-        const { street, city, state, zip } = address;
-        const addressComponents = [street, city, state, zip];
-        return addressComponents.map(component => encodeURIComponent(component)).join(' ');
-      }
+      for (let i = 0; i < homes.length -1; i++) {
+        const origin = homes[i].address;
+        const destination = homes[i+1].address;
 
-      const encodedOrigin = addressToString(origin);
-      const encodedDestination = addressToString(destination);
+        const addressToString = (address) => {
+          const { street, city, state, zip } = address;
+          const addressComponents = [street, city, state, zip];
+          return addressComponents.map(component => encodeURIComponent(component)).join(' ');
+        };
 
-      const response = await fetch(`${url}/homes/distanceMatrix?origin=${encodedOrigin}&destination=${encodedDestination}`);
+        const encodedOrigin = addressToString(origin);
+        const encodedDestination = addressToString(destination);
 
-      const pairData = await response.json();
+        const response = await fetch(`${url}/homes/distanceMatrix?origin=${encodedOrigin}&destination=${encodedDestination}`);
 
-      console.log(pairData);
+        const distData = await response.json();
 
-      dispatch(updatePair(pairData));
+        timeDistances.push(distData);
+      };
 
+
+      dispatch(updateCurrentSchedule(timeDistances));
 
     } catch (error) {
       dispatch(fetchDataError(error.message));
@@ -70,10 +73,27 @@ function useRequestMaker () {
   return {
    getHomes,
    addNewHome, 
-   getPairDistance
+   getTimeDistances
   }
 }
 
 export default useRequestMaker;
 
 
+// let origin = pair.origin.address;
+//       let destination = pair.destination.address;
+
+      // const addressToString = (address) => {
+      //   const { street, city, state, zip } = address;
+      //   const addressComponents = [street, city, state, zip];
+      //   return addressComponents.map(component => encodeURIComponent(component)).join(' ');
+      // }
+
+      // const encodedOrigin = addressToString(origin);
+      // const encodedDestination = addressToString(destination);
+
+//       const response = await fetch(`${url}/homes/distanceMatrix?origin=${encodedOrigin}&destination=${encodedDestination}`);
+
+//       const pairData = await response.json();
+
+//       dispatch(updatePair(pairData));

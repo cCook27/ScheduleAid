@@ -5,8 +5,7 @@ const initialState = {
   loading: false,
   error: null,
   newHome: true,
-  pair: [],
-  pairsToTest: [],
+  currentSchedule: []
 };
 
 function rootReducer(state = initialState, action) {
@@ -28,10 +27,10 @@ function rootReducer(state = initialState, action) {
         ...state,
         newHome: true,
       }
-    case 'UPDATE_PAIR':
+    case 'UPDATE_CURRENT_SCHEDULE':
       return {
         ...state,
-        pair: action.payload,
+        currentSchedule: action.payload,
       }
     case 'FETCH_DATA_REQUEST':
       return {

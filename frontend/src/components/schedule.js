@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import useRequestMaker from '../hooks/request-maker';
 
@@ -7,19 +7,27 @@ import Button from 'react-bootstrap/Button';
 
 function Schedule(props) {
   const homes = props.homes;
-  const {getPairDistance} = useRequestMaker();
+  const {getTimeDistances} = useRequestMaker();
 
-  const pairData = useSelector(state => state.pair);
+  const timeDistances = useSelector(state => state.currentSchedule);
+
+  useEffect(() => {
+    
+  },[timeDistances])
+
+  const sendTest = () => {
+    getTimeDistances(homes);
+  };
 
   return (
     <div>
       <ul>
         {homes.map((home) => (
-          <li>{home.name}</li>
+          <li key={home._id}>{home.name}</li>
         ))}
       </ul>
       <div>
-        <Button>Submit Test</Button>
+        <Button onClick={sendTest}>Submit Test</Button>
       </div>
     </div>
   );
