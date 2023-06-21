@@ -1,14 +1,5 @@
 .page-container {
   display: grid;
   grid-template-columns: 50% 50%;
-}
-
-.homes {
-  width: 50%;
-  margin-left: 100px;
-}
-
-.distance {
-  position: relative;
-  top: 10px;
+  align-items: center;
 }

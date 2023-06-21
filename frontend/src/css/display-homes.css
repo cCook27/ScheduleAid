@@ -1,25 +1,22 @@
-.address-container {
-  display: flex;
-}
-
 .btn:active {
-  transform: translateY(2px) !important;
+  transform: translateY(2px);
 }
 
 .page-container {
   display: grid;
-  grid-template-columns: 70% 30%;
+  grid-template-rows: 70% 30%;
+  justify-content: center;
+  gap: 20px;
 }
 
 .schedule {
-  grid-column: 1;
 }
 
 .card-container {
-  grid-column: 2;
   display: grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: 200px 200px 200px;
   gap: 10px;
+  margin: auto;
 }
 
 .card {

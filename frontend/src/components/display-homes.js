@@ -27,6 +27,7 @@ function DisplayHomes() {
 
   return (
     <div className='page-container'>
+      <Schedule className='schedule' homes={homesToSchedule} />
       <div className='card-container'>
         {homes.map(home => (
           <Card className="card" key={home._id}>
@@ -38,7 +39,6 @@ function DisplayHomes() {
           </Card>
         ))}
       </div>
-      <Schedule className='schedule' homes={homesToSchedule} />
   </div>
     
   
