@@ -12,6 +12,11 @@ function Schedule(props) {
   const timeDistances = useSelector(state => state.currentSchedule);
 
   useEffect(() => {
+    console.log(timeDistances);
+    if(timeDistances.length > 1) {
+      const duration = timeDistances[0].rows[0].elements[0].duration.text;
+      console.log(duration);
+    }
     
   },[timeDistances])
 
@@ -20,10 +25,15 @@ function Schedule(props) {
   };
 
   return (
-    <div>
-      <ul>
+    <div className='page-container'>
+      <ul className='homes'>
         {homes.map((home) => (
           <li key={home._id}>{home.name}</li>
+        ))}
+      </ul>
+      <ul className='distance'>
+      {timeDistances.map((dist) => (
+          <li key='1'>{dist.rows[0].elements[0].duration.text}</li>
         ))}
       </ul>
       <div>
