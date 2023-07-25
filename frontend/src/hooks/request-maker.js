@@ -38,6 +38,7 @@ function useRequestMaker () {
         dispatch(fetchDataError(error.message));
     }
   };
+
   const getTimeDistances = async (homes) => {
     try {
       let timeDistances = [];
@@ -68,7 +69,7 @@ function useRequestMaker () {
     } catch (error) {
       dispatch(fetchDataError(error.message));
     }
-  }
+  };
 
   return {
    getHomes,

@@ -1,5 +1,13 @@
-.page-container {
-  display: grid;
-  grid-template-columns: 100%;
-  align-items: center;
+.border-right {
+  border-right: 1px solid black;
+}
+
+.border-bottom {
+  border-bottom: 1px solid rgba(0, 0, 0, 0);
+  height: 72px;
+}
+
+.time-element {
+  height: 18px;
+  font-size: 10px;
 }
