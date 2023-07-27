@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row';
 import useRequestMaker from '../hooks/request-maker';
 import { useState } from 'react';
 
-function CreateHomes() {
+function CreateClient() {
   const {addNewHome} = useRequestMaker();
 
   const [formData, setFormData] = useState({
@@ -69,4 +69,4 @@ function CreateHomes() {
   );
 }
 
-export default CreateHomes;
+export default CreateClient;

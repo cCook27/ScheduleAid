@@ -1,44 +1,62 @@
-import './App.css'
-
-import Header from './components/header';
-import Schedule from './components/schedule';
-import DisplayHomes from './components/display-homes';
-import CreateHomes from './components/create-homes';
+import Home from './components/Home.js'
+import Navbar from './components/Navbar.js'
+import DisplayClients from './Features/display-clients.js';
+import CreateClient from './Features/create-client.js';
+import Calendar from './components/Calendar.js';
 import useRequestMaker from './hooks/request-maker';
+import { useEffect, useState } from 'react';
+
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 function App() {
+  const [addClass, setAddClass] = useState(false); 
+
   useRequestMaker()
 
+
+
+
   return (
-    <div className='container-fluid'>
-      <div className="row">
-        <div className="col">
 
-          <div className="row header">
-            <div className="col">
-            <Header />
-            </div>
-          </div>
+    <Router>
+      <Navbar />
+      <Switch>
+        <Route exact path="/" component={Home}></Route>
+        <Route exact path="/create" component={CreateClient} ></Route>
+        <Route exact path="/manage" component={DisplayClients} ></Route>
+        <Route exact path="/scheduling" component={Calendar} ></Route>
+      </Switch>
+    </Router>
 
-          <div className="row schedule/create">
-            <div className="col-8">
-              <Schedule />
-            </div>
-            <div className="col-4">
-              <CreateHomes />
-            </div>
-          </div>
-
-          <div className="row displayHomes py-4">
-            <div className="col">
-              <DisplayHomes />
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
   );
 }
 
 export default App;
+
+
+    // <div className='container-fluid'>
+    //   <div className="row">
+    //     <div className="col">
+
+    //       <div className="row header">
+    //         <div className="col">
+    //         <Header />
+    //         </div>
+    //       </div>
+
+    //       <div className="row schedule/create">
+    //         <div className="col">
+    //         <DisplayHomes handleHomeDrop={handleHomeDrop} />
+    //         </div>
+    //       </div>
+
+    //       <div className="row displayHomes py-4">
+    //         <div className="col">
+              
+    //           <CreateHomes />
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+
+    // </div>
