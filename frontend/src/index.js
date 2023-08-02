@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import "react-big-calendar/lib/css/react-big-calendar.css"
+
 import { Provider } from 'react-redux';
 import store from './store/store';
 

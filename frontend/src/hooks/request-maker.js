@@ -81,20 +81,3 @@ function useRequestMaker () {
 export default useRequestMaker;
 
 
-// let origin = pair.origin.address;
-//       let destination = pair.destination.address;
-
-      // const addressToString = (address) => {
-      //   const { street, city, state, zip } = address;
-      //   const addressComponents = [street, city, state, zip];
-      //   return addressComponents.map(component => encodeURIComponent(component)).join(' ');
-      // }
-
-      // const encodedOrigin = addressToString(origin);
-      // const encodedDestination = addressToString(destination);
-
-//       const response = await fetch(`${url}/homes/distanceMatrix?origin=${encodedOrigin}&destination=${encodedDestination}`);
-
-//       const pairData = await response.json();
-
-//       dispatch(updatePair(pairData));
