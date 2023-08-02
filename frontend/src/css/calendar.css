@@ -1,13 +1,17 @@
-.border-right {
-  border-right: 1px solid black;
+.card-title {
+  font-size: 12px;
 }
 
-.border-bottom {
-  border-bottom: 1px solid rgba(0, 0, 0, 0);
-  height: 72px;
-}
-
-.time-element {
-  height: 18px;
+.card-text {
   font-size: 10px;
+}
+
+.card {
+  height: 45px;
+  width: 100px;
+}
+
+.card-body {
+  padding: 0;
+  padding-left: 10px;
 }

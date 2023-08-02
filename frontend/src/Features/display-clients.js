@@ -1,6 +1,5 @@
 /* eslint-disable react/style-prop-object */
 import React, { useEffect, useState } from 'react';
-import useRequestMaker from '../hooks/request-maker';
 import { useSelector } from 'react-redux';
 
 import 'bootstrap/dist/css/bootstrap.css';

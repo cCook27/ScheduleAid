@@ -1,15 +1,6 @@
 import React from 'react';
-import { useEffect } from 'react';
-import useRequestMaker from '../hooks/request-maker';
 
 const Navbar = () => {
-
-  const {getHomes} = useRequestMaker();
-  useEffect(() => {
-    getHomes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
-
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light" style={{background: '#e3f2fd'}}>

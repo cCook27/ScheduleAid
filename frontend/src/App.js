@@ -13,7 +13,11 @@ function App() {
 
   useRequestMaker()
 
-
+  const {getHomes} = useRequestMaker();
+  useEffect(() => {
+    getHomes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
 
 
   return (
