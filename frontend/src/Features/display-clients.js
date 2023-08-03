@@ -1,5 +1,4 @@
-/* eslint-disable react/style-prop-object */
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 
 import 'bootstrap/dist/css/bootstrap.css';
@@ -7,15 +6,9 @@ import '../css/display-homes.css'
 
 
 
-function DisplayClients({handleHomeDrop}) {
-  const [homesToSchedule, setHomesToSchedule] = useState([])
+function DisplayClients() {
 
   const homes = useSelector(state => state.homes);
-
-  const handleState = (home) => {
-   setHomesToSchedule(prev => [...prev, home]);
-  };
-
 
   return (
     <div className='container-fluid'>
