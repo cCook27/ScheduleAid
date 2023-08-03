@@ -39,6 +39,26 @@ function useRequestMaker () {
     }
   };
 
+  const removeClient = async (id) => {
+    try {
+      const options = {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json',},
+      };
+
+      const response = await fetch(`${url}/homes/${id}`, options);
+      const resData = await response.json();
+
+      if(resData) {
+        getHomes();
+      }
+
+      
+    } catch (error) {
+        dispatch(fetchDataError(error.message));
+    }
+  };
+
   const getTimeDistances = async (homes) => {
     try {
       let timeDistances = [];
@@ -74,6 +94,7 @@ function useRequestMaker () {
   return {
    getHomes,
    addNewHome, 
+   removeClient,
    getTimeDistances
   }
 }

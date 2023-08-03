@@ -1,7 +1,8 @@
-const router = require("express").Router();
 const Pair = require('../models/pair');
 const Home = require('../models/home');
 const axios = require('axios');
+
+const router = require("express").Router();
 
 router.get('/homes', async (req, res) => {
   try{
@@ -128,7 +129,7 @@ router.delete('/homes/:home', async (req,res) => {
     const deletedHome = await Home.findOneAndDelete({_id: homeId});
 
     if(!deletedHome) {
-      res.status(404).send('Could not find home to delete')
+      return res.status(404).send('Could not find home to delete')
     };
 
     res.status(204).json(deletedHome);
