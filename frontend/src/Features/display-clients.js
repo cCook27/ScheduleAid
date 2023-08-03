@@ -1,10 +1,11 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import useRequestMaker from '../hooks/request-maker';
+import useHomeRequests from '../hooks/home-requests';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/display-homes.css'
+
 
 
 
@@ -12,7 +13,7 @@ function DisplayClients() {
 
   const homes = useSelector(state => state.homes);
 
-  const {removeClient} = useRequestMaker();
+  const {removeClient} = useHomeRequests();
 
   const remove = (id) => {
     removeClient(id)

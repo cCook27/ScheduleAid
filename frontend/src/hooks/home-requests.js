@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux';
 import { fetchDataRequest, fetchHomesSuccess, fetchDataError, saveNewHome, updateCurrentSchedule } from '../reducers/actions';
 
 
-function useRequestMaker () {
+function useHomeRequests () {
   const dispatch = useDispatch();
   const url = 'http://localhost:3001'
 
@@ -99,6 +99,6 @@ function useRequestMaker () {
   }
 }
 
-export default useRequestMaker;
+export default useHomeRequests;
 
 

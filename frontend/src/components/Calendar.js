@@ -22,16 +22,30 @@ function Calendar(props) {
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
+  const [weeklySchedule, setWeeklySchedule] = useState({ Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: [], Sun: [], });
+ 
+  const formulateWeek = 
+    useCallback((event) => {
+      const dayOfWeek = event.start.toLocaleString('en-US', {weekday: 'short'});
 
-  const newEvent = useCallback(
-      (event) => {
-        setMyEvents((prev) => {
-          
-          return [...prev, { ...event }]
-        })
-      },
-      [setMyEvents]
-    );
+      setWeeklySchedule((prev) => {
+        return {...prev, [dayOfWeek]: [...prev[dayOfWeek], event]}
+      });
+    
+    },
+    [setWeeklySchedule]
+  );
+
+  const newEvent = useCallback((event) => {
+    setMyEvents((prev) => {
+      return [...prev, { ...event }]
+    })
+
+    formulateWeek(event)
+
+    },
+    [setMyEvents, formulateWeek]
+  );
 
   const onDropFromOutside = useCallback(
     ({ start, allDay: isAllDay }) => {
@@ -39,11 +53,13 @@ function Calendar(props) {
       const end = new Date(start.getTime() + 60 * 60 * 1000);
 
       const {client} = draggedClient;
+      const {address} = draggedClient
       const calId = uuidv4();
 
       const event = {
         title: client,
         id: calId,
+        address: address,
         start,
         end,
         isAllDay,
@@ -53,21 +69,21 @@ function Calendar(props) {
     [newEvent, draggedClient]
   );
 
-  const moveEvent = useCallback(({event, start, end, allDay: isAllDay}) =>{
+  const moveEvent = useCallback(
+    ({event, start, end, allDay: isAllDay}) => {
   
-    setMyEvents((prev) => {
-      const existingEvent = prev.find((ev) => ev.id === event.id); 
-      const filteredState = prev.filter((ev) => ev.id !== event.id);
+      setMyEvents((prev) => {
+        const existingEvent = prev.find((ev) => ev.id === event.id); 
+        const filteredState = prev.filter((ev) => ev.id !== event.id);
 
-      console.log(filteredState)
-      console.log(existingEvent)
+        return [...filteredState, {...existingEvent, start, end, isAllDay}]
+      });
 
-      return [...filteredState, {...existingEvent, start, end, isAllDay}]
-    })
+    }, 
+      [setMyEvents]
+  );
 
-  }, [setMyEvents]);
-
-  const handleDragStart = useCallback((client) => setDraggedClient({client: client}), []);
+  const handleDragStart = useCallback((client, address) => setDraggedClient({client: client, address: address}), []);
  
 
   if(!dataLoaded) {
@@ -98,7 +114,7 @@ function Calendar(props) {
           {homes.map(home => (
             <div key={home._id} draggable className="col-4" 
               onDragStart={() =>
-                  handleDragStart(home.name)
+                  handleDragStart(home.name, home.address)
                 }>
               <div  className="card my-3">
                 <div className="card-body">
