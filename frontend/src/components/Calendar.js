@@ -22,29 +22,15 @@ function Calendar(props) {
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
-  const [weeklySchedule, setWeeklySchedule] = useState({ Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: [], Sun: [], });
- 
-  const formulateWeek = 
-    useCallback((event) => {
-      const dayOfWeek = event.start.toLocaleString('en-US', {weekday: 'short'});
+  
 
-      setWeeklySchedule((prev) => {
-        return {...prev, [dayOfWeek]: [...prev[dayOfWeek], event]}
+  const newEvent = useCallback(
+    (event) => {
+      setMyEvents((prev) => {
+        return [...prev, { ...event }]
       });
-    
     },
-    [setWeeklySchedule]
-  );
-
-  const newEvent = useCallback((event) => {
-    setMyEvents((prev) => {
-      return [...prev, { ...event }]
-    })
-
-    formulateWeek(event)
-
-    },
-    [setMyEvents, formulateWeek]
+    [setMyEvents]
   );
 
   const onDropFromOutside = useCallback(
@@ -84,6 +70,29 @@ function Calendar(props) {
   );
 
   const handleDragStart = useCallback((client, address) => setDraggedClient({client: client, address: address}), []);
+
+  const testSchedule = useCallback(
+    () => {
+      const weeklySchedule = myEvents.reduce((accum, event) => {
+      const day = event.start.toLocaleString('en-US', { weekday: 'short' });
+
+      return {
+        ...accum, [day]: [...accum[day], event].sort((a, b) => a.start - b.start)
+      }
+      }, {
+          Mon: [],
+          Tue: [],
+          Wed: [],
+          Thu: [],
+          Fri: [],
+          Sat: [],
+          Sun: []
+        }
+      );
+
+    },
+    [myEvents]
+  );
  
 
   if(!dataLoaded) {
@@ -106,6 +115,7 @@ function Calendar(props) {
             selectable
           />
         </div>
+        <button onClick={testSchedule} className="btn">Test</button>
       </div>
 
 

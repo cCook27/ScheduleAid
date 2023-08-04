@@ -20,20 +20,17 @@ router.get('/homes', async (req, res) => {
   }
 });
 
-router.get('/homes/distanceMatrix', async (req, res) => {
+router.post('/homes/distanceMatrix', async (req, res) => {
   try {
-    const origin = req.query.origin;
-    const destination = req.query.destination;
-
-    if(!origin || !destination) {
-      return res.status(400).send('An origin and a destination are required.');
+    const weeklySchedule = req.body
+    for(const day in weeklySchedule) {
+      const organizedRoute = day.sort((a, b) => {
+        return a.start.toLocaleString('en-US', {timeStyle: 'Short'}) - b.start.toLocaleString('en-US', {timeStyle: 'Short'})
+      });
+      
     }
 
-    const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=AIzaSyAWH9MKNEKtg2LMmFtGyj9xxkrPH5pdOxQ`)
-        
-    const distanceData = response.data;
 
-    res.json(distanceData);
 
   } catch (error) {
     console.error('Error:', error);
@@ -141,3 +138,27 @@ router.delete('/homes/:home', async (req,res) => {
 });
 
 module.exports = router;
+
+
+
+// router.get('/homes/distanceMatrix', async (req, res) => {
+//   try {
+//     const origin = req.query.origin;
+//     const destination = req.query.destination;
+
+//     if(!origin || !destination) {
+//       return res.status(400).send('An origin and a destination are required.');
+//     }
+
+//     const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=AIzaSyAWH9MKNEKtg2LMmFtGyj9xxkrPH5pdOxQ`)
+        
+//     const distanceData = response.data;
+
+//     res.json(distanceData);
+
+//   } catch (error) {
+//     console.error('Error:', error);
+//     res.status(500).send(`An error occurred while trying to get your information. Try again later. ${error.message}`);
+//   }
+
+// });
