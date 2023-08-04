@@ -1,21 +1,23 @@
-/* eslint-disable react/style-prop-object */
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
+
+import useHomeRequests from '../hooks/home-requests';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/display-homes.css'
 
 
 
-function DisplayClients({handleHomeDrop}) {
-  const [homesToSchedule, setHomesToSchedule] = useState([])
+
+function DisplayClients() {
 
   const homes = useSelector(state => state.homes);
 
-  const handleState = (home) => {
-   setHomesToSchedule(prev => [...prev, home]);
-  };
+  const {removeClient} = useHomeRequests();
 
+  const remove = (id) => {
+    removeClient(id)
+  }
 
   return (
     <div className='container-fluid'>
@@ -27,6 +29,7 @@ function DisplayClients({handleHomeDrop}) {
                 <h5 className="card-title">{home.name}</h5>
                 <p className="card-text">{home.address.street}, {home.address.city}, {home.address.state}, {home.address.zip}</p>
                 <a href='/manage' className="btn btn-primary">Manage</a>
+                <button onClick={() => remove(home._id)} className="btn">Delete</button>
               </div>
               </div>
           </div>

@@ -3,11 +3,11 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import useRequestMaker from '../hooks/request-maker';
 import { useState } from 'react';
+import useHomeRequests from '../hooks/home-requests';
 
 function CreateClient() {
-  const {addNewHome} = useRequestMaker();
+  const {addNewHome} = useHomeRequests();
 
   const [formData, setFormData] = useState({
     name: '',

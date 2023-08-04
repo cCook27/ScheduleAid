@@ -2,7 +2,7 @@ import { useDispatch } from 'react-redux';
 import { fetchDataRequest, fetchHomesSuccess, fetchDataError, saveNewHome, updateCurrentSchedule } from '../reducers/actions';
 
 
-function useRequestMaker () {
+function useHomeRequests () {
   const dispatch = useDispatch();
   const url = 'http://localhost:3001'
 
@@ -31,6 +31,26 @@ function useRequestMaker () {
 
       if(resData) {
         dispatch(saveNewHome());
+      }
+
+      
+    } catch (error) {
+        dispatch(fetchDataError(error.message));
+    }
+  };
+
+  const removeClient = async (id) => {
+    try {
+      const options = {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json',},
+      };
+
+      const response = await fetch(`${url}/homes/${id}`, options);
+      const resData = await response.json();
+
+      if(resData) {
+        getHomes();
       }
 
       
@@ -74,10 +94,11 @@ function useRequestMaker () {
   return {
    getHomes,
    addNewHome, 
+   removeClient,
    getTimeDistances
   }
 }
 
-export default useRequestMaker;
+export default useHomeRequests;
 
 
