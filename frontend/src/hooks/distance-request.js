@@ -8,9 +8,20 @@ function useDistanceRequests () {
 
 
 
-  const getTimeDistances = async (homes) => {
+  const getTimeDistances = async (events) => {
     try {
-      
+      const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',},
+        body: JSON.stringify(events)
+      };
+
+      const response = await fetch(`${url}/homes/distanceMatrix`, options);
+      const scheduleViability = await response.json();
+
+      console.log(scheduleViability)
+
+      return scheduleViability
 
     } catch (error) {
       dispatch(fetchDataError(error.message));

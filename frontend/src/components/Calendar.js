@@ -4,6 +4,8 @@ import { useSelector } from 'react-redux';
 import '../css/calendar.css';
 import { v4 as uuidv4 } from 'uuid';
 
+import useDistanceRequests from '../hooks/distance-request';
+
 import { momentLocalizer, Calendar as BigCalendar } from 'react-big-calendar';
 import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
@@ -17,6 +19,7 @@ const localizer = momentLocalizer(moment);
 
 function Calendar(props) {
 
+  const {getTimeDistances} = useDistanceRequests();
   const homes = useSelector(state => state.homes);
   const dataLoaded = homes.length > 0;
 
@@ -71,25 +74,29 @@ function Calendar(props) {
 
   const handleDragStart = useCallback((client, address) => setDraggedClient({client: client, address: address}), []);
 
-  const testSchedule = useCallback(
-    () => {
-      const weeklySchedule = myEvents.reduce((accum, event) => {
-      const day = event.start.toLocaleString('en-US', { weekday: 'short' });
 
-      return {
-        ...accum, [day]: [...accum[day], event].sort((a, b) => a.start - b.start)
-      }
-      }, {
-          Mon: [],
-          Tue: [],
-          Wed: [],
-          Thu: [],
-          Fri: [],
-          Sat: [],
-          Sun: []
+  const testSchedule = useCallback(
+    async () => {
+      const weeklySchedule = myEvents.reduce((accum, event) => {
+        const day = event.start.toLocaleString('en-US', { weekday: 'short' });
+
+        return {
+          ...accum, [day]: [...accum[day], event].sort((a, b) => a.start - b.start)
         }
+        }, {
+            Mon: [],
+            Tue: [],
+            Wed: [],
+            Thu: [],
+            Fri: [],
+            Sat: [],
+            Sun: []
+          }
       );
 
+      const test = await getTimeDistances(weeklySchedule);
+
+      console.log(test)
     },
     [myEvents]
   );
