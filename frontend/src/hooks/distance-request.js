@@ -19,8 +19,6 @@ function useDistanceRequests () {
       const response = await fetch(`${url}/homes/distanceMatrix`, options);
       const scheduleViability = await response.json();
 
-      console.log(scheduleViability)
-
       return scheduleViability
 
     } catch (error) {

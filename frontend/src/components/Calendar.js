@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Children, useEffect} from 'react';
 import { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import '../css/calendar.css';
@@ -25,6 +25,42 @@ function Calendar(props) {
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
+
+  const eventPropGetter = useCallback(
+    (event) => ({
+      ...(event.isViable === true && {
+        className: 'isViable',
+      }),
+      ...(event.isViable === false && {
+        className: 'notViable',
+      }),
+    }),
+    [myEvents]
+  );
+
+  const eventViability = useCallback(
+    (viabilityData) => {
+
+      viabilityData.forEach((element) => {
+        setMyEvents((prev) => {
+          let origin = prev.find((event) => event.id === element.originId);
+          origin.isViable = element.isViable;
+
+          const filteredState = prev.filter((event) => event.id !== element.originId);
+
+        return [...filteredState, {...origin}]
+      });
+
+
+      })
+
+    },
+      []
+  );
+
+  useEffect(() => {
+    console.log(myEvents)
+  }, [myEvents])
   
 
   const newEvent = useCallback(
@@ -52,6 +88,7 @@ function Calendar(props) {
         start,
         end,
         isAllDay,
+        isViable: null
       }
       newEvent(event)
     },
@@ -94,9 +131,11 @@ function Calendar(props) {
           }
       );
 
-      const test = await getTimeDistances(weeklySchedule);
+      console.log(weeklySchedule)
 
-      console.log(test)
+      const viabilityData = await getTimeDistances(weeklySchedule);
+
+      eventViability(viabilityData);
     },
     [myEvents]
   );
@@ -117,6 +156,7 @@ function Calendar(props) {
             onDropFromOutside={onDropFromOutside}
             onEventDrop={moveEvent}
             onEventResize={moveEvent}
+            eventPropGetter={eventPropGetter}
             defaultView="week" 
             resizable
             selectable
