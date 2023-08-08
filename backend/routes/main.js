@@ -20,20 +20,64 @@ router.get('/homes', async (req, res) => {
   }
 });
 
-router.get('/homes/distanceMatrix', async (req, res) => {
+router.post('/homes/distanceMatrix', async (req, res) => {
   try {
-    const origin = req.query.origin;
-    const destination = req.query.destination;
+    const weeklySchedule = Object.values(req.body);
 
-    if(!origin || !destination) {
-      return res.status(400).send('An origin and a destination are required.');
-    }
+    const formulateAddress = (address) => {
+      return `${address.street}, ${address.city}, ${address.state}, ${address.zip}`
+    };
 
-    const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=AIzaSyAWH9MKNEKtg2LMmFtGyj9xxkrPH5pdOxQ`)
-        
-    const distanceData = response.data;
+    const convertToSeconds = (timeStamp) => {
+      const date = new Date(timeStamp);
+      const totalSeconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+      
+      return totalSeconds
+    };
 
-    res.json(distanceData);
+    const timeChecker = async () => {
+      let scheduleViability = [];
+
+      await Promise.all(weeklySchedule.map(async (day) => {
+        for (let i = 0; i < day.length; i++) {
+          const event = day[i];
+
+          if(day[i+1]) {
+            const origin = formulateAddress(event.address);
+            const destination = formulateAddress(day[i+1].address);
+
+            const endTime = convertToSeconds(event.end);
+            const startTime = convertToSeconds(day[i+1].start);
+
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=AIzaSyAWH9MKNEKtg2LMmFtGyj9xxkrPH5pdOxQ`);
+
+            const distanceData = response.data;
+
+            if((startTime - endTime) > distanceData.rows[0].elements[0].duration.value) {
+              scheduleViability.push( 
+                {
+                  isViable: true,
+                  originId: event.id,
+                  destinationId: day[i+1].id
+                });
+              } else {
+                  scheduleViability.push( 
+                    {
+                      isViable: false,
+                      originId: event.id,
+                      destinationId: day[i+1].id
+                    });
+                } 
+          } 
+        }
+      }));
+
+      return scheduleViability;
+    };
+
+    const scheduleViability = await timeChecker();
+
+    res.status(200).json(scheduleViability);
 
   } catch (error) {
     console.error('Error:', error);
@@ -141,3 +185,72 @@ router.delete('/homes/:home', async (req,res) => {
 });
 
 module.exports = router;
+
+
+
+// router.post('/homes/distanceMatrix', async (req, res) => {
+//   try {
+//     const weeklySchedule = Object.values(req.body);
+
+//     const formulateAddress = (address) => {
+//       return `${address.street}, ${address.city}, ${address.state}, ${address.zip}`
+//     };
+
+//     const convertToSeconds = (timeStamp) => {
+//       const date = new Date(timeStamp);
+//       const totalSeconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
+      
+//       return totalSeconds
+//     };
+
+//     const timeChecker = async () => {
+//       let scheduleViability = [];
+
+//       for (let i = 0; i < weeklySchedule.length; i++) {
+//         const day = weeklySchedule[i];
+
+//         day.forEach(async (event, j) => {
+//           if(day[j+1]) {
+//             const origin = formulateAddress(event.address);
+//             const destination = formulateAddress(day[j+1].address);
+
+//             const endTime = convertToSeconds(event.end);
+//             const startTime = convertToSeconds(day[j+1].start)
+
+//             const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=AIzaSyAWH9MKNEKtg2LMmFtGyj9xxkrPH5pdOxQ`);
+
+//             const distanceData = await response.data;
+
+//             if((startTime - endTime) > distanceData.rows[0].elements[0].duration.value) {
+//               scheduleViability.push( 
+//                 {
+//                   viability: true,
+//                   originId: event.id,
+//                   destinationId: day[j+1].id
+//                 });
+//             } else {
+//               scheduleViability.push( 
+//                 {
+//                   viability: false,
+//                   originId: event.id,
+//                   destinationId: day[j+1].id
+//                 });
+//             }
+//           } 
+           
+//         });
+        
+//       }
+//       return scheduleViability;
+//     };
+
+//     const scheduleViability = await timeChecker();
+
+//     res.status(200).json(scheduleViability);
+
+//   } catch (error) {
+//     console.error('Error:', error);
+//     res.status(500).send(`An error occurred while trying to get your information. Try again later. ${error.message}`);
+//   }
+
+// });
