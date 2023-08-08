@@ -56,7 +56,7 @@ router.post('/homes/distanceMatrix', async (req, res) => {
             if((startTime - endTime) > distanceData.rows[0].elements[0].duration.value) {
               scheduleViability.push( 
                 {
-                  isViable: true,
+                  isViableOrg: true,
                   originId: event.id,
                   destinationId: day[i+1].id
                 });

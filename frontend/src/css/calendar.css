@@ -844,10 +844,15 @@ button.rbc-input::-moz-focus-inner {
   pointer-events: none;
 }
 
-.notViable {
-  background-color: red !important;
+.notViableOrg {
+  border-bottom: 5px solid red !important;
 }
 
-.isViable {
-  background-color: green !important;
+.notViableDest {
+  border-top: 5px solid red !important;
+}
+
+.bothNotViable {
+  border-top: 5px solid red !important;
+  border-bottom: 5px solid red !important;
 }

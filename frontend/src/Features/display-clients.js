@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useSelector } from 'react-redux';
 
 import useHomeRequests from '../hooks/home-requests';
@@ -14,6 +14,11 @@ function DisplayClients() {
   const homes = useSelector(state => state.homes);
 
   const {removeClient} = useHomeRequests();
+  const {getHomes} = useHomeRequests();
+
+  useEffect(() => {
+    getHomes();
+  },[removeClient])
 
   const remove = (id) => {
     removeClient(id)
