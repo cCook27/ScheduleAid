@@ -844,15 +844,38 @@ button.rbc-input::-moz-focus-inner {
   pointer-events: none;
 }
 
-.notViableOrg {
-  border-bottom: 5px solid red !important;
-}
-
-.notViableDest {
-  border-top: 5px solid red !important;
+.bothViable {
+  border-top: 5px solid green !important;
+  border-bottom: 5px solid green !important;
 }
 
 .bothNotViable {
   border-top: 5px solid red !important;
   border-bottom: 5px solid red !important;
+}
+
+.orgVDestN {
+  border-top: 5px solid red !important;
+  border-bottom: 5px solid green !important;
+}
+
+.orgNDestV {
+  border-top: 5px solid green !important;
+  border-bottom: 5px solid red !important;
+}
+
+.orgNDestNull {
+  border-bottom: 5px solid red !important;
+}
+
+.orgNullDestN {
+  border-top: 5px solid red !important;
+}
+
+.orgNullDestV {
+  border-top: 5px solid green !important;
+}
+
+.orgVDestNull {
+  border-bottom: 5px solid green !important;
 }

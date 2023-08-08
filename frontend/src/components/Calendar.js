@@ -36,14 +36,34 @@ function Calendar(props) {
 
   const eventPropGetter = useCallback(
     (event) => ({
-      ...(event.isViableOrg === false && {
-        className: 'notViableOrg',
+      
+      ...(event.isViableDest === false && event.isViableOrg === true && {
+        className: 'orgVDestN',
       }),
-      ...(event.isViableDest === false && {
-        className: 'notViableDest',
+      ...(event.isViableDest === true && event.isViableOrg === false && {
+        className: 'orgNDestV',
       }),
+
+      ...(event.isViableDest === false && event.isViableOrg === null && {
+        className: 'orgNullDestN',
+      }),
+      ...(event.isViableDest === null && event.isViableOrg === false && {
+        className: 'orgNDestNull',
+      }),
+
+      ...(event.isViableDest === null && event.isViableOrg === true && {
+        className: 'orgVDestNull',
+      }),
+      ...(event.isViableDest === true && event.isViableOrg === null && {
+        className: 'orgNullDestV',
+      }),
+
+
       ...(event.isViableDest === false && event.isViableOrg === false && {
         className: 'bothNotViable',
+      }),
+      ...(event.isViableDest === true && event.isViableOrg === true && {
+        className: 'bothViable',
       }),
     }),
     [myEvents]
@@ -51,7 +71,6 @@ function Calendar(props) {
 
   const eventViability = useCallback(
     (viabilityData) => {
-
       viabilityData.forEach((element) => {
         setMyEvents((prev) => {
           let origin = prev.find((event) => event.id === element.originId);
