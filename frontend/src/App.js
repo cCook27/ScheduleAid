@@ -4,20 +4,12 @@ import DisplayClients from './Features/display-clients.js';
 import CreateClient from './Features/create-client.js';
 import Calendar from './components/Calendar.js';
 import useHomeRequests from './hooks/home-requests.js';
-import { useEffect } from 'react';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 
 function App() {
   useHomeRequests()
-
-  const {getHomes} = useHomeRequests();
-  useEffect(() => {
-    getHomes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
-
 
   return (
 

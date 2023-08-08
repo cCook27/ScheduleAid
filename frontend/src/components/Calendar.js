@@ -5,6 +5,7 @@ import '../css/calendar.css';
 import { v4 as uuidv4 } from 'uuid';
 
 import useDistanceRequests from '../hooks/distance-request';
+import useHomeRequests from '../hooks/home-requests.js';
 
 import { momentLocalizer, Calendar as BigCalendar } from 'react-big-calendar';
 import moment from "moment";
@@ -19,7 +20,14 @@ const localizer = momentLocalizer(moment);
 
 function Calendar(props) {
 
+  const {getHomes} = useHomeRequests();
   const {getTimeDistances} = useDistanceRequests();
+
+  useEffect(() => {
+    getHomes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
+
   const homes = useSelector(state => state.homes);
   const dataLoaded = homes.length > 0;
 
@@ -28,11 +36,34 @@ function Calendar(props) {
 
   const eventPropGetter = useCallback(
     (event) => ({
-      ...(event.isViable === true && {
-        className: 'isViable',
+      
+      ...(event.isViableDest === false && event.isViableOrg === true && {
+        className: 'orgVDestN',
       }),
-      ...(event.isViable === false && {
-        className: 'notViable',
+      ...(event.isViableDest === true && event.isViableOrg === false && {
+        className: 'orgNDestV',
+      }),
+
+      ...(event.isViableDest === false && event.isViableOrg === null && {
+        className: 'orgNullDestN',
+      }),
+      ...(event.isViableDest === null && event.isViableOrg === false && {
+        className: 'orgNDestNull',
+      }),
+
+      ...(event.isViableDest === null && event.isViableOrg === true && {
+        className: 'orgVDestNull',
+      }),
+      ...(event.isViableDest === true && event.isViableOrg === null && {
+        className: 'orgNullDestV',
+      }),
+
+
+      ...(event.isViableDest === false && event.isViableOrg === false && {
+        className: 'bothNotViable',
+      }),
+      ...(event.isViableDest === true && event.isViableOrg === true && {
+        className: 'bothViable',
       }),
     }),
     [myEvents]
@@ -40,19 +71,26 @@ function Calendar(props) {
 
   const eventViability = useCallback(
     (viabilityData) => {
-
       viabilityData.forEach((element) => {
         setMyEvents((prev) => {
           let origin = prev.find((event) => event.id === element.originId);
-          origin.isViable = element.isViable;
+          origin.isViableOrg = element.isViable;
 
           const filteredState = prev.filter((event) => event.id !== element.originId);
 
-        return [...filteredState, {...origin}]
+          return [...filteredState, {...origin}]
+        });
+
+        setMyEvents((prev) => {
+          let destination = prev.find((event) => event.id === element.destinationId);
+          destination.isViableDest = element.isViable;
+
+          const filteredState = prev.filter((event) => event.id !== element.destinationId);
+
+          return [...filteredState, {...destination}]
+        });
+
       });
-
-
-      })
 
     },
       []
@@ -88,7 +126,8 @@ function Calendar(props) {
         start,
         end,
         isAllDay,
-        isViable: null
+        isViableOrg: null,
+        isViableDest: null
       }
       newEvent(event)
     },
@@ -157,6 +196,7 @@ function Calendar(props) {
             onEventDrop={moveEvent}
             onEventResize={moveEvent}
             eventPropGetter={eventPropGetter}
+            step={15}
             defaultView="week" 
             resizable
             selectable
