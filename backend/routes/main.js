@@ -3,6 +3,7 @@ const Home = require('../models/home');
 const axios = require('axios');
 
 const router = require("express").Router();
+const mongoose = require("mongoose");
 
 router.get('/homes', async (req, res) => {
   try{
@@ -112,10 +113,36 @@ router.post('/homes', async (req, res) => {
     res.status(201).json(homeToAdd);
 
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('An error occurred while saving the client home.');
+      console.error('Error:', error);
+      res.status(500).send('An error occurred while saving the client home.');
   }
 });
+
+router.post('/schedule', async (req, res) => {
+  try {
+    const schedule = req.body;
+
+    const db = mongoose.connection.useDb('D-I-D');
+
+    const collection = db.collection('schedule');
+
+    collection.insertMany(schedule, (err, result) => {
+      if(err) {
+        console.error('Error inserting document:', err);
+        return res.status(500).json({ error: 'Failed to save in database' });
+      }
+
+      return res.json({ message: 'Database created successfully' });
+    })
+
+
+
+
+  } catch {
+      console.error('Error inserting document:');
+      res.status(500).json({ error: 'Failed to save in database' });
+  }
+})
 
 router.post('pair', async (req, res) => {
   try {
@@ -188,69 +215,3 @@ module.exports = router;
 
 
 
-// router.post('/homes/distanceMatrix', async (req, res) => {
-//   try {
-//     const weeklySchedule = Object.values(req.body);
-
-//     const formulateAddress = (address) => {
-//       return `${address.street}, ${address.city}, ${address.state}, ${address.zip}`
-//     };
-
-//     const convertToSeconds = (timeStamp) => {
-//       const date = new Date(timeStamp);
-//       const totalSeconds = date.getHours() * 3600 + date.getMinutes() * 60 + date.getSeconds();
-      
-//       return totalSeconds
-//     };
-
-//     const timeChecker = async () => {
-//       let scheduleViability = [];
-
-//       for (let i = 0; i < weeklySchedule.length; i++) {
-//         const day = weeklySchedule[i];
-
-//         day.forEach(async (event, j) => {
-//           if(day[j+1]) {
-//             const origin = formulateAddress(event.address);
-//             const destination = formulateAddress(day[j+1].address);
-
-//             const endTime = convertToSeconds(event.end);
-//             const startTime = convertToSeconds(day[j+1].start)
-
-//             const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=AIzaSyAWH9MKNEKtg2LMmFtGyj9xxkrPH5pdOxQ`);
-
-//             const distanceData = await response.data;
-
-//             if((startTime - endTime) > distanceData.rows[0].elements[0].duration.value) {
-//               scheduleViability.push( 
-//                 {
-//                   viability: true,
-//                   originId: event.id,
-//                   destinationId: day[j+1].id
-//                 });
-//             } else {
-//               scheduleViability.push( 
-//                 {
-//                   viability: false,
-//                   originId: event.id,
-//                   destinationId: day[j+1].id
-//                 });
-//             }
-//           } 
-           
-//         });
-        
-//       }
-//       return scheduleViability;
-//     };
-
-//     const scheduleViability = await timeChecker();
-
-//     res.status(200).json(scheduleViability);
-
-//   } catch (error) {
-//     console.error('Error:', error);
-//     res.status(500).send(`An error occurred while trying to get your information. Try again later. ${error.message}`);
-//   }
-
-// });

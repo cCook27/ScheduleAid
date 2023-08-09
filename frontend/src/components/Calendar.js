@@ -1,4 +1,4 @@
-import React, {Children, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import '../css/calendar.css';
@@ -6,12 +6,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 import useDistanceRequests from '../hooks/distance-request';
 import useHomeRequests from '../hooks/home-requests.js';
+import useScheduleRequests from '../hooks/schedule-requests';
 
 import { momentLocalizer, Calendar as BigCalendar } from 'react-big-calendar';
 import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
 
@@ -22,6 +24,7 @@ function Calendar(props) {
 
   const {getHomes} = useHomeRequests();
   const {getTimeDistances} = useDistanceRequests();
+  const {saveSchedule} = useScheduleRequests();
 
   useEffect(() => {
     getHomes();
@@ -178,6 +181,16 @@ function Calendar(props) {
     },
     [myEvents]
   );
+
+  const saveSched = useCallback(
+    () => {
+      if(myEvents.length === 0) {
+        return null;
+      }
+      saveSchedule(myEvents);
+    },
+    [myEvents]
+  );
  
 
   if(!dataLoaded) {
@@ -203,6 +216,7 @@ function Calendar(props) {
           />
         </div>
         <button onClick={testSchedule} className="btn">Test</button>
+        <button onClick={saveSched} className="btn">Save Schedule</button>
       </div>
 
 

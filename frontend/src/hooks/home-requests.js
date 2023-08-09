@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { fetchDataRequest, fetchHomesSuccess, fetchDataError, saveNewHome, updateCurrentSchedule } from '../reducers/actions';
+import { fetchDataRequest, fetchHomesSuccess, fetchDataError, saveNewHome } from '../reducers/actions';
 
 
 function useHomeRequests () {
@@ -59,43 +59,10 @@ function useHomeRequests () {
     }
   };
 
-  const getTimeDistances = async (homes) => {
-    try {
-      let timeDistances = [];
-
-      for (let i = 0; i < homes.length -1; i++) {
-        const origin = homes[i].address;
-        const destination = homes[i+1].address;
-
-        const addressToString = (address) => {
-          const { street, city, state, zip } = address;
-          const addressComponents = [street, city, state, zip];
-          return addressComponents.map(component => encodeURIComponent(component)).join(' ');
-        };
-
-        const encodedOrigin = addressToString(origin);
-        const encodedDestination = addressToString(destination);
-
-        const response = await fetch(`${url}/homes/distanceMatrix?origin=${encodedOrigin}&destination=${encodedDestination}`);
-
-        const distData = await response.json();
-
-        timeDistances.push(distData);
-      };
-
-
-      dispatch(updateCurrentSchedule(timeDistances));
-
-    } catch (error) {
-      dispatch(fetchDataError(error.message));
-    }
-  };
-
   return {
    getHomes,
    addNewHome, 
    removeClient,
-   getTimeDistances
   }
 }
 
