@@ -6,6 +6,13 @@ export const fetchHomesSuccess = (data) => {
   }
 };
 
+export const fetchScheduleSucsess = (data) => {
+  return {
+    type: 'FETCH_SCHEDULE_SCHEDULE',
+    payload: data
+  }
+};
+
 export const fetchDataError = (error) => {
   return {
     type: 'FETCH_DATA_ERROR',

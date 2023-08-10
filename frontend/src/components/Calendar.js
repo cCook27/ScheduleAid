@@ -24,7 +24,7 @@ function Calendar(props) {
 
   const {getHomes} = useHomeRequests();
   const {getTimeDistances} = useDistanceRequests();
-  const {saveSchedule} = useScheduleRequests();
+  const {saveSchedule, getSchedule} = useScheduleRequests();
 
   useEffect(() => {
     getHomes();
@@ -32,6 +32,8 @@ function Calendar(props) {
   },[])
 
   const homes = useSelector(state => state.homes);
+  const dbSchedule = useSelector(state => state.schedule);
+
   const dataLoaded = homes.length > 0;
 
   const [myEvents, setMyEvents] = useState([]);
@@ -100,8 +102,26 @@ function Calendar(props) {
   );
 
   useEffect(() => {
-    console.log(myEvents)
-  }, [myEvents])
+    fillInCalendar();
+  }, []);
+
+  const fillInCalendar = async () => {
+    await getSchedule();
+
+    const schedule = dbSchedule.map((event) => {
+    const startTime = new Date(event.start);
+    const endTime = new Date(event.end);
+
+    event.start = startTime;
+    event.end = endTime;
+    
+    return event; 
+    });
+
+    console.log(schedule)
+
+    setMyEvents([...schedule]);
+  }
   
 
   const newEvent = useCallback(
@@ -192,10 +212,6 @@ function Calendar(props) {
     [myEvents]
   );
  
-
-  if(!dataLoaded) {
-    return <div>Loading...</div>
-  }
 
   return (
     <div className='row my-5'>

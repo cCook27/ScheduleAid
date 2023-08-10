@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { fetchDataError } from '../reducers/actions';
+import { fetchDataError, fetchScheduleSucsess } from '../reducers/actions';
 
 
 function useScheduleRequests () {
@@ -19,13 +19,34 @@ function useScheduleRequests () {
       const response = await fetch(`${url}/schedule`, options);
       const data = await response.json();
 
+      console.log(data);
+
     } catch (error) {
       dispatch(fetchDataError(error.message));
     }
   };
 
+  const getSchedule = async () => {
+    try {
+      const response = await fetch(`${url}/schedule`);
+      const scheduleData = await response.json();
+
+      if(scheduleData === null) {
+        return null;
+      } else {
+        dispatch(fetchScheduleSucsess(scheduleData));
+      }
+
+      
+
+    } catch (error) {
+      dispatch(fetchDataError(error.message));
+    }
+  }
+
   return {
-   saveSchedule
+   saveSchedule,
+   getSchedule
   }
 }
 

@@ -3,7 +3,10 @@ const Home = require('../models/home');
 const axios = require('axios');
 
 const router = require("express").Router();
+
 const mongoose = require("mongoose");
+const DID = mongoose.connection.useDb('D-I-D');
+const schedCollection = DID.collection('schedule');
 
 router.get('/homes', async (req, res) => {
   try{
@@ -122,25 +125,40 @@ router.post('/schedule', async (req, res) => {
   try {
     const schedule = req.body;
 
-    const db = mongoose.connection.useDb('D-I-D');
+    const currSchedule = await schedCollection. find({}).toArray();
 
-    const collection = db.collection('schedule');
+    if(currSchedule.length > 0) {
+      await schedCollection.deleteMany({});
+    }
 
-    collection.insertMany(schedule, (err, result) => {
-      if(err) {
-        console.error('Error inserting document:', err);
-        return res.status(500).json({ error: 'Failed to save in database' });
-      }
-
-      return res.json({ message: 'Database created successfully' });
-    })
-
-
-
+    const insertedSched = await schedCollection.insertMany(schedule);
+    res.status(201).json({message: 'Schedule saved!', sched: insertedSched});
 
   } catch {
-      console.error('Error inserting document:');
+      console.log('Error inserting document:');
       res.status(500).json({ error: 'Failed to save in database' });
+  }
+});
+
+router.get('/schedule', async (req, res) => {
+  try {
+
+    const DID = mongoose.connection.useDb('D-I-D');
+    const schedCollection = DID.collection('schedule');
+
+    const schedule = await schedCollection. find({}).toArray();
+
+    if(!schedule) {
+      res.status.json([]);
+    } else {
+      res.status(200).json(schedule);
+    }
+
+    
+
+  } catch {
+      console.log('Error getting documents');
+      res.status(500).send('An error occurred while fetching documents.');
   }
 })
 
