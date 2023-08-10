@@ -3,14 +3,17 @@ import Navbar from './components/Navbar.js'
 import DisplayClients from './Features/display-clients.js';
 import CreateClient from './Features/create-client.js';
 import Calendar from './components/Calendar.js';
+
 import useHomeRequests from './hooks/home-requests.js';
+import useScheduleRequests from './hooks/schedule-requests.js';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 
-function App() {
-  useHomeRequests()
 
+function App() {
+  useHomeRequests();
+  useScheduleRequests();
   return (
 
     <Router>

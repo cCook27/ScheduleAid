@@ -26,18 +26,25 @@ function Calendar(props) {
   const {getTimeDistances} = useDistanceRequests();
   const {saveSchedule, getSchedule} = useScheduleRequests();
 
-  useEffect(() => {
-    getHomes();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
-
   const homes = useSelector(state => state.homes);
-  const dbSchedule = useSelector(state => state.schedule);
-
   const dataLoaded = homes.length > 0;
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const shcedData = await getSchedule();
+      fillInCalendar(shcedData);
+    }
+
+    getHomes();
+    fetchData();
+
+    console.log(homes)
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
 
   const eventPropGetter = useCallback(
     (event) => ({
@@ -101,27 +108,22 @@ function Calendar(props) {
       []
   );
 
-  useEffect(() => {
-    fillInCalendar();
-  }, []);
+  const fillInCalendar = useCallback(
+    async (schedData) => {
+      const schedule = schedData.map((event) => {
+        const startTime = new Date(event.start);
+        const endTime = new Date(event.end);
 
-  const fillInCalendar = async () => {
-    await getSchedule();
+        event.start = startTime;
+        event.end = endTime;
 
-    const schedule = dbSchedule.map((event) => {
-    const startTime = new Date(event.start);
-    const endTime = new Date(event.end);
-
-    event.start = startTime;
-    event.end = endTime;
+        return event; 
+      });
+      setMyEvents([...schedule]);
+    },
+    []
+  )
     
-    return event; 
-    });
-
-    console.log(schedule)
-
-    setMyEvents([...schedule]);
-  }
   
 
   const newEvent = useCallback(
@@ -215,6 +217,18 @@ function Calendar(props) {
 
   return (
     <div className='row my-5'>
+      { !dataLoaded ?
+        <div className="loading .col d-flex justify-content-center py-4">
+          <div class="spinner-grow me-2 text-primary" role="status"></div>
+          <div class="spinner-grow me-2 text-secondary" role="status"></div>
+          <div class="spinner-grow me-2 text-success" role="status"></div>
+          <div class="spinner-grow me-2 text-danger" role="status"></div>
+          <div class="spinner-grow me-2 text-warning" role="status"></div>
+          <div class="spinner-grow me-2 text-info" role="status"></div>
+          <div class="spinner-grow me-2 text-dark" role="status"></div>
+        </div> : null}
+      
+      
 
       <div className='col-8 ms-3 d-flex justify-content-start'>
         <div style={{height: '80vh', width: '100%'}}>

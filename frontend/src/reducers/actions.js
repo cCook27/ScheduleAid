@@ -6,9 +6,9 @@ export const fetchHomesSuccess = (data) => {
   }
 };
 
-export const fetchScheduleSucsess = (data) => {
+export const fetchScheduleSuccsess = (data) => {
   return {
-    type: 'FETCH_SCHEDULE_SCHEDULE',
+    type: 'FETCH_SCHEDULE_SUCCESS',
     payload: data
   }
 };

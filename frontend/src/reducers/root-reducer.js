@@ -27,7 +27,7 @@ function rootReducer(state = initialState, action) {
         ...state,
         newHome: true,
       }
-    case 'FETCH_SCHEDULE_SCHEDULE':
+    case 'FETCH_SCHEDULE_SUCCESS':
       return {
         ...state,
         schedule: action.payload,
