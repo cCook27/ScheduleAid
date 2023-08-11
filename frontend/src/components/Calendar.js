@@ -31,6 +31,8 @@ function Calendar(props) {
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
+  const [modal, setModal] = useState(false);
+  const [client, setClient] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,8 +42,6 @@ function Calendar(props) {
 
     getHomes();
     fetchData();
-
-    console.log(homes)
     
     // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
@@ -122,9 +122,7 @@ function Calendar(props) {
       setMyEvents([...schedule]);
     },
     []
-  )
-    
-  
+  );
 
   const newEvent = useCallback(
     (event) => {
@@ -213,20 +211,55 @@ function Calendar(props) {
     },
     [myEvents]
   );
+
+  const selectEvent = useCallback(
+    (event) => {
+      setModal(true);
+      setClient({title: event.title,
+                 id: event.id});
+    },
+    []
+  );
+
+  const removeFromCal = (id) => {
+    setMyEvents((prev) => {
+      const filteredState = prev.filter((ev) => ev.id !== id);
+
+      return [...filteredState]
+    });
+
+    setModal(false)
+    setClient(null)
+  }
  
 
   return (
-    <div className='row my-5'>
+    <div className={`row my-5 ${modal ? 'overlay' : ''}`}>
       { !dataLoaded ?
         <div className="loading .col d-flex justify-content-center py-4">
-          <div class="spinner-grow me-2 text-primary" role="status"></div>
-          <div class="spinner-grow me-2 text-secondary" role="status"></div>
-          <div class="spinner-grow me-2 text-success" role="status"></div>
-          <div class="spinner-grow me-2 text-danger" role="status"></div>
-          <div class="spinner-grow me-2 text-warning" role="status"></div>
-          <div class="spinner-grow me-2 text-info" role="status"></div>
-          <div class="spinner-grow me-2 text-dark" role="status"></div>
-        </div> : null}
+          <div className="spinner-grow me-2 text-primary" role="status"></div>
+          <div className="spinner-grow me-2 text-secondary" role="status"></div>
+          <div className="spinner-grow me-2 text-success" role="status"></div>
+          <div className="spinner-grow me-2 text-danger" role="status"></div>
+          <div className="spinner-grow me-2 text-warning" role="status"></div>
+          <div className="spinner-grow me-2 text-info" role="status"></div>
+          <div className="spinner-grow me-2 text-dark" role="status"></div>
+        </div> : null
+      }
+
+       
+      { modal ?
+        <div className='position-absolute above-overlay'>
+          <div className="card" style={{width: "18rem"}}>
+            <div className="card-body modal-body">
+              <h5 className="card-title">{client.title}</h5>
+              <h6 className="card-subtitle mb-2 text-muted">Are you sure you want to remove this this client?</h6>
+              <button onClick={() => removeFromCal(client.id)} className='btn btn-danger'>remove</button>
+            </div>
+          </div>
+        </div>
+         : null
+      }
       
       
 
@@ -239,6 +272,7 @@ function Calendar(props) {
             onEventDrop={moveEvent}
             onEventResize={moveEvent}
             eventPropGetter={eventPropGetter}
+            onSelectEvent={selectEvent}
             step={15}
             defaultView="week" 
             resizable
@@ -267,7 +301,7 @@ function Calendar(props) {
           ))}
         </div>
       </div>
-     
+
     </div>
     
   ) 
