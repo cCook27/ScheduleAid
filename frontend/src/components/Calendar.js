@@ -27,7 +27,6 @@ function Calendar(props) {
   const {saveSchedule, getSchedule} = useScheduleRequests();
 
   const homes = useSelector(state => state.homes);
-  const dbSchedule = useSelector(state => state.schedule)
   const dataLoaded = homes.length > 0;
 
   const [myEvents, setMyEvents] = useState([]);
@@ -37,12 +36,8 @@ function Calendar(props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if(dbSchedule.length === 0) {
-        const shcedData = await getSchedule();
-        fillInCalendar(shcedData);
-      } else {
-        fillInCalendar(dbSchedule);
-      }
+      const dbSchedule = await getSchedule();
+      fillInCalendar(dbSchedule);
     };
 
     getHomes();
@@ -114,8 +109,8 @@ function Calendar(props) {
   );
 
   const fillInCalendar = useCallback(
-    async (schedData) => {
-      const schedule = schedData.map((event) => {
+    async (dbSchedule) => {
+      const schedule = dbSchedule.map((event) => {
         const startTime = new Date(event.start);
         const endTime = new Date(event.end);
 
@@ -168,6 +163,9 @@ function Calendar(props) {
       setMyEvents((prev) => {
         const existingEvent = prev.find((ev) => ev.id === event.id); 
         const filteredState = prev.filter((ev) => ev.id !== event.id);
+
+        existingEvent.isViableOrg = null;
+        existingEvent.isViableDest = null;
 
         return [...filteredState, {...existingEvent, start, end, isAllDay}]
       });

@@ -4,8 +4,7 @@ const initialState = {
   homes: [],
   loading: false,
   error: null,
-  newHome: true,
-  schedule: []
+  newHome: true
 };
 
 function rootReducer(state = initialState, action) {
@@ -14,8 +13,6 @@ function rootReducer(state = initialState, action) {
       return {
         ...state,
         homes: action.payload,
-        loading: false,
-        newHome: false,
       };
     case fetchDataError:
       return {
