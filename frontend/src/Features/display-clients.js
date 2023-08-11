@@ -18,10 +18,12 @@ function DisplayClients() {
 
   useEffect(() => {
     getHomes();
-  },[removeClient])
+  },[])
 
-  const remove = (id) => {
-    removeClient(id)
+  const remove = async (id) => {
+    await removeClient(id);
+
+    getHomes();
   }
 
   return (

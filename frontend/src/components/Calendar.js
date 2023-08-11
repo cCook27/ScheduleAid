@@ -27,6 +27,7 @@ function Calendar(props) {
   const {saveSchedule, getSchedule} = useScheduleRequests();
 
   const homes = useSelector(state => state.homes);
+  const dbSchedule = useSelector(state => state.schedule)
   const dataLoaded = homes.length > 0;
 
   const [myEvents, setMyEvents] = useState([]);
@@ -36,9 +37,13 @@ function Calendar(props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const shcedData = await getSchedule();
-      fillInCalendar(shcedData);
-    }
+      if(dbSchedule.length === 0) {
+        const shcedData = await getSchedule();
+        fillInCalendar(shcedData);
+      } else {
+        fillInCalendar(dbSchedule);
+      }
+    };
 
     getHomes();
     fetchData();
@@ -192,9 +197,7 @@ function Calendar(props) {
             Sun: []
           }
       );
-
-      console.log(weeklySchedule)
-
+      
       const viabilityData = await getTimeDistances(weeklySchedule);
 
       eventViability(viabilityData);

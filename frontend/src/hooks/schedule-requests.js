@@ -19,6 +19,8 @@ function useScheduleRequests () {
       const response = await fetch(`${url}/schedule`, options);
       const data = await response.json();
 
+      dispatch(fetchScheduleSuccsess(schedule));
+
     } catch (error) {
       dispatch(fetchDataError(error.message));
     }
