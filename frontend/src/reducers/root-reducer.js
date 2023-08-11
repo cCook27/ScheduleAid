@@ -1,10 +1,10 @@
-import { fetchHomesSuccess, fetchDataRequest, fetchDataError, saveNewHome } from './actions'
+
 
 const initialState = {
   homes: [],
   loading: false,
   error: null,
-  newHome: true
+  newHome: true,
 };
 
 function rootReducer(state = initialState, action) {
@@ -13,8 +13,10 @@ function rootReducer(state = initialState, action) {
       return {
         ...state,
         homes: action.payload,
+        loading: false,
+        newHome: false,
       };
-    case fetchDataError:
+    case 'FETCH_DATA_ERROR':
       return {
         ...state,
         error: action.payload
@@ -23,11 +25,6 @@ function rootReducer(state = initialState, action) {
       return {
         ...state,
         newHome: true,
-      }
-    case 'FETCH_SCHEDULE_SUCCESS':
-      return {
-        ...state,
-        schedule: action.payload,
       }
     case 'FETCH_DATA_REQUEST':
       return {

@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { fetchDataError, fetchScheduleSuccsess } from '../reducers/actions';
+import { fetchDataError } from '../reducers/actions';
 
 
 function useScheduleRequests () {
