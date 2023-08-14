@@ -1,20 +1,18 @@
-import { useDispatch } from 'react-redux';
-import { fetchDataRequest, fetchHomesSuccess, fetchDataError, saveNewHome } from '../reducers/actions';
-
+import { useMutation } from "react-query";
 
 function useHomeRequests () {
-  const dispatch = useDispatch();
+ 
   const url = 'http://localhost:3001'
 
   const getHomes = async () => {
     try {
-      dispatch(fetchDataRequest())
       const response = await fetch(`${url}/homes`);
       const homeData = await response.json();
-      dispatch(fetchHomesSuccess(homeData));
+      
+      return homeData;
 
     } catch (error) {
-        dispatch(fetchDataError(error.message));
+        console.log(error);
     }
   };
 
@@ -29,13 +27,11 @@ function useHomeRequests () {
       const response = await fetch(`${url}/homes`, options);
       const resData = await response.json();
 
-      if(resData) {
-        dispatch(saveNewHome());
-      }
+      return resData;
 
       
     } catch (error) {
-        dispatch(fetchDataError(error.message));
+        console.log(error);
     }
   };
 
@@ -49,13 +45,10 @@ function useHomeRequests () {
       const response = await fetch(`${url}/homes/${id}`, options);
       const resData = await response.json();
 
-      if(resData) {
-        getHomes();
-      }
-
+      return resData;
       
     } catch (error) {
-        dispatch(fetchDataError(error.message));
+        console.log(error);
     }
   };
 

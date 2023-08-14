@@ -1,12 +1,7 @@
-import { useDispatch } from 'react-redux';
-import { fetchDataError } from '../reducers/actions';
-
 
 function useDistanceRequests () {
-  const dispatch = useDispatch();
+
   const url = 'http://localhost:3001'
-
-
 
   const getTimeDistances = async (events) => {
     try {
@@ -22,7 +17,7 @@ function useDistanceRequests () {
       return scheduleViability
 
     } catch (error) {
-      dispatch(fetchDataError(error.message));
+      console.log(error)
     }
   };
 

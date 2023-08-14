@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import { useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import '../css/calendar.css';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,6 +13,8 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
 
@@ -21,30 +22,26 @@ const localizer = momentLocalizer(moment);
 
 
 function Calendar(props) {
+  const queryClient = useQueryClient();
+
+  const dataLoaded = true;
 
   const {getHomes} = useHomeRequests();
   const {getTimeDistances} = useDistanceRequests();
   const {saveSchedule, getSchedule} = useScheduleRequests();
-
-  const homes = useSelector(state => state.homes);
-  const dataLoaded = homes.length > 0;
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
   const [modal, setModal] = useState(false);
   const [client, setClient] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const dbSchedule = await getSchedule();
-      fillInCalendar(dbSchedule);
-    };
+  const { data: homes, status } = useQuery('homes', getHomes);
+  const { data: dbSchedule, stat } = useQuery('schedule', getSchedule, {
+    onSuccess: (data) => {
+      fillInCalendar(data); // Call your fillInCalendar function here
+    },
+  });
 
-    getHomes();
-    fetchData();
-    
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[])
 
   const eventPropGetter = useCallback(
     (event) => ({
@@ -123,6 +120,7 @@ function Calendar(props) {
     },
     []
   );
+
 
   const newEvent = useCallback(
     (event) => {
@@ -203,15 +201,14 @@ function Calendar(props) {
     [myEvents]
   );
 
-  const saveSched = useCallback(
-    () => {
-      if(myEvents.length === 0) {
-        return null;
-      }
-      saveSchedule(myEvents);
-    },
-    [myEvents]
-  );
+  const saveSched = useMutation({
+    mutationFn: () => saveSchedule(myEvents),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries('schedule');
+    }
+  });
+
 
   const selectEvent = useCallback(
     (event) => {
@@ -281,25 +278,33 @@ function Calendar(props) {
           />
         </div>
         <button onClick={testSchedule} className="btn">Test</button>
-        <button onClick={saveSched} className="btn">Save Schedule</button>
+        <button onClick={() => saveSched.mutate()} className="btn">Save Schedule</button>
       </div>
 
 
       <div className="col-3 d-flex justify-content-center">
         <div className="row">
-          {homes.map(home => (
-            <div key={home._id} draggable className="col-4" 
-              onDragStart={() =>
-                  handleDragStart(home.name, home.address)
-                }>
-              <div  className="card my-3">
-                <div className="card-body">
-                  <div className="card-title">{home.name}</div>
-                  <p className="card-text">{home.address.city}, {home.address.zip}</p>
+          {status === 'loading' ? (
+            <div>Loading Homes...</div>
+          ) : status === 'error' ? (
+            <div>Error Loading Homes...</div>
+          ) : (
+            homes.map(home => (
+              <div key={home._id} draggable className="col-4" 
+                onDragStart={() =>
+                    handleDragStart(home.name, home.address)
+                  }>
+                <div  className="card my-3">
+                  <div className="card-body">
+                    <div className="card-title">{home.name}</div>
+                    <p className="card-text">{home.address.city}, {home.address.zip}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          )
+          
+          )}
         </div>
       </div>
 
