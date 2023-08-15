@@ -72,7 +72,7 @@ router.post('/homes/distanceMatrix', async (req, res) => {
                       destinationId: day[i+1].id
                     });
                 } 
-          } 
+          }
         }
       }));
 

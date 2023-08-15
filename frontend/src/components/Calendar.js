@@ -38,9 +38,15 @@ function Calendar(props) {
   const { data: homes, status } = useQuery('homes', getHomes);
   const { data: dbSchedule, stat } = useQuery('schedule', getSchedule, {
     onSuccess: (data) => {
-      fillInCalendar(data); // Call your fillInCalendar function here
+      fillInCalendar(data); 
+      
     },
   });
+
+  useEffect(() => {
+    console.log(myEvents)
+
+  },[])
 
 
   const eventPropGetter = useCallback(
@@ -177,6 +183,7 @@ function Calendar(props) {
 
   const testSchedule = useCallback(
     async () => {
+      console.log(myEvents)
       const weeklySchedule = myEvents.reduce((accum, event) => {
         const day = event.start.toLocaleString('en-US', { weekday: 'short' });
 
@@ -201,13 +208,9 @@ function Calendar(props) {
     [myEvents]
   );
 
-  const saveSched = useMutation({
-    mutationFn: () => saveSchedule(myEvents),
-
-    onSuccess: () => {
-      queryClient.invalidateQueries('schedule');
-    }
-  });
+  const saveSched = () => {
+    saveSchedule(myEvents)
+  }
 
 
   const selectEvent = useCallback(
@@ -278,7 +281,7 @@ function Calendar(props) {
           />
         </div>
         <button onClick={testSchedule} className="btn">Test</button>
-        <button onClick={() => saveSched.mutate()} className="btn">Save Schedule</button>
+        <button onClick={saveSched} className="btn">Save Schedule</button>
       </div>
 
 
