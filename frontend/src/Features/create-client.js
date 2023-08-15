@@ -1,8 +1,7 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
+import '../css/create-client.css'
 import { useState } from 'react';
 import useHomeRequests from '../hooks/home-requests';
 
@@ -29,44 +28,86 @@ function CreateClient() {
     addNewHome(formData);
   }
 
-
-
   return (
-    <Form onSubmit={handleSubmit}>
-      <Row className="mb-3">
-        <Form.Group as={Col} controlId="formGridName">
-          <Form.Label>Name</Form.Label>
-          <Form.Control type="text" placeholder="Enter Name" name='name' value={formData.name} onChange={handleState} />
-        </Form.Group>
-      </Row>
+    <Form onSubmit={handleSubmit} className="form">
+      <div className="row ps-2 mb-3">
+        <div className="col-12">
 
-      <Form.Group className="mb-3" controlId="formGridAddress1">
-        <Form.Label>Address</Form.Label>
-        <Form.Control placeholder="1234 Main St" name='street' value={formData.street} onChange={handleState} />
-      </Form.Group>
+          <div className="form-group my-3">
+            <label>Name</label>
+            <input
+              type="text"
+              placeholder="Enter Name"
+              name="name"
+              value={formData.name}
+              onChange={handleState}
+              className="form-control"
+            />
+          </div>
 
-      <Row className="mb-3">
-        <Form.Group as={Col} controlId="formGridCity">
-          <Form.Label>City</Form.Label>
-          <Form.Control name='city' value={formData.city} onChange={handleState} />
-        </Form.Group>
+          
+          <div className="form-group my-3">
+            <label>Address</label>
+            <input
+              placeholder="1234 Main St"
+              name="street"
+              value={formData.street}
+              onChange={handleState}
+              className="form-control"
+            />
+          </div>
 
-        <Form.Group as={Col} controlId="formGridState">
-          <Form.Label>State</Form.Label>
-          <Form.Control name='state' value={formData.state} onChange={handleState}></Form.Control>
-        </Form.Group>
+          <div className="row">
+            <div className="col">
+              <div className="form-group my-3">
+                <label>City</label>
+                <input
+                  name="city"
+                  value={formData.city}
+                  onChange={handleState}
+                  className="form-control"
+                />
+              </div>
+            </div>
 
-        <Form.Group as={Col} controlId="formGridZip">
-          <Form.Label>Zip</Form.Label>
-          <Form.Control name='zip' value={formData.zip} onChange={handleState} />
-        </Form.Group>
-      </Row>
+            <div className="col">
+              <div className="form-group my-3">
+                <label>State</label>
+                <input
+                  name="state"
+                  value={formData.state}
+                  onChange={handleState}
+                  className="form-control"
+                />
+              </div>
+            </div>
 
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
+            <div className="col">
+              <div className="form-group my-3">
+                <label>Zip</label>
+                <input
+                  name="zip"
+                  value={formData.zip}
+                  onChange={handleState}
+                  className="form-control"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row mt-3">
+          <div className="col pe-0">
+            <div className="btn-container">
+              <Button variant="primary" type="submit">
+                Submit
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </Form>
   );
 }
 
 export default CreateClient;
+

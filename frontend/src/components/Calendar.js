@@ -43,11 +43,6 @@ function Calendar(props) {
     },
   });
 
-  useEffect(() => {
-    console.log(myEvents)
-
-  },[])
-
 
   const eventPropGetter = useCallback(
     (event) => ({
@@ -154,7 +149,7 @@ function Calendar(props) {
         end,
         isAllDay,
         isViableOrg: null,
-        isViableDest: null
+        isViableDest: null,
       }
       newEvent(event)
     },
@@ -226,11 +221,16 @@ function Calendar(props) {
     setMyEvents((prev) => {
       const filteredState = prev.filter((ev) => ev.id !== id);
 
-      return [...filteredState]
+      return [...filteredState];
     });
 
-    setModal(false)
-    setClient(null)
+    setModal(false);
+    setClient(null);
+  }
+
+  const cancelModal = () => {
+    setModal(false);
+    setClient(null);
   }
  
 
@@ -256,6 +256,7 @@ function Calendar(props) {
               <h5 className="card-title">{client.title}</h5>
               <h6 className="card-subtitle mb-2 text-muted">Are you sure you want to remove this this client?</h6>
               <button onClick={() => removeFromCal(client.id)} className='btn btn-danger'>remove</button>
+              <button onClick={cancelModal} className='btn btn-primary'>Cancel</button>
             </div>
           </div>
         </div>

@@ -1,0 +1,12 @@
+.btn-container {
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  width: 100%;
+}
+
+label {
+  color: white;
+}

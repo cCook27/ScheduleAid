@@ -9,12 +9,9 @@ const Navbar = () => {
           <li className="nav-item me-5 ">
             <a className="nav-link" href="/">Home</a>
           </li>
-          <li className="nav-item me-5">
-            <a className="nav-link" href="/create">Create Client</a>
-          </li>
           <li className="nav-item me-5 dropdown">
             <a className="nav-link" href="/manage">
-              Manage Clients
+              Add Clients
             </a>
           </li>
           <li className="nav-item me-5 dropdown">
@@ -22,9 +19,7 @@ const Navbar = () => {
               Scheduling
             </a>
           </li>
-          <li className="nav-item me-5">
-            <a className="nav-link" href="#">Tutorial</a>
-          </li>
+         
         </ul>
       </div>
     </nav>
