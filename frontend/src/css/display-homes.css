@@ -1,5 +1,6 @@
 .card {
   height: auto;
+  border: 1px solid #003271;
 }
 
 .btn-container {
@@ -11,6 +12,10 @@
 }
 
 .page-container {
-  background: #003271;
+  background: #eaeaea;
   height: 100vh;
+}
+
+.title {
+  color: #003271;
 }

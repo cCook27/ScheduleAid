@@ -6,7 +6,9 @@ const Schedule = () => {
 
   return (
     <div className="row">
-      <Calendar />
+      <div className="col">
+        <Calendar />
+      </div>
     </div>
     
   )

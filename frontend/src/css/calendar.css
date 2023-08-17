@@ -34,6 +34,7 @@
 
 .above-overlay {
   z-index: 1001;
+  position: absolute;
   top: 20%;
   left: 25%;
 }
@@ -76,6 +77,28 @@
 
 .orgVDestNull {
   border-bottom: 5px solid green !important;
+}
+
+button {
+  border: 1px solid #003271;
+  border-radius: 5px;
+  background: #003271;
+  color: white;
+  height: 34px;
+  width: 125px;
+}
+
+button:hover {
+  background: #003f8c;
+}
+
+.remove {
+  background: rgb(205, 13, 13);
+  border: 1px solid red;
+}
+
+.remove:hover {
+  background: red;
 }
 
 /* calendar */

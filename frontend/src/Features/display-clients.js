@@ -28,8 +28,11 @@ function DisplayClients() {
       <div className='container-fluid'>
         <div className="row">
 
-          <div className="col">
+          <div className="col" style={{height: '100vh'}}>
             <div className="row">
+              <div className="title d-flex justify-content-center">
+                <h4>Create & Manage Your Clients</h4>
+              </div>
               <div className="col">
                 <CreateClient />
               </div>
@@ -37,7 +40,7 @@ function DisplayClients() {
           </div>
 
 
-          <div className="col-8">
+          <div className="col-8 ps-5 pt-4">
             <div className="row">
               {status === 'loading' ? (
                 <div className="col">
@@ -50,11 +53,11 @@ function DisplayClients() {
               ) : (
                 homes.map(home => (
                   <div key={home._id} className="col-3">
-                    <div className="card m-2" style={{width: '10rem', height: 'auto'}}>
+                    <div className="card m-2 shadow-lg" style={{width: '10rem', height: 'auto'}}>
                       <div className="card-body p-2">
-                        <h5>{home.name}</h5>
-                        <div >
-                          {home.address.street}, {home.address.city}, {home.address.state}, {home.address.zip}
+                        <h5 className='text-center'>{home.name}</h5>
+                        <div className='text-center'>
+                          {home.address.state}, {home.address.zip}
                         </div>
                         <div className="btn-container">
                           <button className="btn btn-primary my-2">

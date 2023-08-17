@@ -1,5 +1,4 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import '../css/create-client.css'
 import { useState } from 'react';
@@ -98,9 +97,9 @@ function CreateClient() {
         <div className="row mt-3">
           <div className="col pe-0">
             <div className="btn-container">
-              <Button variant="primary" type="submit">
+              <button from className='btn-style' type="submit">
                 Submit
-              </Button>
+              </button>
             </div>
           </div>
         </div>

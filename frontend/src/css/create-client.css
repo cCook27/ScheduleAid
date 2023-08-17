@@ -3,10 +3,17 @@
   justify-content: center;
 }
 
-button {
+.btn-style {
   width: 100%;
+  background: #003271;
+  border: 1px solid #003271;
+  border-radius: 5px;
+  color: white;
+  font-weight: 600;
+  height: 34px;
 }
 
 label {
-  color: white;
+  color: #003271;
+  font-weight: 500;
 }
