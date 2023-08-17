@@ -156,11 +156,18 @@ function Calendar(props) {
         isAllDay,
         isViableOrg: null,
         isViableDest: null,
+        repeat: null
       }
-      newEvent(event)
+      newEvent(event);
     },
     [newEvent, draggedClient]
   );
+
+  // const doesRepeat = useCallback(
+  //   (event) => {
+      
+  //   }
+  // )
 
   const moveEvent = useCallback(
     ({event, start, end, allDay: isAllDay}) => {
@@ -209,7 +216,13 @@ function Calendar(props) {
   );
 
   const saveSched = () => {
-    saveSchedule(myEvents)
+    saveSchedule(myEvents);
+  }
+
+  const emptyCalendar = () => {
+    saveSchedule(myEvents);
+
+    setMyEvents([]);
   }
 
 
@@ -262,112 +275,105 @@ function Calendar(props) {
 
   return (
     <div className="container-fluid">
-      <div className="row">
-        <div className="col">
-          <div className={`row my-5 ${modal | errorModal ? 'overlay' : ''}`}>
+      <div className={`row my-5 ${modal | errorModal ? 'overlay' : ''}`}>
 
-            {/* loading */}
-            { !dataLoaded ?
-              <div className="loading col d-flex justify-content-center py-4">
-                <div className="spinner-grow me-2 text-primary" role="status"></div>
-                <div className="spinner-grow me-2 text-secondary" role="status"></div>
-                <div className="spinner-grow me-2 text-success" role="status"></div>
-                <div className="spinner-grow me-2 text-danger" role="status"></div>
-                <div className="spinner-grow me-2 text-warning" role="status"></div>
-                <div className="spinner-grow me-2 text-info" role="status"></div>
-                <div className="spinner-grow me-2 text-dark" role="status"></div>
-              </div> : null
-            }
+        {/* calendar */}
+        <div className='col-8 d-flex justify-content-start'>
+          <div style={{height: '75vh', width: '100%'}}>
+            <DnDCalendar {...props} 
+              localizer={localizer} 
+              events={myEvents} 
+              onDropFromOutside={onDropFromOutside}
+              onEventDrop={moveEvent}
+              onEventResize={moveEvent}
+              eventPropGetter={eventPropGetter}
+              onSelectEvent={selectEvent}
+              step={15}
+              defaultView="week" 
+              resizable
+              selectable
+            />
+          </div>
+        </div>
 
-            {/* calendar */}
-            <div className='col-8 d-flex justify-content-start'>
-              <div className="row">
-                <div className="col">
-                  <div style={{height: '75vh', width: '100%'}}>
-                    <DnDCalendar {...props} 
-                      localizer={localizer} 
-                      events={myEvents} 
-                      onDropFromOutside={onDropFromOutside}
-                      onEventDrop={moveEvent}
-                      onEventResize={moveEvent}
-                      eventPropGetter={eventPropGetter}
-                      onSelectEvent={selectEvent}
-                      step={15}
-                      defaultView="week" 
-                      resizable
-                      selectable
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Homes */}
-            <div className="col ms-3">
-              <div className='d-flex flex-column justify-content-center align-items-center'>
+         {/* Homes */}
+         <div className="col ms-3">
+          <div className="row d-flex">
+            <div className="col">
+              <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
                 <button onClick={testSchedule} className="test my-2">Test</button>
                 <button onClick={saveSched} className="save">Save Schedule</button>
               </div>
-              <div className="row">
-                {status === 'loading' ? (
-                  <div>Loading Homes...</div>
-                ) : status === 'error' ? (
-                  <div>Error Loading Homes...</div>
-                ) : (
-                  homes.map(home => (
-                    <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
-                      onDragStart={() =>
-                          handleDragStart(home.name, home.address)
-                        }>
-                      <div  className="card my-3">
-                        <div className="card-body">
-                          <div className="card-title">{home.name}</div>
-                          <p className="card-text">{home.address.city}, {home.address.zip}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                )
-                )}
-              </div>
             </div>
 
-            {modal ? <div className="above-overlay" >
-              <div className="card" style={{width: "18rem", height: "175px"}}>
-                <div className="p-0 card-body text-center">
-                  <h2>{client.title}</h2>
-                  <p>
-                    Would you like to remove this client from {client.start}
-                  </p>
-                  <button className='m-2 remove' onClick={() => removeFromCal(client.id)}>Remove</button>
-                  <button className='m-2' onClick={cancelModal}>Cancel</button>
-                </div>
+            <div className="col">
+              <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
+                <button onClick={emptyCalendar} className="test my-2">Empty Calendar</button>
+                <button className="save">All Schedules</button>
               </div>
-            </div> : null}
-
-            {errorModal ? <div className="above-overlay" >
-              <div className="card" style={{width: "18rem", height: "175px"}}>
-                <div className="p-0 card-body text-center">
-                  <h2>OOPS!</h2>
-                  <p>
-                    It looks like we're ahving trouble testing your schedule. Try again later. We're on it.
-                  </p>
-                  <button className='m-2' onClick={cancelModal}>Close</button>
-                </div>
-              </div>
-            </div> : null}
-
+            </div>
           </div>
-        </div>
+            
+            <div className="row">
+              {status === 'loading' ? (
+                <div>Loading Homes...</div>
+              ) : status === 'error' ? (
+                <div>Error Loading Homes...</div>
+              ) : (
+                homes.map(home => (
+                  <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
+                    onDragStart={() =>
+                        handleDragStart(home.name, home.address)
+                      }>
+                    <div  className="card my-3">
+                      <div className="card-body">
+                        <div className="card-title">{home.name}</div>
+                        <p className="card-text">{home.address.city}, {home.address.zip}</p>
+                      </div>
+                    </div>
+                  </div>
+                )
+              )
+              )}
+            </div>
+         </div>
+
+
+         {modal ? <div className="above-overlay" >
+            <div className="card" style={{width: "18rem", height: "175px"}}>
+              <div className="p-0 card-body text-center">
+                <h2>{client.title}</h2>
+                <p>
+                  Would you like to remove this client from {client.start}
+                </p>
+                <button className='m-2 remove' onClick={() => removeFromCal(client.id)}>Remove</button>
+                <button className='m-2' onClick={cancelModal}>Cancel</button>
+              </div>
+            </div>
+          </div> : null}
+
+          {errorModal ? <div className="above-overlay" >
+            <div className="card" style={{width: "18rem", height: "175px"}}>
+              <div className="p-0 card-body text-center">
+                <h2>OOPS!</h2>
+                <p>
+                  It looks like we're ahving trouble testing your schedule. Try again later. We're on it.
+                </p>
+                <button className='m-2' onClick={cancelModal}>Close</button>
+              </div>
+            </div>
+          </div> : null}
+
       </div>
     </div>
-    
-  ) 
+  )
+
+
 }
 
 export default Calendar;
 
-       
+
       
       
 
