@@ -101,6 +101,28 @@ button:hover {
   background: red;
 }
 
+.repeat {
+  border-radius: 5px;
+  background: transparent;
+  height: 30px;
+  width: 65px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid gray;
+  color: rgb(28, 26, 26);
+}
+
+.repeat:hover {
+  background-color: green;
+  color: white;
+}
+
+.repeat-selected {
+  background-color: green;
+  border: 1px solid green;
+  color: white;
+}
+
 /* calendar */
 
 .rbc-btn {
