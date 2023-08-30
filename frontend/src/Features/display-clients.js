@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CreateClient from './create-client';
 import useHomeRequests from '../hooks/home-requests';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -8,6 +8,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 
 function DisplayClients() {
+
   const queryClient = useQueryClient();
 
   const { getHomes, removeClient } = useHomeRequests();
@@ -42,7 +43,7 @@ function DisplayClients() {
 
           <div className="col-8 ps-5 pt-4">
             <div className="row">
-              {status === 'loading' ? (
+              {status === 'loading'  ? (
                 <div className="col">
                   <div>Loading...</div>     
                 </div>
@@ -50,7 +51,11 @@ function DisplayClients() {
                 <div className="col">
                   <div>Error loading data</div>
                 </div>
-              ) : (
+              ) : !homes ? (
+                <div className="col">
+                  <div>No Current Clients</div>     
+                </div>
+              ): (
                 homes.map(home => (
                   <div key={home._id} className="col-3">
                     <div className="card m-2 shadow-lg" style={{width: '10rem', height: 'auto'}}>

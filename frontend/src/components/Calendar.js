@@ -113,6 +113,8 @@ function Calendar(props) {
 
   const fillInCalendar = useCallback(
     (dbSchedule) => {
+      console.log(myEvents)
+     
       const schedule = dbSchedule.map((event) => {
         const startTime = new Date(event.start);
         const endTime = new Date(event.end);
@@ -187,7 +189,6 @@ function Calendar(props) {
 
   const handleDragStart = useCallback((client, address) => setDraggedClient({client: client, address: address}), []);
 
-
   const testSchedule = useCallback(
     async () => {
       const weeklySchedule = myEvents.reduce((accum, event) => {
@@ -217,15 +218,14 @@ function Calendar(props) {
   const saveSched = () => {
     saveSchedule(myEvents);
     setChangesSaved(true);
-  }
+  };
 
   const emptyCalendar = () => {
     saveSchedule(myEvents);
 
     setMyEvents([]);
     setChangesSaved(false);
-  }
-
+  };
 
   const selectEvent = useCallback(
     (event) => {
@@ -342,6 +342,10 @@ function Calendar(props) {
                 <div>Loading Homes...</div>
               ) : status === 'error' ? (
                 <div>Error Loading Homes...</div>
+              ) : !homes ? (
+                <div className="col">
+                  <div>No Clients saved</div>     
+                </div>
               ) : (
                 homes.map(home => (
                   <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 

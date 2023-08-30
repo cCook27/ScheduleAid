@@ -1,6 +1,8 @@
 const Pair = require('../models/pair');
 const Home = require('../models/home');
 const axios = require('axios');
+const passport = require('../authentication/passport-config');
+const guard = require('express-jwt-permissions')();
 
 const router = require("express").Router();
 
@@ -22,6 +24,32 @@ router.get('/homes', async (req, res) => {
     console.error('Error:', error);
     res.status(500).send('An error occurred while looking for client homes.');
   }
+});
+
+router.get('/schedule', async (req, res) => {
+  try {
+
+    const DID = mongoose.connection.useDb('D-I-D');
+    const schedCollection = DID.collection('schedule');
+
+    const schedule = await schedCollection. find({}).toArray();
+
+    if(!schedule) {
+      res.status.json([]);
+    } else {
+      res.status(200).json(schedule);
+    }
+
+    
+
+  } catch {
+      console.log('Error getting documents');
+      res.status(500).send('An error occurred while fetching documents.');
+  }
+});
+
+router.get('/authorized', guard.check(['read: authorized']), function (req, res) {
+  res.send('Secured Resource');
 });
 
 router.post('/homes/distanceMatrix', async (req, res) => {
@@ -140,28 +168,6 @@ router.post('/schedule', async (req, res) => {
   }
 });
 
-router.get('/schedule', async (req, res) => {
-  try {
-
-    const DID = mongoose.connection.useDb('D-I-D');
-    const schedCollection = DID.collection('schedule');
-
-    const schedule = await schedCollection. find({}).toArray();
-
-    if(!schedule) {
-      res.status.json([]);
-    } else {
-      res.status(200).json(schedule);
-    }
-
-    
-
-  } catch {
-      console.log('Error getting documents');
-      res.status(500).send('An error occurred while fetching documents.');
-  }
-})
-
 router.post('pair', async (req, res) => {
   try {
     const newPairInfo = req.body;
@@ -228,6 +234,8 @@ router.delete('/homes/:home', async (req,res) => {
     res.status(500).send('An error occurred while looking for client homes.');
   }
 });
+
+
 
 module.exports = router;
 

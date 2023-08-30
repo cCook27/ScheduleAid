@@ -1,8 +1,15 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 const Navbar = () => {
 
-  return (
+  const location = useLocation();
+
+
+  if(location.pathname === '/register') {
+    return null;
+  } 
+   return (
     <nav className="navbar navbar-expand-lg navbar-light" style={{background: '#e3f2fd'}}>
       <div className="collapse navbar-collapse d-flex justify-content-center" id="navbarSupportedContent">
         <ul className="navbar-nav mr-auto">
