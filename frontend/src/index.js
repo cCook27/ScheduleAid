@@ -8,12 +8,15 @@ import reportWebVitals from './reportWebVitals';
 import "react-big-calendar/lib/css/react-big-calendar.css"
 
 const queryClient = new QueryClient();
+// const domain = "dev-uhybzq8zwt4f7tgf.us.auth0.com";
+// const clientId = "fvh7p3Ch7dDMn2b0dr76IoE0WtWy79st";
+// const redirectUri = "https://localhost:3000/home";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <Auth0Provider
-        domain="dev-inretjsuzauvwd5e.us.auth0.com"
-        clientId="FcB7YlOin80xMUjUExsyRoOfdO4syMk6"
+        domain="dev-uhybzq8zwt4f7tgf.us.auth0.com"
+        clientId="fvh7p3Ch7dDMn2b0dr76IoE0WtWy79st"
         authorizationParams={{
         redirect_uri: window.location.origin
         }}

@@ -53,29 +53,4 @@ function App() {
 export default App;
 
 
-    // <div className='container-fluid'>
-    //   <div className="row">
-    //     <div className="col">
-
-    //       <div className="row header">
-    //         <div className="col">
-    //         <Header />
-    //         </div>
-    //       </div>
-
-    //       <div className="row schedule/create">
-    //         <div className="col">
-    //         <DisplayHomes handleHomeDrop={handleHomeDrop} />
-    //         </div>
-    //       </div>
-
-    //       <div className="row displayHomes py-4">
-    //         <div className="col">
-              
-    //           <CreateHomes />
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </div>
-
-    // </div>
+    

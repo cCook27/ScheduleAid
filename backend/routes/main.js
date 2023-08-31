@@ -49,7 +49,8 @@ router.get('/schedule', async (req, res) => {
 });
 
 router.get('/authorized', guard.check(['read: authorized']), function (req, res) {
-  res.send('Secured Resource');
+  // here we will get an access token by exchanging the authorization code with the authorization server (auth0)
+  res.status.json({message: 'Secured Resource'});
 });
 
 router.post('/homes/distanceMatrix', async (req, res) => {

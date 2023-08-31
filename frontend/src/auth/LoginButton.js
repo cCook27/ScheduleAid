@@ -10,7 +10,7 @@ const LoginButton = () => {
     const redirectUri = "https://localhost:3000/home";
 
     // Apply the rest as query params
-    const response = fetch(
+    const response = await fetch(
       `https://${domain}/authorize?` + 
       `audience=${audience}` +
       `scope=${scope}` +
@@ -23,6 +23,8 @@ const LoginButton = () => {
     
     // Manually changing the window once we get a response
     // It will have the code we need in the home url once redirected
+
+    console.log(response)
     window.location.replace(response.url);
   };
 
