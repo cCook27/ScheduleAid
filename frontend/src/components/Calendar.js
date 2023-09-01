@@ -22,6 +22,7 @@ const localizer = momentLocalizer(moment);
 
 
 function Calendar(props) {
+
   const queryClient = useQueryClient();
 
   const {getHomes} = useHomeRequests();

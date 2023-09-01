@@ -1,16 +1,32 @@
-import { useMutation } from "react-query";
+import { useAuth0 } from "@auth0/auth0-react";
+
 
 function useHomeRequests () {
  
-  const url = 'http://localhost:3001'
+  const url = 'http://localhost:8080';
+  const { getAccessTokenSilently } = useAuth0();
+  const domain = "dev-uhybzq8zwt4f7tgf.us.auth0.com";
 
   const getHomes = async () => {
     try {
-      const response = await fetch(`${url}/homes`);
+
+      const accessToken = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: `https://${domain}/api/v2/`,
+          scope: "read:current_user",
+        },
+      });
+
+      const response = await fetch(`${url}/homes`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
       const homeData = await response.json();
       
       return homeData;
-
+    
+     
     } catch (error) {
         console.log(error);
     }

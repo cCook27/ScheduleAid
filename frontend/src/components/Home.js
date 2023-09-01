@@ -6,18 +6,7 @@ const Home = ({ location }) => {
   const { code } = queryString.parse(location.search);
 
   const [greeting, setGreeting] = useState('none');
-
-  useEffect(() => {
-    fetch(`http://localhost:3001/home?${code}`, {
-      method: 'GET',
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json"
-      }
-    })
-    .then(res => res.json())
-    .then(res => setGreeting(JSON.stringify(res)))
-  },[code]);
+  
   return (
     <div>
       <h1>Home</h1>

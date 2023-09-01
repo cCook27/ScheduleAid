@@ -1,36 +1,10 @@
 import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const LoginButton = () => {
-  const login = async () => {
-    const domain = "dev-uhybzq8zwt4f7tgf.us.auth0.com";
-    const audience = "https://www.home2home-api.com";
-    const scope = 'read:authorized';
-    const clientId = "fvh7p3Ch7dDMn2b0dr76IoE0WtWy79st";
-    const responseType = "code";
-    const redirectUri = "https://localhost:3000/home";
+  const { loginWithRedirect } = useAuth0();
 
-    // Apply the rest as query params
-    const response = await fetch(
-      `https://${domain}/authorize?` + 
-      `audience=${audience}` +
-      `scope=${scope}` +
-      `clientId=${clientId}` +
-      `responseType=${responseType}` +
-      `redirectUri=${redirectUri}`, {
-        redirect: "manual"
-      }
-    );
-    
-    // Manually changing the window once we get a response
-    // It will have the code we need in the home url once redirected
-
-    console.log(response)
-    window.location.replace(response.url);
-  };
-
-  return (
-    <button className="btn btn-primary" onClick={() => login()}>Login</button>
-  )
+  return <button onClick={() => loginWithRedirect()}>Log In</button>;
 };
 
 export default LoginButton;

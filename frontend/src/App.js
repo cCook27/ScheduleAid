@@ -10,6 +10,7 @@ import useHomeRequests from './hooks/home-requests.js';
 import useScheduleRequests from './hooks/schedule-requests.js';
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Profile from './auth/Profile.js';
 
 
 
@@ -26,6 +27,7 @@ function App() {
         <div>
           <LoginButton />
           <LogoutButton />
+          <Profile />
         </div>
       </div>
 

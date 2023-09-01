@@ -7,10 +7,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "react-big-calendar/lib/css/react-big-calendar.css"
 
+
 const queryClient = new QueryClient();
-// const domain = "dev-uhybzq8zwt4f7tgf.us.auth0.com";
-// const clientId = "fvh7p3Ch7dDMn2b0dr76IoE0WtWy79st";
-// const redirectUri = "https://localhost:3000/home";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -18,14 +16,16 @@ root.render(
         domain="dev-uhybzq8zwt4f7tgf.us.auth0.com"
         clientId="fvh7p3Ch7dDMn2b0dr76IoE0WtWy79st"
         authorizationParams={{
-        redirect_uri: window.location.origin
-        }}
+            redirect_uri: window.location.origin,
+            audience: "https://dev-uhybzq8zwt4f7tgf.us.auth0.com/api/v2/",
+            scope: "read:current_user update:current_user_metadata"
+          }}
     >
-    <QueryClientProvider client={queryClient}>
-        <App />
-    </QueryClientProvider>
-  </Auth0Provider>,
-    
+        <QueryClientProvider client={queryClient}>
+            <App />
+        </QueryClientProvider>
+    </Auth0Provider>,
+
 
 );
 

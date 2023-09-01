@@ -5,10 +5,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../css/display-homes.css';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-
-
 function DisplayClients() {
-
   const queryClient = useQueryClient();
 
   const { getHomes, removeClient } = useHomeRequests();
