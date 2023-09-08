@@ -1,21 +1,18 @@
 import { useAuth0 } from "@auth0/auth0-react";
 
-function useScheduleRequests () {
+async function useScheduleRequests () {
   const url = 'http://localhost:8080';
   const { getAccessTokenSilently } = useAuth0();
   const domain = "dev-uhybzq8zwt4f7tgf.us.auth0.com";
 
+  const accessToken = await getAccessTokenSilently({
+    authorizationParams: {
+      audience: `https://${domain}/api/v2/`,
+    },
+  });
 
   const saveSchedule = async (schedule) => {
     try {
-
-      const accessToken = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: `https://${domain}/api/v2/`,
-          scope: "read:current_user",
-        },
-      });
-     
         const options = {
           method: 'POST',
           headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
@@ -24,9 +21,6 @@ function useScheduleRequests () {
   
         const response = await fetch(`${url}/schedule`, options);
         const data = await response.json();
-      
-
-      
 
     } catch (error) {
         console.log(error);
@@ -35,16 +29,6 @@ function useScheduleRequests () {
 
   const getSchedule = async () => {
     try {
-
-      const accessToken = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: `https://${domain}/api/v2/`,
-          scope: "read:current_user",
-        },
-      });
-
-      console.log(accessToken)
-      
       const response = await fetch(`${url}/schedule`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
@@ -62,11 +46,27 @@ function useScheduleRequests () {
     } catch (error) {
         console.log(error);
     }
-  }
+  };
+
+  
+  const deleteSchedule = async () => {
+    try {
+      const options = {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
+      };
+
+      const response = await fetch(`${url}/schedule`, options); 
+
+    } catch (error) {
+        console.log(error);
+    }
+  };
 
   return {
    saveSchedule,
-   getSchedule
+   getSchedule,
+   deleteSchedule
   }
 }
 

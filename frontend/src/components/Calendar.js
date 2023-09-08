@@ -7,6 +7,8 @@ import useDistanceRequests from '../hooks/distance-request';
 import useHomeRequests from '../hooks/home-requests.js';
 import useScheduleRequests from '../hooks/schedule-requests';
 
+import Loading from '../pop-ups/loading.js';
+
 import { momentLocalizer, Calendar as BigCalendar } from 'react-big-calendar';
 import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
@@ -27,7 +29,7 @@ function Calendar(props) {
 
   const {getHomes} = useHomeRequests();
   const {getTimeDistances} = useDistanceRequests();
-  const {saveSchedule, getSchedule} = useScheduleRequests();
+  const {saveSchedule, getSchedule, deleteSchedule} = useScheduleRequests();
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
@@ -36,8 +38,8 @@ function Calendar(props) {
   const [client, setClient] = useState(null);
   const [changesSaved, setChangesSaved] = useState(false);
 
-  const { data: homes, status } = useQuery('homes', getHomes);
-  const { data: dbSchedule, stat } = useQuery('schedule', getSchedule, {
+  const { data: homes, status } = useQuery(["homes"], async () => await getHomes());
+  const { data: dbSchedule, stat } = useQuery(["schedule"], getSchedule, {
     onSuccess: (data) => {
       fillInCalendar(data); 
       
@@ -208,7 +210,7 @@ function Calendar(props) {
             Sun: []
           }
       );
-      
+      console.log(weeklySchedule)
       const viabilityData = await getTimeDistances(weeklySchedule);
 
       eventViability(viabilityData);
@@ -222,10 +224,9 @@ function Calendar(props) {
   };
 
   const emptyCalendar = () => {
-    saveSchedule(myEvents);
-
     setMyEvents([]);
-    setChangesSaved(false);
+    deleteSchedule()
+    // setChangesSaved(false);
   };
 
   const selectEvent = useCallback(
@@ -340,7 +341,7 @@ function Calendar(props) {
             
             <div className="row">
               {status === 'loading' ? (
-                <div>Loading Homes...</div>
+                <div><Loading /></div>
               ) : status === 'error' ? (
                 <div>Error Loading Homes...</div>
               ) : !homes ? (
