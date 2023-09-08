@@ -1,8 +1,6 @@
-const Pair = require('../models/pair');
 const Home = require('../models/home');
 const axios = require('axios');
-const passport = require('../authentication/passport-config');
-const guard = require('express-jwt-permissions')();
+
 
 const router = require("express").Router();
 
@@ -46,11 +44,6 @@ router.get('/schedule', async (req, res) => {
       console.log('Error getting documents');
       res.status(500).send('An error occurred while fetching documents.');
   }
-});
-
-router.get('/authorized', guard.check(['read: authorized']), function (req, res) {
-  // here we will get an access token by exchanging the authorization code with the authorization server (auth0)
-  res.status.json({message: 'Secured Resource'});
 });
 
 router.post('/homes/distanceMatrix', async (req, res) => {
@@ -137,7 +130,6 @@ router.post('/homes', async (req, res) => {
         state: newHomeInfo.state,
         zip: newHomeInfo.zip,
       },
-      pairs: newHomeInfo.pairs
     });
 
     const savedHome = await homeToAdd.save();
@@ -154,10 +146,10 @@ router.post('/schedule', async (req, res) => {
   try {
     const schedule = req.body;
 
-    const currSchedule = await schedCollection. find({}).toArray();
+    const currSchedule = await schedCollection.find({}).toArray();
 
     if(currSchedule.length > 0) {
-      await schedCollection.deleteMany({});
+      await schedCollection.drop();
     }
 
     const insertedSched = await schedCollection.insertMany(schedule);
@@ -166,55 +158,6 @@ router.post('/schedule', async (req, res) => {
   } catch {
       console.log('Error inserting document:');
       res.status(500).json({ error: 'Failed to save in database' });
-  }
-});
-
-router.post('pair', async (req, res) => {
-  try {
-    const newPairInfo = req.body;
-
-    Object.getOwnPropertyNames(newPairInfo).forEach((property) => {
-      if(!newPairInfo[property]) {
-        return res.status(400).send('All fields are required when saving a new pair.');
-      }
-    });
-
-    const pairToAdd = new Pair({
-      origin: {
-        number: newPairInfo.origin.number,
-        street: newPairInfo.origin.street,
-        city: newPairInfo.origin.city,
-        state: newPairInfo.origin.state,
-        zip: newPairInfo.origin.zip,
-      },
-      destination: {
-        number: newPairInfo.destination.number,
-        street: newPairInfo.destination.street,
-        city: newPairInfo.destination.city,
-        state: newPairInfo.destination.state,
-        zip: newPairInfo.destination.zip,
-      },
-      departureTime: newPairInfo.departureTime,
-      ArrivalTime: newPairInfo.ArrivalTime,
-    });
-
-    const savedPair = await pairToAdd.save();
-
-    await Home.findOneAndUpdate(
-      {address: savedPair.origin},
-      {$push: {pairs: savedPair._id}}
-    );
-
-    await Home.findOneAndUpdate(
-      {address: savedPair.destination},
-      {$push: {pairs: savedPair._id}}
-    );
-
-    res.status(201).json(savedPair);
-
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('An error occurred while saving your pair for testing.');
   }
 });
 
@@ -235,6 +178,18 @@ router.delete('/homes/:home', async (req,res) => {
     res.status(500).send('An error occurred while looking for client homes.');
   }
 });
+
+router.delete('/schedule', async (req, res) => {
+  try {
+    const deletedSchedule = await schedCollection.drop();
+
+    res.status(204).json(deletedSchedule);
+
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while looking for client homes.');
+  }
+})
 
 
 
