@@ -5,17 +5,18 @@ function useHomeRequests () {
  
   const url = 'http://localhost:8080';
   const { getAccessTokenSilently } = useAuth0();
-  const domain = "dev-uhybzq8zwt4f7tgf.us.auth0.com";
 
   const getHomes = async () => {
     try {
 
       const accessToken = await getAccessTokenSilently({
         authorizationParams: {
-          audience: `https://${domain}/api/v2/`,
+          audience: `https://www.Home2Home-api.com`,
           scope: "read:current_user",
         },
       });
+
+      console.log(accessToken)
 
       const response = await fetch(`${url}/homes`, {
         headers: {

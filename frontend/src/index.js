@@ -17,7 +17,7 @@ root.render(
         clientId="fvh7p3Ch7dDMn2b0dr76IoE0WtWy79st"
         authorizationParams={{
             redirect_uri: window.location.origin,
-            audience: "https://dev-uhybzq8zwt4f7tgf.us.auth0.com/api/v2/",
+            audience: "https://www.Home2Home-api.com",
             scope: "read:current_user update:current_user_metadata"
           }}
     >

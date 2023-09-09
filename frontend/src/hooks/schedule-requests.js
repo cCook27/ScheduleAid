@@ -3,11 +3,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 async function useScheduleRequests () {
   const url = 'http://localhost:8080';
   const { getAccessTokenSilently } = useAuth0();
-  const domain = "dev-uhybzq8zwt4f7tgf.us.auth0.com";
 
   const accessToken = await getAccessTokenSilently({
     authorizationParams: {
-      audience: `https://${domain}/api/v2/`,
+      audience: `https://www.Home2Home-api.com`,
     },
   });
 

@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import Home from './static/Home.js'
 import Navbar from './components/Navbar.js'
 import DisplayClients from './Features/display-clients.js';
@@ -7,6 +9,7 @@ import LogoutButton from './auth/LogoutButton.js';
 import Profile from './auth/Profile.js';
 import Dashboard from './components/Dashboard.js';
 import Loading from './pop-ups/loading.js';
+import useUserRequests from './hooks/user-requests.js';
 
 import './App.css'
 
@@ -15,9 +18,20 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 
+
 function App() {
+  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { getUser } = useUserRequests()
   
-  const { isLoading, isAuthenticated  } = useAuth0();
+
+ useEffect(() => {
+
+  if(isAuthenticated) {
+    getUser(user);
+    
+  }
+
+ }, [isAuthenticated, getUser]);
 
   if(isLoading) {
     return (
