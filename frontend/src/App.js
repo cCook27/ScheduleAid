@@ -27,7 +27,7 @@ function App() {
  useEffect(() => {
 
   if(isAuthenticated) {
-    getUser(user);
+    getUser(user.sub);
     
   }
 
