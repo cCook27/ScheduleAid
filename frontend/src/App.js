@@ -9,29 +9,18 @@ import LogoutButton from './auth/LogoutButton.js';
 import Profile from './auth/Profile.js';
 import Dashboard from './components/Dashboard.js';
 import Loading from './pop-ups/loading.js';
-import useUserRequests from './hooks/user-requests.js';
 
 import './App.css'
 
-
 import { useAuth0 } from "@auth0/auth0-react";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import CreateProfile from './auth/CreateProfile.js';
 
 
 
 function App() {
   const { user, isAuthenticated, isLoading } = useAuth0();
-  const { getUser } = useUserRequests()
-  
-
- useEffect(() => {
-
-  if(isAuthenticated) {
-    getUser(user.sub);
-    
-  }
-
- }, [isAuthenticated, getUser]);
+  const currentPath = window.location.path;
 
   if(isLoading) {
     return (
@@ -53,9 +42,13 @@ function App() {
     <div>
       <div>
         <Router>
-          <Navbar />
+          {currentPath !== '/create-profile' ? <div>
+            <Navbar />
+          </div> : null}
+          
           <Switch>
-            <Route exact path="/" component={Dashboard}></Route> 
+            <Route exact path="/" component={Dashboard}></Route>
+            <Route exact path="/create-profile" component={CreateProfile}></Route> 
             <Route exact path="/profile" component={Profile}></Route>
             <Route exact path="/logout" component={LogoutButton}></Route>
             <Route exact path="/create" component={CreateClient} ></Route>
