@@ -1,12 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import CreateClient from './create-client';
 import useHomeRequests from '../hooks/home-requests';
+import UserContext from '../context/context';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/display-homes.css';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 function DisplayClients() {
   const queryClient = useQueryClient();
+
+  const user = useContext(UserContext)
 
   const { getHomes, removeClient } = useHomeRequests();
 
