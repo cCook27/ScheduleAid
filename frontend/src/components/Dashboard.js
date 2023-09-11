@@ -8,27 +8,30 @@ const Dashboard = () => {
 
   const { getUser } = useUserRequests()
   const { user, isAuthenticated, isLoading } = useAuth0();
-  const [userInfo, setUserInfo] = useState(false);  
-
-  const currentPath = window.location.pathname;
+  const [validUser, setValidUser] = useState(false);  
+  const [userInfo, setUserInfo] = useState('');
 
   useEffect(() => {
     if (isAuthenticated && user) {
       getUser(user.sub)
         .then((userData) => {
           if (userData.error) {
-            setUserInfo(false);
+            setValidUser(false);
             window.location.pathname = '/create-profile';
           } else {
-            setUserInfo(true);
+            setValidUser(true);
+            setUserInfo(userData)
           }
         });
     }
   }, []);
 
-  if(userInfo) {
+  if(validUser) {
+    console.log(userInfo)
     return (
-      <h1>Dashboard</h1>
+      <div>
+        <h1>Welcome {userInfo.name}!</h1>
+      </div>
     );
   } else {
     return (

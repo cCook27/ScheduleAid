@@ -7,13 +7,13 @@ const { auth } = require('express-oauth2-jwt-bearer');
 const port = process.env.PORT || 8080;
 
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost/products", {
+mongoose.connect("mongodb://localhost/home2home", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
 const checkJwt = auth({
-  audience: 'https://dev-uhybzq8zwt4f7tgf.us.auth0.com/api/v2/',
+  audience: 'https://www.Home2Home-api.com',
   issuerBaseURL: 'https://dev-uhybzq8zwt4f7tgf.us.auth0.com/',
 });
 

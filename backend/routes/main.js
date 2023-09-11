@@ -1,16 +1,55 @@
-const Home = require('../models/home');
+const User = require('../models/User-Model');
+const Home = require('../models/Home-Model');
 const axios = require('axios');
-
 
 const router = require("express").Router();
 
-const mongoose = require("mongoose");
-const DID = mongoose.connection.useDb('D-I-D');
-const schedCollection = DID.collection('schedule');
+router.get('/user/:user', async (req, res) => {
+  try {
+    const userId = req.params.user;
+
+    const user = await User.findOne({_id: userId});
+
+    if(!user) {
+      return res.status(404).send('User not found');
+    };
+
+    res.send(user);
+
+  } catch(error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while looking for the User.');
+  }
+
+});
+
+router.post('/user', async (req, res) => {
+  try{
+    const newUser = req.body;
+
+    const userToAdd = new User({
+      name: newUser.name,
+      _id: newUser._id,
+      homes: [],
+      schedule: [],
+      buffer: 5,
+      designation: newUser.designation,
+      email: newUser.email
+    });
+
+    const savedUser = await userToAdd.save();
+    res.status(201).json(savedUser);
+
+  } catch(error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while looking for the User.');
+  }
+  
+});
 
 router.get('/homes', async (req, res) => {
   try{
-    const homes = await Home.find({});
+    const homes = await User.homes.find({});
     
     if(homes.length === 0) {
       return res.status(404).send('Oops looks like there are no client homes in the db');
@@ -132,7 +171,8 @@ router.post('/homes', async (req, res) => {
       },
     });
 
-    const savedHome = await homeToAdd.save();
+    const homeAdded = User.homes.push(homeToAdd);
+    const save = User.save();
 
     res.status(201).json(homeToAdd);
 

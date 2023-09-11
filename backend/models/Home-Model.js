@@ -9,7 +9,8 @@ const HomeSchema = new Schema({
     state: String,
     zip: Number,
   },
-  pairs: [{ type: Schema.Types.ObjectId, ref: 'Pair' }]
+  preferredTimes: Array
 });
+
 
 module.exports = mongoose.model("Home", HomeSchema);

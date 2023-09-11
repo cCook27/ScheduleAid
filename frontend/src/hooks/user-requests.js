@@ -26,6 +26,7 @@ function useUserRequests () {
       const userData = await response.json();
 
       return userData;
+      
     } catch (error) {
       console.error('Error:', error);
 

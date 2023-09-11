@@ -40,6 +40,7 @@ const Home = ({ location }) => {
         </ul>
       </div>
     </nav>
+    <div>Home</div>
      
     </div>
   )
