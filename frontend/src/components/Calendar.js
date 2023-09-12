@@ -2,12 +2,12 @@ import React, {useEffect, useContext} from 'react';
 import { useState, useCallback } from 'react';
 import '../css/calendar.css';
 import { v4 as uuidv4 } from 'uuid';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
+import { UserContext, AccessTokenContext } from '../context/context';
 import useDistanceRequests from '../hooks/distance-request';
 import useHomeRequests from '../hooks/home-requests.js';
 import useScheduleRequests from '../hooks/schedule-requests';
-import { UserContext, AccessTokenContext } from '../context/context';
-
 import Loading from '../pop-ups/loading.js';
 
 import { momentLocalizer, Calendar as BigCalendar } from 'react-big-calendar';
@@ -16,11 +16,7 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-
-
 const DnDCalendar = withDragAndDrop(BigCalendar);
-
 const localizer = momentLocalizer(moment);
 
 
