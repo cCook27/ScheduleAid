@@ -23,9 +23,9 @@ const localizer = momentLocalizer(moment);
 function Calendar(props) {
 
   const queryClient = useQueryClient();
+
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
-
   const {getHomes} = useHomeRequests();
   const {getTimeDistances} = useDistanceRequests();
   const {saveUserSchedule, getUserSchedule, deleteSchedule} = useScheduleRequests();
