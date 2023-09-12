@@ -317,7 +317,7 @@ function Calendar(props) {
               onEventResize={moveEvent}
               eventPropGetter={eventPropGetter}
               onSelectEvent={selectEvent}
-              step={15}
+              step={5}
               defaultView="week" 
               resizable
               selectable

@@ -1,6 +1,8 @@
 const User = require('../models/User-Model');
 const Home = require('../models/Home-Model');
 const axios = require('axios');
+require('dotenv').config();
+const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 const mongoose = require('mongoose')
 
 const router = require("express").Router();
@@ -116,7 +118,7 @@ router.post('/homes/distanceMatrix', async (req, res) => {
             const endTime = convertToSeconds(event.end);
             const startTime = convertToSeconds(day[i+1].start);
 
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=AIzaSyAWH9MKNEKtg2LMmFtGyj9xxkrPH5pdOxQ`);
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=${apiKey}`);
 
             const distanceData = response.data;
 

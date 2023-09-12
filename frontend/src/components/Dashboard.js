@@ -54,7 +54,6 @@ const Dashboard = () => {
   }
 
   if(validUser) {
-    console.log(userInfo)
     return (
       <div>
         <div>
@@ -77,9 +76,9 @@ const Dashboard = () => {
             </AccessTokenContext.Provider>
           </UserContext.Provider>
         </div>
-        <div>
+        {currentPath !== '/create-profile' || "/profile" || "/logout" ||  "/create" || "/manage" || "/scheduling" ? <div>
           <h1>Welcome {userInfo.name}!</h1>
-        </div>
+        </div> : null}
       </div>
     );
   } else {
