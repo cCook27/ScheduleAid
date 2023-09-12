@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 import '../css/create-client.css'
 import { useState, useContext } from 'react';
 import useHomeRequests from '../hooks/home-requests';
-import UserContext from '../context/context';
+import {UserContext} from '../context/context';
 
 function CreateClient() {
   const {addNewHome} = useHomeRequests();

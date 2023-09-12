@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import CreateClient from './create-client';
 import useHomeRequests from '../hooks/home-requests';
-import UserContext from '../context/context';
+import {UserContext} from '../context/context';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/display-homes.css';
 import { useAuth0 } from "@auth0/auth0-react";

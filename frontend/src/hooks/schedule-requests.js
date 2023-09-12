@@ -1,16 +1,10 @@
 import { useAuth0 } from "@auth0/auth0-react";
 
-async function useScheduleRequests () {
+function useScheduleRequests () {
   const url = 'http://localhost:8080';
   const { getAccessTokenSilently } = useAuth0();
 
-  const accessToken = await getAccessTokenSilently({
-    authorizationParams: {
-      audience: `https://www.Home2Home-api.com`,
-    },
-  });
-
-  const saveSchedule = async (schedule) => {
+  const saveUserSchedule = async (userId, schedule, accessToken) => {
     try {
         const options = {
           method: 'POST',
@@ -18,7 +12,7 @@ async function useScheduleRequests () {
           body: JSON.stringify(schedule)
         };
   
-        const response = await fetch(`${url}/schedule`, options);
+        const response = await fetch(`${url}/schedule/${userId}`, options);
         const data = await response.json();
 
     } catch (error) {
@@ -26,11 +20,11 @@ async function useScheduleRequests () {
     }
   };
 
-  const getSchedule = async () => {
+  const getUserSchedule = async (userId, token) => {
     try {
-      const response = await fetch(`${url}/schedule`, {
+      const response = await fetch(`${url}/schedule/${userId}`, {
         headers: {
-          Authorization: `Bearer ${accessToken}`
+          Authorization: `Bearer ${token}`
         }
       });
       const scheduleData = await response.json();
@@ -48,14 +42,14 @@ async function useScheduleRequests () {
   };
 
   
-  const deleteSchedule = async () => {
+  const deleteSchedule = async (userId, accessToken) => {
     try {
       const options = {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
       };
 
-      const response = await fetch(`${url}/schedule`, options); 
+      const response = await fetch(`${url}/schedule/${userId}`, options); 
 
     } catch (error) {
         console.log(error);
@@ -63,8 +57,8 @@ async function useScheduleRequests () {
   };
 
   return {
-   saveSchedule,
-   getSchedule,
+   saveUserSchedule,
+   getUserSchedule,
    deleteSchedule
   }
 }

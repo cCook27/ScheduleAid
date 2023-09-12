@@ -67,21 +67,19 @@ router.get('/homes/:user', async (req, res) => {
   }
 });
 
-router.get('/schedule', async (req, res) => {
+router.get('/schedule/:user', async (req, res) => {
   try {
+    const userId = req.params.user
 
-    const DID = mongoose.connection.useDb('D-I-D');
-    const schedCollection = DID.collection('schedule');
+    const user = await User.findOne({_id: userId});
 
-    const schedule = await schedCollection. find({}).toArray();
-
-    if(!schedule) {
-      res.status.json([]);
-    } else {
-      res.status(200).json(schedule);
+    if(!user) {
+      return res.status(404).send('User not found');
     }
 
-    
+    const schedule = user.schedule;
+
+    res.status(200).json(schedule);
 
   } catch {
       console.log('Error getting documents');
@@ -188,19 +186,23 @@ router.post('/homes/:user', async (req, res) => {
   }
 });
 
-router.post('/schedule', async (req, res) => {
+router.post('/schedule/:user', async (req, res) => {
   try {
-    const schedule = req.body;
+    const newSchedule = req.body;
+    const userId = req.params.user;
 
-    const currSchedule = await schedCollection.find({}).toArray();
+    const updatedSchedule = await User.findOneAndUpdate(
+      {_id: userId},
+      {$set: {schedule: newSchedule}},
+      {new: true}
+    );
 
-    if(currSchedule.length > 0) {
-      await schedCollection.drop();
+    if(!updatedSchedule) {
+      return res.status(404).send('User not found');
     }
 
-    const insertedSched = await schedCollection.insertMany(schedule);
-    res.status(201).json({message: 'Schedule saved!', sched: insertedSched});
-
+    res.status(201).json(updatedSchedule);
+    
   } catch {
       console.log('Error inserting document:');
       res.status(500).json({ error: 'Failed to save in database' });

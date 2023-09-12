@@ -13,14 +13,15 @@ import Profile from '../auth/Profile.js';
 import Loading from '../pop-ups/loading.js';
 import useUserRequests from '../hooks/user-requests';
 import CreateProfile from '../auth/CreateProfile.js';
-import UserContext from '../context/context.js';
+import { UserContext, AccessTokenContext } from '../context/context.js';
 
 const Dashboard = () => {
 
   const { getUser } = useUserRequests()
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const [validUser, setValidUser] = useState(false);  
   const [userInfo, setUserInfo] = useState('');
+  const [accessToken, setAccessToken] = useState('');
 
   const currentPath = window.location.path;
 
@@ -34,10 +35,22 @@ const Dashboard = () => {
           } else {
             setValidUser(true);
             setUserInfo(userData)
+            retrieveToken();
           }
         });
     }
   }, []);
+
+  const retrieveToken = async () => {
+    const accessToken = await getAccessTokenSilently({
+      authorizationParams: {
+        audience: `https://www.Home2Home-api.com`,
+        scope: "read:current_user",
+      },
+    });
+
+    setAccessToken(accessToken);
+  }
 
   if(validUser) {
     console.log(userInfo)
@@ -45,20 +58,22 @@ const Dashboard = () => {
       <div>
         <div>
           <UserContext.Provider value={userInfo}>
-            <Router>
-              {currentPath !== '/create-profile' ? <div>
-                <Navbar />
-              </div> : null}
-              
-              <Switch>
-                <Route exact path="/create-profile" component={CreateProfile}></Route> 
-                <Route exact path="/profile" component={Profile}></Route>
-                <Route exact path="/logout" component={LogoutButton}></Route>
-                <Route exact path="/create" component={CreateClient} ></Route>
-                <Route exact path="/manage" component={DisplayClients} ></Route>
-                <Route exact path="/scheduling" component={Calendar} ></Route>
-              </Switch>
-            </Router>
+            <AccessTokenContext.Provider value={accessToken}>
+              <Router>
+                {currentPath !== '/create-profile' ? <div>
+                  <Navbar />
+                </div> : null}
+                
+                <Switch>
+                  <Route exact path="/create-profile" component={CreateProfile}></Route> 
+                  <Route exact path="/profile" component={Profile}></Route>
+                  <Route exact path="/logout" component={LogoutButton}></Route>
+                  <Route exact path="/create" component={CreateClient} ></Route>
+                  <Route exact path="/manage" component={DisplayClients} ></Route>
+                  <Route exact path="/scheduling" component={Calendar} ></Route>
+                </Switch>
+              </Router>
+            </AccessTokenContext.Provider>
           </UserContext.Provider>
         </div>
         <div>

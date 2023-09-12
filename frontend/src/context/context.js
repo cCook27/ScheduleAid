@@ -1,5 +1,6 @@
 import { createContext } from "react";
 
-const UserContext = createContext(undefined);
+export const UserContext = createContext(undefined);
 
-export default UserContext
+export const AccessTokenContext = createContext(undefined);
+

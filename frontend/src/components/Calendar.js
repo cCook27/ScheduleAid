@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useContext} from 'react';
 import { useState, useCallback } from 'react';
 import '../css/calendar.css';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import useDistanceRequests from '../hooks/distance-request';
 import useHomeRequests from '../hooks/home-requests.js';
 import useScheduleRequests from '../hooks/schedule-requests';
+import { UserContext, AccessTokenContext } from '../context/context';
 
 import Loading from '../pop-ups/loading.js';
 
@@ -26,10 +27,12 @@ const localizer = momentLocalizer(moment);
 function Calendar(props) {
 
   const queryClient = useQueryClient();
+  const user = useContext(UserContext);
+  const accessToken = useContext(AccessTokenContext);
 
   const {getHomes} = useHomeRequests();
   const {getTimeDistances} = useDistanceRequests();
-  const {saveSchedule, getSchedule, deleteSchedule} = useScheduleRequests();
+  const {saveUserSchedule, getUserSchedule, deleteSchedule} = useScheduleRequests();
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
@@ -38,13 +41,14 @@ function Calendar(props) {
   const [client, setClient] = useState(null);
   const [changesSaved, setChangesSaved] = useState(false);
 
-  const { data: homes, status } = useQuery(["homes"], async () => await getHomes());
-  const { data: dbSchedule, stat } = useQuery(["schedule"], getSchedule, {
-    onSuccess: (data) => {
-      fillInCalendar(data); 
-      
-    },
-  });
+  const { data: homes, status } = useQuery(["homes"], () => getHomes(user._id));
+  const { data: dbSchedule, stat } = useQuery(["schedule"], 
+    () => getUserSchedule(user._id, accessToken), {
+      onSuccess: (data) => {
+        fillInCalendar(data); 
+        
+      },
+    });
 
 
   const eventPropGetter = useCallback(
@@ -218,14 +222,14 @@ function Calendar(props) {
     [myEvents]
   );
 
-  const saveSched = () => {
-    saveSchedule(myEvents);
+  const saveSchedule = () => {
+    saveUserSchedule(user._id, myEvents, accessToken);
     setChangesSaved(true);
   };
 
   const emptyCalendar = () => {
     setMyEvents([]);
-    deleteSchedule()
+    deleteSchedule(accessToken)
     // setChangesSaved(false);
   };
 
@@ -327,7 +331,7 @@ function Calendar(props) {
             <div className="col">
               <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
                 <button onClick={testSchedule} className="test my-2">Test</button>
-                <button onClick={saveSched} className="save">Save Schedule</button>
+                <button onClick={saveSchedule} className="save">Save Schedule</button>
               </div>
             </div>
 
