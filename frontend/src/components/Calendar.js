@@ -41,14 +41,18 @@ function Calendar(props) {
   const [client, setClient] = useState(null);
   const [changesSaved, setChangesSaved] = useState(false);
 
-  const { data: homes, status } = useQuery(["homes"], () => getHomes(user._id));
+  const { data: homes, status } = useQuery(["homes"], 
+    () => getHomes(user._id, accessToken)
+  );
+
   const { data: dbSchedule, stat } = useQuery(["schedule"], 
     () => getUserSchedule(user._id, accessToken), {
       onSuccess: (data) => {
         fillInCalendar(data); 
         
       },
-    });
+    }
+  );
 
 
   const eventPropGetter = useCallback(

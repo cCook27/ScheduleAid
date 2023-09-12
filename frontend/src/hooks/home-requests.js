@@ -6,16 +6,8 @@ function useHomeRequests () {
   const url = 'http://localhost:8080';
   const { getAccessTokenSilently } = useAuth0();
 
-  const getHomes = async (userId) => {
+  const getHomes = async (userId, accessToken) => {
     try {
-
-      const accessToken = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: `https://www.Home2Home-api.com`,
-          scope: "read:current_user",
-        },
-      });
-
       const response = await fetch(`${url}/homes/${userId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
@@ -43,15 +35,8 @@ function useHomeRequests () {
     }
   };
 
-  const addNewHome = async (home, userId) => {
+  const addNewHome = async (home, userId, accessToken) => {
     try {
-      const accessToken = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: `https://www.Home2Home-api.com`,
-          scope: "read:current_user",
-        },
-      });
-
       const options = {
         method: 'POST',
         headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
@@ -69,16 +54,8 @@ function useHomeRequests () {
     }
   };
 
-  const removeClient = async (homeId, userId) => {
+  const removeClient = async (homeId, userId, accessToken) => {
     try {
-
-      const accessToken = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: `https://www.Home2Home-api.com`,
-          scope: "read:current_user",
-        },
-      });
-
       const options = {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},

@@ -3,11 +3,12 @@ import Form from 'react-bootstrap/Form';
 import '../css/create-client.css'
 import { useState, useContext } from 'react';
 import useHomeRequests from '../hooks/home-requests';
-import {UserContext} from '../context/context';
+import {UserContext, AccessTokenContext} from '../context/context';
 
 function CreateClient() {
   const {addNewHome} = useHomeRequests();
   const user = useContext(UserContext);
+  const accessToken = useContext(AccessTokenContext);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -26,7 +27,7 @@ function CreateClient() {
   };
 
   const handleSubmit = async () => {
-    addNewHome(formData, user._id);
+    addNewHome(formData, user._id, accessToken);
   }
 
   return (

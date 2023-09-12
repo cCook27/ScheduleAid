@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import CreateClient from './create-client';
 import useHomeRequests from '../hooks/home-requests';
-import {UserContext} from '../context/context';
+import {UserContext, AccessTokenContext} from '../context/context';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/display-homes.css';
 import { useAuth0 } from "@auth0/auth0-react";
@@ -11,13 +11,14 @@ function DisplayClients() {
   const queryClient = useQueryClient();
   const { isLoading } = useAuth0();
   const user = useContext(UserContext);
+  const accessToken = useContext(AccessTokenContext);
   const { getHomes, removeClient } = useHomeRequests();
 
-  const { data: homes, status } = useQuery('homes', () => getHomes(user._id));
+  const { data: homes, status } = useQuery('homes', () => getHomes(user._id, accessToken));
 
   const removeHome = useMutation({
     mutationFn: (id) => 
-      removeClient(id, user._id),
+      removeClient(id, user._id, accessToken),
       
     onSuccess: () => {
       queryClient.invalidateQueries('homes');
