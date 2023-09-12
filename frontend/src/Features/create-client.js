@@ -1,11 +1,13 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import '../css/create-client.css'
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import useHomeRequests from '../hooks/home-requests';
+import UserContext from '../context/context';
 
 function CreateClient() {
   const {addNewHome} = useHomeRequests();
+  const user = useContext(UserContext);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -23,8 +25,8 @@ function CreateClient() {
     }));
   };
 
-  const handleSubmit = () => {
-    addNewHome(formData);
+  const handleSubmit = async () => {
+    addNewHome(formData, user._id);
   }
 
   return (
@@ -97,7 +99,7 @@ function CreateClient() {
         <div className="row mt-3">
           <div className="col pe-0">
             <div className="btn-container">
-              <button from className='btn-style' type="submit">
+              <button className='btn-style' type="submit">
                 Submit
               </button>
             </div>

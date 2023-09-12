@@ -1,6 +1,7 @@
 const User = require('../models/User-Model');
 const Home = require('../models/Home-Model');
 const axios = require('axios');
+const mongoose = require('mongoose')
 
 const router = require("express").Router();
 
@@ -47,15 +48,18 @@ router.post('/user', async (req, res) => {
   
 });
 
-router.get('/homes', async (req, res) => {
+router.get('/homes/:user', async (req, res) => {
   try{
-    const homes = await User.homes.find({});
+    const userId = req.params.user;
+    const user = await User.findOne({_id: userId});
+
+    const userHomes = user.homes;
     
-    if(homes.length === 0) {
-      return res.status(404).send('Oops looks like there are no client homes in the db');
+    if(userHomes.length === 0) {
+      return res.send([]);
     }
 
-    res.send(homes);
+    res.send(userHomes);
 
   } catch (error) {
     console.error('Error:', error);
@@ -151,9 +155,11 @@ router.post('/homes/distanceMatrix', async (req, res) => {
 
 });
 
-router.post('/homes', async (req, res) => {
+router.post('/homes/:user', async (req, res) => {
   try {
     const newHomeInfo = req.body;
+    const userId = req.params.user;
+    const user = await User.findOne({_id: userId}); 
 
     Object.getOwnPropertyNames(newHomeInfo).forEach((property) => {
       if(!newHomeInfo[property]) {
@@ -171,8 +177,8 @@ router.post('/homes', async (req, res) => {
       },
     });
 
-    const homeAdded = User.homes.push(homeToAdd);
-    const save = User.save();
+    const homeAdded = user.homes.push(homeToAdd);
+    const save = user.save();
 
     res.status(201).json(homeToAdd);
 
@@ -201,18 +207,24 @@ router.post('/schedule', async (req, res) => {
   }
 });
 
-router.delete('/homes/:home', async (req,res) => {
+router.delete('/homes/:home/:user', async (req,res) => {
   try {
-    const homeId = req.params.home;
+    const userId = req.params.user;
+    const homeId = new mongoose.Types.ObjectId(req.params.home);
+    const user = await User.findOne({ _id: userId });
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { homes: { _id: homeId } } },
+      { new: true } 
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send('User not found');
+    }
+
+    res.status(204).send();
     
-    const deletedHome = await Home.findOneAndDelete({_id: homeId});
-
-    if(!deletedHome) {
-      return res.status(404).send('Could not find home to delete')
-    };
-
-    res.status(204).json(deletedHome);
-
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send('An error occurred while looking for client homes.');

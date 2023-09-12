@@ -6,7 +6,7 @@ function useHomeRequests () {
   const url = 'http://localhost:8080';
   const { getAccessTokenSilently } = useAuth0();
 
-  const getHomes = async () => {
+  const getHomes = async (userId) => {
     try {
 
       const accessToken = await getAccessTokenSilently({
@@ -16,32 +16,49 @@ function useHomeRequests () {
         },
       });
 
-      console.log(accessToken)
-
-      const response = await fetch(`${url}/homes`, {
+      const response = await fetch(`${url}/homes/${userId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
       });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
       const homeData = await response.json();
       
       return homeData;
     
      
     } catch (error) {
-        console.log(error);
+      console.error('Error:', error);
+
+      const errorResponse = {
+        error: 'An error occurred while fetching user data',
+        message: error.message 
+      };
+
+      return errorResponse;
     }
   };
 
-  const addNewHome = async (home) => {
+  const addNewHome = async (home, userId) => {
     try {
+      const accessToken = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: `https://www.Home2Home-api.com`,
+          scope: "read:current_user",
+        },
+      });
+
       const options = {
         method: 'POST',
-        headers: {'Content-Type': 'application/json',},
+        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
         body: JSON.stringify(home)
       };
 
-      const response = await fetch(`${url}/homes`, options);
+      const response = await fetch(`${url}/homes/${userId}`, options);
       const resData = await response.json();
 
       return resData;
@@ -52,14 +69,22 @@ function useHomeRequests () {
     }
   };
 
-  const removeClient = async (id) => {
+  const removeClient = async (homeId, userId) => {
     try {
+
+      const accessToken = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: `https://www.Home2Home-api.com`,
+          scope: "read:current_user",
+        },
+      });
+
       const options = {
         method: 'DELETE',
-        headers: {'Content-Type': 'application/json',},
+        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
       };
 
-      const response = await fetch(`${url}/homes/${id}`, options);
+      const response = await fetch(`${url}/homes/${homeId}/${userId}`, options);
       const resData = await response.json();
 
       return resData;

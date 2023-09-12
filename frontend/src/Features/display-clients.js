@@ -4,20 +4,20 @@ import useHomeRequests from '../hooks/home-requests';
 import UserContext from '../context/context';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/display-homes.css';
+import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 function DisplayClients() {
   const queryClient = useQueryClient();
-
-  const user = useContext(UserContext)
-
+  const { isLoading } = useAuth0();
+  const user = useContext(UserContext);
   const { getHomes, removeClient } = useHomeRequests();
 
-  const { data: homes, status } = useQuery('homes', getHomes);
+  const { data: homes, status } = useQuery('homes', () => getHomes(user._id));
 
   const removeHome = useMutation({
     mutationFn: (id) => 
-      removeClient(id),
+      removeClient(id, user._id),
       
     onSuccess: () => {
       queryClient.invalidateQueries('homes');
@@ -43,7 +43,7 @@ function DisplayClients() {
 
           <div className="col-8 ps-5 pt-4">
             <div className="row">
-              {status === 'loading'  ? (
+              {isLoading ? (
                 <div className="col">
                   <div>Loading...</div>     
                 </div>
