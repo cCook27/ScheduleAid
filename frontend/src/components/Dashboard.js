@@ -19,6 +19,7 @@ const Dashboard = () => {
 
   const { getUser } = useUserRequests()
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  
   const [validUser, setValidUser] = useState(false);  
   const [userInfo, setUserInfo] = useState('');
   const [accessToken, setAccessToken] = useState('');

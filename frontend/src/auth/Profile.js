@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-
 import { useAuth0 } from "@auth0/auth0-react";
-import LogoutButton from "./LogoutButton";
 
+import LogoutButton from "./LogoutButton";
 
 const Profile = () => {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  
   const [userMetadata, setUserMetadata] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
