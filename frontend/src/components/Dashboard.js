@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, useHistory } from 'react-router-dom';
 
 
 import Navbar from './Navbar.js'
@@ -76,9 +76,9 @@ const Dashboard = () => {
             </AccessTokenContext.Provider>
           </UserContext.Provider>
         </div>
-        {currentPath !== '/create-profile' || "/profile" || "/logout" ||  "/create" || "/manage" || "/scheduling" ? <div>
+        <div>
           <h1>Welcome {userInfo.name}!</h1>
-        </div> : null}
+        </div>
       </div>
     );
   } else {

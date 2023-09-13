@@ -2,9 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 
 function useHomeRequests () {
- 
   const url = 'http://localhost:8080';
-  const { getAccessTokenSilently } = useAuth0();
 
   const getHomes = async (userId, accessToken) => {
     try {

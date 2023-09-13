@@ -67,7 +67,8 @@ function DisplayClients() {
                       <div className="card-body p-2">
                         <h5 className='text-center'>{home.name}</h5>
                         <div className='text-center'>
-                          {home.address.state}, {home.address.zip}
+                          <p>{home.address}</p>
+                          <p>{home.number}</p>
                         </div>
                         <div className="btn-container">
                           <button className="btn btn-primary my-2">

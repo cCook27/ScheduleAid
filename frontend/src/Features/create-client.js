@@ -46,7 +46,7 @@ function CreateClient() {
   };
 
  const handleSubmit = () => {
-    // addNewHome(formData, user._id, accessToken);
+    addNewHome(formData, user._id, accessToken);
   };
 
   return (
@@ -177,61 +177,4 @@ function CreateClient() {
 export default CreateClient;
 
 
- // const [formData, setFormData] = useState({
-  //   name: '',
-  //   address: ''
-  // });
-
-  // const handleState = (event) => {
-  //   const {name, value} = event.target;
-  //   setFormData((prevFormData) => ({
-  //     ...prevFormData,
-  //     [name]: value
-  //   }));
-  // };
-
-  // const handleSubmit = async () => {
-  //   addNewHome(formData, user._id, accessToken);
-  // }
-
-
-{/* <Form onSubmit={handleSubmit} className="form">
-      <div className="row ps-2 mb-3">
-        <div className="col-12">
-
-          <div className="form-group my-3">
-            <label>Name</label>
-            <input
-              type="text"
-              placeholder="Enter Name"
-              name="name"
-              value={formData.name}
-              onChange={handleState}
-              className="form-control"
-            />
-          </div>
-
-          
-          <div className="form-group my-3">
-            <label>Address</label>
-            <input
-              placeholder="1234 Main St"
-              name="address"
-              type='tex
-              value={formData.street}
-              onChange={handleState}
-              className="form-control"
-            />
-          </div>
-        </div>
-        <div className="row mt-3">
-          <div className="col pe-0">
-            <div className="btn-container">
-              <button className='btn-style' type="submit">
-                Submit
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Form> */}
+ 

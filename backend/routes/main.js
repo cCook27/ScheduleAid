@@ -167,20 +167,10 @@ router.post('/homes/:user', async (req, res) => {
       }
     });
 
-    const homeToAdd = new Home({
-      name: newHomeInfo.name,
-      address: {
-        street: newHomeInfo.street,
-        city: newHomeInfo.city,
-        state: newHomeInfo.state,
-        zip: newHomeInfo.zip,
-      },
-    });
-
-    const homeAdded = user.homes.push(homeToAdd);
+    const homeAdded = user.homes.push(newHomeInfo);
     const save = user.save();
 
-    res.status(201).json(homeToAdd);
+    res.status(201).json(newHomeInfo);
 
   } catch (error) {
       console.error('Error:', error);
