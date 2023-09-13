@@ -9,6 +9,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css"
 
 
 const queryClient = new QueryClient();
+const apiKey = process.env.GOOGLE_MAPS_API_KEY
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
