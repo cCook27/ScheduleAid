@@ -46,7 +46,7 @@ function CreateClient() {
   };
 
  const handleSubmit = () => {
-    // addNewHome(formData, user._id, accessToken);
+    addNewHome(formData, user._id, accessToken);
   };
 
   return (

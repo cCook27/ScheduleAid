@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import Home from './static/Home.js'
 import Dashboard from './components/Dashboard.js';
@@ -28,7 +29,11 @@ function App() {
   }
   
   return (
-    <Dashboard />
+    <Router>
+      <Switch>
+        <Route component={Dashboard} /> {/* Default Dashboard Route */}
+      </Switch>
+    </Router>
   );
 }
 

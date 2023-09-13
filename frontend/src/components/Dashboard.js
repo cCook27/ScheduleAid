@@ -24,19 +24,18 @@ const Dashboard = () => {
   const [userInfo, setUserInfo] = useState('');
   const [accessToken, setAccessToken] = useState('');
 
-  const currentPath = window.location.path;
+  const currentPath = window.location.pathname;
 
   useEffect(() => {
     if (isAuthenticated && user) {
+      retrieveToken()
       getUser(user.sub)
         .then((userData) => {
           if (userData.error) {
             setValidUser(false);
-            window.location.pathname = '/create-profile';
           } else {
             setValidUser(true);
             setUserInfo(userData)
-            retrieveToken();
           }
         });
     }
@@ -60,12 +59,15 @@ const Dashboard = () => {
           <UserContext.Provider value={userInfo}>
             <AccessTokenContext.Provider value={accessToken}>
               <Router>
-                {currentPath !== '/create-profile' ? <div>
-                  <Navbar />
-                </div> : null}
+               <Navbar />
+               
+                {currentPath === '/' ? 
+                  <div>
+                    <h1>Welcome {userInfo.name}!</h1>
+                  </div> : null
+                }
                 
-                <Switch>
-                  <Route exact path="/create-profile" component={CreateProfile}></Route> 
+                <Switch> 
                   <Route exact path="/profile" component={Profile}></Route>
                   <Route exact path="/logout" component={LogoutButton}></Route>
                   <Route exact path="/create" component={CreateClient} ></Route>
@@ -76,14 +78,11 @@ const Dashboard = () => {
             </AccessTokenContext.Provider>
           </UserContext.Provider>
         </div>
-        {currentPath !== '/create-profile' || "/profile" || "/logout" ||  "/create" || "/manage" || "/scheduling" ? <div>
-          <h1>Welcome {userInfo.name}!</h1>
-        </div> : null}
       </div>
     );
   } else {
     return (
-      <Loading />
+      <CreateProfile />
     )
   }
   

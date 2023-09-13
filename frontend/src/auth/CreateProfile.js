@@ -1,13 +1,16 @@
-import React, { useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import React, { useEffect, useContext } from "react";
 import { useState } from "react";
 import Form from 'react-bootstrap/Form';
+import { useAuth0 } from "@auth0/auth0-react";
 
 import useUserRequests from "../hooks/user-requests";
+import {UserContext, AccessTokenContext} from '../context/context';
 
 const CreateProfile = () => {
-  const { user } = useAuth0();
+  // const user = useContext(UserContext);
+  // const accessToken = useContext(AccessTokenContext)
   const { addUser } = useUserRequests();
+  const { user } = useAuth0();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -22,7 +25,7 @@ const CreateProfile = () => {
       ...prev,
       _id: user.sub
     }))
-  }, [user])
+  }, [])
 
   const handleState = (event) => {
     const {name, value} = event.target;
@@ -99,7 +102,7 @@ const CreateProfile = () => {
         <div className="row mt-3">
           <div className="col pe-0">
             <div className="btn-container">
-              <button from className='btn-style' type="submit">
+              <button className='btn-style' type="submit">
                 Submit
               </button>
             </div>
