@@ -1,5 +1,4 @@
 const User = require('../models/User-Model');
-const Home = require('../models/Home-Model');
 const axios = require('axios');
 require('dotenv').config();
 const apiKey = process.env.GOOGLE_MAPS_API_KEY;

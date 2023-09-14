@@ -62,7 +62,7 @@ function DisplayClients() {
                 </div>
               ): (
                 homes.map(home => (
-                  <div key={home._id} className="col-3">
+                  <div  key={home._id} className="col-3">
                     <div className="card m-2 shadow-lg" style={{width: '10rem', height: 'auto'}}>
                       <div className="card-body p-2">
                         <h5 className='text-center'>{home.name}</h5>
@@ -79,7 +79,6 @@ function DisplayClients() {
                       </div>
                     </div>
                   </div>
-                  
                 ))
               )}
             </div>

@@ -1,13 +1,19 @@
-import React, { useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import React, { useEffect, useContext } from "react";
 import { useState } from "react";
 import Form from 'react-bootstrap/Form';
+import { useAuth0 } from "@auth0/auth0-react";
+import { useHistory } from 'react-router-dom';
 
 import useUserRequests from "../hooks/user-requests";
+import {UserContext, AccessTokenContext} from '../context/context';
 
 const CreateProfile = () => {
+  // const user = useContext(UserContext);
+  // const accessToken = useContext(AccessTokenContext)
+  const { addUser, getUser } = useUserRequests();
   const { user } = useAuth0();
-  const { addUser } = useUserRequests();
+  const history = useHistory();
+
   
   const [formData, setFormData] = useState({
     name: '',
@@ -18,11 +24,22 @@ const CreateProfile = () => {
   });
 
   useEffect(() => {
+    getUser(user.sub)
+        .then((userData) => {
+          if (userData.error) {
+            console.log('proceed with create profile')
+          } else {
+            window.location.pathname = '/dashboard'
+          }
+        });
+  });
+
+  useEffect(() => {
     setFormData((prev) => ({
       ...prev,
       _id: user.sub
     }))
-  }, [user])
+  }, [])
 
   const handleState = (event) => {
     const {name, value} = event.target;
@@ -34,7 +51,11 @@ const CreateProfile = () => {
 
   const handleSubmit = () => {
     addUser(formData)
-    window.location.pathname = '/dashboard';
+    window.location.pathname = '/'
+  }
+
+  const handleIt = () => {
+    window.location.pathname = '/dashboard'
   }
 
   return (
@@ -99,9 +120,10 @@ const CreateProfile = () => {
         <div className="row mt-3">
           <div className="col pe-0">
             <div className="btn-container">
-              <button from className='btn-style' type="submit">
+              <button className='btn-style' type="submit">
                 Submit
               </button>
+              <button onClick={handleIt}>try this</button>
             </div>
           </div>
         </div>

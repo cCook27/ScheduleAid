@@ -120,8 +120,6 @@ function Calendar(props) {
 
   const fillInCalendar = useCallback(
     (dbSchedule) => {
-      console.log(myEvents)
-     
       const schedule = dbSchedule.map((event) => {
         const startTime = new Date(event.start);
         const endTime = new Date(event.end);
