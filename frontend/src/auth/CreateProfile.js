@@ -1,18 +1,13 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, } from "react";
 import { useState } from "react";
 import Form from 'react-bootstrap/Form';
 import { useAuth0 } from "@auth0/auth0-react";
-import { useHistory } from 'react-router-dom';
 
 import useUserRequests from "../hooks/user-requests";
-import {UserContext, AccessTokenContext} from '../context/context';
 
 const CreateProfile = () => {
-  // const user = useContext(UserContext);
-  // const accessToken = useContext(AccessTokenContext)
   const { addUser, getUser } = useUserRequests();
   const { user } = useAuth0();
-  const history = useHistory();
 
   
   const [formData, setFormData] = useState({
@@ -32,7 +27,7 @@ const CreateProfile = () => {
             window.location.pathname = '/dashboard'
           }
         });
-  });
+  }, []);
 
   useEffect(() => {
     setFormData((prev) => ({

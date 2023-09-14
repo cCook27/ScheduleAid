@@ -34,7 +34,7 @@ const DashboardHolder = () => {
           if (userData.error) {
             if(currentPath !== '/create-profile') {
               setValidUser(false);
-            window.location.pathname = '/create-profile'
+              window.location.pathname = '/create-profile'
             } else {
               console.log('checked')
             }
