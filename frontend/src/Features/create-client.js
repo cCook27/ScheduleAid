@@ -54,9 +54,13 @@ function CreateClient() {
     }));
   };
 
- const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
     addNewHome(formData, user._id, accessToken);
+
+    window.location.reload();
   };
+  
 
   return (
     <div>

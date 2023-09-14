@@ -203,7 +203,7 @@ router.post('/schedule/:user', async (req, res) => {
 router.delete('/homes/:home/:user', async (req,res) => {
   try {
     const userId = req.params.user;
-    const homeId = new mongoose.Types.ObjectId(req.params.home);
+    const homeId = req.params.home;
     const user = await User.findOne({ _id: userId });
 
     const updatedUser = await User.findOneAndUpdate(
