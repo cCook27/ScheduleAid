@@ -1,57 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import LogoutButton from "./LogoutButton";
+import { UserContext } from '../context/context';
 
 const Profile = () => {
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
-  
-  const [userMetadata, setUserMetadata] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    street: '',
-    city: '',
-    state: '',
-    zip: ''
-  });
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
-  useEffect(() => {
-    const getUserMetadata = async () => {
-      const domain = "dev-uhybzq8zwt4f7tgf.us.auth0.com";
-  
-      try {
-        const accessToken = await getAccessTokenSilently({
-          authorizationParams: {
-            audience: `https://${domain}/api/v2/`,
-            scope: "read:current_user",
-          },
-        });
-  
-        const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user.sub}`;
-  
-        const metadataResponse = await fetch(userDetailsByIdUrl, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-  
-        const { user_metadata } = await metadataResponse.json();
-
-        setUserMetadata(user_metadata);
-        console.log(userMetadata)
-      } catch (e) {
-        console.log(e.message);
-      }
-    };
-  
-    getUserMetadata();
-  }, [getAccessTokenSilently, user?.sub]);
-
+  const user = useContext(UserContext);
 
   
 
   return (
     <div>
+      <div>
+        <p>{user.name}</p>
+        <p>{user.email}</p>
+        <p>{user.designation}</p>
+      </div>
       <LogoutButton />
     </div>
    
