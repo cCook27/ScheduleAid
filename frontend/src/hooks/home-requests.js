@@ -52,7 +52,7 @@ function useHomeRequests () {
     }
   };
 
-  const removeClient = async (homeId, userId, accessToken) => {
+  const removeHome = async (homeId, userId, accessToken) => {
     try {
       const options = {
         method: 'DELETE',
@@ -72,7 +72,7 @@ function useHomeRequests () {
   return {
    getHomes,
    addNewHome, 
-   removeClient,
+   removeHome,
   }
 }
 

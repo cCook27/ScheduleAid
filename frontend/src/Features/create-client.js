@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import '../css/create-client.css'
 import { useState, useContext } from 'react';
 import PlacesAutocomplete from 'react-places-autocomplete';
+import { v4 as uuidv4 } from 'uuid';
 
 import useHomeRequests from '../hooks/home-requests';
 import {UserContext, AccessTokenContext} from '../context/context';
@@ -20,8 +21,16 @@ function CreateClient() {
     number: "",
     email: "",
     prefContact: "",
-    notes: ""
+    notes: "",
+    _id: ""
   });
+
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      _id: uuidv4(),
+    }));
+  }, [])
 
   const handleSelect = (value) => {
     setFormData((prevData) => ({

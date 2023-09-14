@@ -14,15 +14,15 @@ function DisplayClients() {
   const { isLoading } = useAuth0();
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
-  const { getHomes, removeClient } = useHomeRequests();
+  const { getHomes, removeHome } = useHomeRequests();
 
   const { data: homes, status } = useQuery('homes', 
     () => getHomes(user._id, accessToken)
   );
 
-  const removeHome = useMutation({
+  const deleteHome = useMutation({
     mutationFn: (id) => 
-      removeClient(id, user._id, accessToken),
+      removeHome(id, user._id, accessToken),
       
     onSuccess: () => {
       queryClient.invalidateQueries('homes');
@@ -74,7 +74,7 @@ function DisplayClients() {
                           <button className="btn btn-primary my-2">
                             Edit
                           </button>
-                          <button onClick={() => removeHome.mutate(home._id)} className="btn btn-danger mb-2">Delete</button>
+                          <button onClick={() => deleteHome.mutate(home._id)} className="btn btn-danger mb-2">Delete</button>
                         </div>
                       </div>
                     </div>

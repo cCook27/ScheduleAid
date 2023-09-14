@@ -12,7 +12,7 @@ import Calendar from './Calendar.js';
 import LogoutButton from '../auth/LogoutButton.js';
 import Profile from '../auth/Profile.js';
 import Loading from '../pop-ups/loading.js';
-import useUserRequests from '../hooks/user-requests';
+import useUserRequests from '../hooks/user-requests.js';
 import CreateProfile from '../auth/CreateProfile.js';
 import { UserContext, AccessTokenContext } from '../context/context.js';
 
