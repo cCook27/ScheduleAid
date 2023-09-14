@@ -49,13 +49,10 @@ const CreateProfile = () => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault()
     addUser(formData)
     window.location.pathname = '/'
-  }
-
-  const handleIt = () => {
-    window.location.pathname = '/dashboard'
   }
 
   return (
@@ -123,7 +120,6 @@ const CreateProfile = () => {
               <button className='btn-style' type="submit">
                 Submit
               </button>
-              <button onClick={handleIt}>try this</button>
             </div>
           </div>
         </div>
