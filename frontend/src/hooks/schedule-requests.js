@@ -1,8 +1,5 @@
-import { useAuth0 } from "@auth0/auth0-react";
-
 function useScheduleRequests () {
   const url = 'http://localhost:8080';
-  const { getAccessTokenSilently } = useAuth0();
 
   const saveUserSchedule = async (userId, schedule, accessToken) => {
     try {
@@ -20,11 +17,11 @@ function useScheduleRequests () {
     }
   };
 
-  const getUserSchedule = async (userId, token) => {
+  const getUserSchedule = async (userId, accessToken) => {
     try {
       const response = await fetch(`${url}/schedule/${userId}`, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${accessToken}`
         }
       });
       const scheduleData = await response.json();
@@ -50,6 +47,7 @@ function useScheduleRequests () {
       };
 
       const response = await fetch(`${url}/schedule/${userId}`, options); 
+      const data = await response.json();
 
     } catch (error) {
         console.log(error);

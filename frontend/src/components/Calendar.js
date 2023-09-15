@@ -50,6 +50,13 @@ function Calendar(props) {
     }
   );
 
+  useEffect(() => {
+    if(changesSaved) {
+      saveUserSchedule(user._id, myEvents, accessToken);
+      setChangesSaved(true)
+    }
+  }, [myEvents])
+
 
   const eventPropGetter = useCallback(
     (event) => ({
@@ -136,14 +143,14 @@ function Calendar(props) {
     []
   );
 
-
   const newEvent = useCallback(
     (event) => {
       setMyEvents((prev) => {
         return [...prev, { ...event }]
       });
 
-      setChangesSaved(false);
+      setChangesSaved(true);
+      
     },
     [setMyEvents]
   );
@@ -186,7 +193,7 @@ function Calendar(props) {
         return [...filteredState, {...existingEvent, start, end, isAllDay}]
       });
 
-      setChangesSaved(false);
+      setChangesSaved(true);
 
     }, 
       [setMyEvents]
@@ -213,7 +220,7 @@ function Calendar(props) {
           }
       );
       console.log(weeklySchedule)
-      const viabilityData = await getTimeDistances(weeklySchedule);
+      const viabilityData = await getTimeDistances(weeklySchedule, accessToken);
 
       eventViability(viabilityData);
     },
@@ -225,10 +232,9 @@ function Calendar(props) {
     setChangesSaved(true);
   };
 
-  const emptyCalendar = () => {
+  const removeAllEvents = () => {
     setMyEvents([]);
-    deleteSchedule(accessToken)
-    // setChangesSaved(false);
+    deleteSchedule(user._id, accessToken)
   };
 
   const selectEvent = useCallback(
@@ -335,7 +341,7 @@ function Calendar(props) {
 
             <div className="col">
               <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
-                <button onClick={emptyCalendar} className="test my-2">Empty Calendar</button>
+                <button onClick={removeAllEvents} className="test my-2">Delete All</button>
                 <button className="save">All Schedules</button>
               </div>
             </div>

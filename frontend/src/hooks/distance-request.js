@@ -1,16 +1,7 @@
-import { useAuth0 } from "@auth0/auth0-react";
-
-async function useDistanceRequests () {
+function useDistanceRequests () {
   const url = 'http://localhost:8080';
-  const { getAccessTokenSilently } = useAuth0();
 
-  const accessToken = await getAccessTokenSilently({
-    authorizationParams: {
-      audience: `https://www.Home2Home-api.com`,
-    },
-  });
-
-  const getTimeDistances = async (events, token) => {
+  const getTimeDistances = async (events, accessToken) => {
     try {
       const options = {
         method: 'POST',

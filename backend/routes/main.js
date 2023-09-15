@@ -90,11 +90,8 @@ router.get('/schedule/:user', async (req, res) => {
 
 router.post('/homes/distanceMatrix', async (req, res) => {
   try {
+    const userId = req.params.user;
     const weeklySchedule = Object.values(req.body);
-
-    const formulateAddress = (address) => {
-      return `${address.street}, ${address.city}, ${address.state}, ${address.zip}`
-    };
 
     const convertToSeconds = (timeStamp) => {
       const date = new Date(timeStamp);
@@ -111,8 +108,8 @@ router.post('/homes/distanceMatrix', async (req, res) => {
           const event = day[i];
 
           if(day[i+1]) {
-            const origin = formulateAddress(event.address);
-            const destination = formulateAddress(day[i+1].address);
+            const origin = event.address;
+            const destination = day[i+1].address;
 
             const endTime = convertToSeconds(event.end);
             const startTime = convertToSeconds(day[i+1].start);
@@ -224,9 +221,15 @@ router.delete('/homes/:home/:user', async (req,res) => {
   }
 });
 
-router.delete('/schedule', async (req, res) => {
+router.delete('/schedule/:user', async (req, res) => {
   try {
-    const deletedSchedule = await schedCollection.drop();
+    const userId = req.params.user;
+
+    const deletedSchedule = await User.findOneAndUpdate(
+      {_id: userId},
+      {$set: {schedule: []}},
+      {new: true}
+    );
 
     res.status(204).json(deletedSchedule);
 
