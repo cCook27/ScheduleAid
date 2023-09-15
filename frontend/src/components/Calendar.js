@@ -227,11 +227,6 @@ function Calendar(props) {
     [myEvents]
   );
 
-  const saveSchedule = () => {
-    saveUserSchedule(user._id, myEvents, accessToken);
-    setChangesSaved(true);
-  };
-
   const removeAllEvents = () => {
     setMyEvents([]);
     deleteSchedule(user._id, accessToken)
@@ -335,7 +330,6 @@ function Calendar(props) {
             <div className="col">
               <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
                 <button onClick={testSchedule} className="test my-2">Test</button>
-                <button onClick={saveSchedule} className="save">Save Schedule</button>
               </div>
             </div>
 
