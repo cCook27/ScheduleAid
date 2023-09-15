@@ -2,13 +2,15 @@ const User = require('../models/User-Model');
 const axios = require('axios');
 require('dotenv').config();
 const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-const mongoose = require('mongoose');
-
 const router = require("express").Router();
 
 router.get('/user/:user', async (req, res) => {
   try {
     const userId = req.params.user;
+
+    if(!userId) {
+      return res.status(400).send('Bad request, User Id not sent.');
+    }
 
     const user = await User.findOne({_id: userId});
 
@@ -29,6 +31,10 @@ router.post('/user', async (req, res) => {
   try{
     const newUser = req.body;
 
+    if(!newUser || !newUser.name || !newUser._id || !newUser.email) {
+      return res.status(400).send('Bad request, User data not sent.');
+    }
+
     const userToAdd = new User({
       name: newUser.name,
       _id: newUser._id,
@@ -40,6 +46,7 @@ router.post('/user', async (req, res) => {
     });
 
     const savedUser = await userToAdd.save();
+
     res.status(201).json(savedUser);
 
   } catch(error) {
@@ -51,8 +58,14 @@ router.post('/user', async (req, res) => {
 
 router.get('/homes/:user', async (req, res) => {
   try{
-    const userId = req.params.user;
+    const userId = req.params.user;    
     const user = await User.findOne({_id: userId});
+
+    if(!userId) {
+      return res.status(400).send('Bad request, User Id not sent.');
+    } else if(!user) {
+      return res.status(404).send('User not found');
+    }
 
     const userHomes = user.homes;
     
@@ -71,10 +84,11 @@ router.get('/homes/:user', async (req, res) => {
 router.get('/schedule/:user', async (req, res) => {
   try {
     const userId = req.params.user
-
     const user = await User.findOne({_id: userId});
 
-    if(!user) {
+    if(!userId) {
+      return res.status(400).send('Bad request, User Id not sent.');
+    } else if(!user) {
       return res.status(404).send('User not found');
     }
 
@@ -90,8 +104,11 @@ router.get('/schedule/:user', async (req, res) => {
 
 router.post('/homes/distanceMatrix', async (req, res) => {
   try {
-    const userId = req.params.user;
     const weeklySchedule = Object.values(req.body);
+
+    if(weeklySchedule.length === 0 || !weeklySchedule) {
+      return res.status(400).send('No schedule body sent, no testing required');
+    };
 
     const convertToSeconds = (timeStamp) => {
       const date = new Date(timeStamp);
@@ -114,25 +131,43 @@ router.post('/homes/distanceMatrix', async (req, res) => {
             const endTime = convertToSeconds(event.end);
             const startTime = convertToSeconds(day[i+1].start);
 
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=${apiKey}`);
+            try {
+              const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=${apiKey}`);
 
-            const distanceData = response.data;
+              const distanceData = response.data;
 
-            if((startTime - endTime) > distanceData.rows[0].elements[0].duration.value) {
-              scheduleViability.push( 
-                {
-                  isViable: true,
-                  originId: event.id,
-                  destinationId: day[i+1].id
-                });
+              if((startTime - endTime) > distanceData.rows[0].elements[0].duration.value) {
+                scheduleViability.push( 
+                  {
+                    isViable: true,
+                    originId: event.id,
+                    destinationId: day[i+1].id
+                  });
+                } else {
+                    scheduleViability.push( 
+                      {
+                        isViable: false,
+                        originId: event.id,
+                        destinationId: day[i+1].id
+                      });
+                  } 
+            } catch (error) {
+              console.error("Error making the request:", error);
+
+              if (error.response) {
+                if (error.response.status === 404) {
+                  res.status(404).send("Resource not found");
+                } else if (error.response.status === 401) {
+                  res.status(401).send("Unauthorized");
+                } else {
+                  res.status(error.response.status).send("An error occurred during the request");
+                }
+              } else if (error.request) {
+                res.status(500).send("No response received from the server");
               } else {
-                  scheduleViability.push( 
-                    {
-                      isViable: false,
-                      originId: event.id,
-                      destinationId: day[i+1].id
-                    });
-                } 
+                res.status(500).send(`Request setup error: ${error.message}`);
+              }
+            };
           }
         }
       }));
@@ -157,6 +192,12 @@ router.post('/homes/:user', async (req, res) => {
     const userId = req.params.user;
     const user = await User.findOne({_id: userId}); 
 
+    if(!newHomeInfo || !userId) {
+      return res.status(400).send('Bad request, Data not sent.');
+    } else if(!user) {
+      return res.status(404).send('User not found');
+    };
+
     Object.getOwnPropertyNames(newHomeInfo).forEach((property) => {
       if(!newHomeInfo[property]) {
         return res.status(400).send('All fields are required when saving a new client home.');
@@ -178,6 +219,10 @@ router.post('/schedule/:user', async (req, res) => {
   try {
     const newSchedule = req.body;
     const userId = req.params.user;
+
+    if(!newSchedule || !userId) {
+      return res.status(400).send('Bad request, Data not sent.');
+    } 
 
     const updatedSchedule = await User.findOneAndUpdate(
       {_id: userId},
@@ -201,7 +246,10 @@ router.delete('/homes/:home/:user', async (req,res) => {
   try {
     const userId = req.params.user;
     const homeId = req.params.home;
-    const user = await User.findOne({ _id: userId });
+
+    if(!homeId || !userId) {
+      return res.status(400).send('Bad request, User information not sent.');
+    } 
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
@@ -225,11 +273,19 @@ router.delete('/schedule/:user', async (req, res) => {
   try {
     const userId = req.params.user;
 
+    if(!userId) {
+      return res.status(400).send('Bad request, User information not sent.');
+    } 
+
     const deletedSchedule = await User.findOneAndUpdate(
       {_id: userId},
       {$set: {schedule: []}},
       {new: true}
     );
+
+    if (!updatedUser) {
+      return res.status(404).send('User not found');
+    }
 
     res.status(204).json(deletedSchedule);
 
