@@ -28,7 +28,7 @@ const DashboardHolder = () => {
   const currentPath = window.location.pathname;
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isAuthenticated) {
       getUser(user.sub)
         .then((userData) => {
           if (userData.error) {

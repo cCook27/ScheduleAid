@@ -296,7 +296,6 @@ router.delete('/schedule/:user', async (req, res) => {
 })
 
 
-
 module.exports = router;
 
 

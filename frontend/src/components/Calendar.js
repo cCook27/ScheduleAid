@@ -359,7 +359,6 @@ function Calendar(props) {
                     <div  className="card my-3">
                       <div className="card-body">
                         <div className="card-title">{home.name}</div>
-                        <p className="card-text">{home.address.city}, {home.address.zip}</p>
                       </div>
                     </div>
                   </div>
