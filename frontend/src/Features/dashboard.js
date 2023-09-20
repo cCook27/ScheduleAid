@@ -4,7 +4,7 @@ import { useState, useContext } from 'react';
 
 const Dashboard = () => {
   const user = useContext(UserContext);
-
+console.log(user)
   return (
     <h1>Welcome, {user.name}</h1>
   )
