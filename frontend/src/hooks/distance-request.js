@@ -19,8 +19,38 @@ function useDistanceRequests () {
     }
   };
 
+  const getRoutes = async (userId, accessToken) => {
+    try {
+      const response = await fetch(`${url}/routing/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const routes = await response.json();
+      
+      return routes;
+    
+     
+    } catch (error) {
+      console.error('Error:', error);
+
+      const errorResponse = {
+        error: 'An error occurred while fetching user data',
+        message: error.message 
+      };
+
+      return errorResponse;
+    }
+  };
+
   return {
-   getTimeDistances
+   getTimeDistances,
+   getRoutes
   }
 }
 

@@ -14,6 +14,7 @@ import Profile from '../auth/Profile.js';
 import Loading from '../pop-ups/loading.js';
 import useUserRequests from '../hooks/user-requests.js';
 import CreateProfile from '../auth/CreateProfile.js';
+import CreateSchedule from '../Features/create-schedule.js';
 import { UserContext, AccessTokenContext } from '../context/context.js';
 
 const DashboardHolder = () => {
@@ -79,6 +80,7 @@ const DashboardHolder = () => {
                   <Route exact path="/create" component={CreateClient} ></Route>
                   <Route exact path="/manage" component={DisplayClients} ></Route>
                   <Route exact path="/scheduling" component={Calendar} ></Route>
+                  <Route exact path="/create-schedule" component={CreateSchedule} ></Route>
                 </Switch>
               </Router>
             </AccessTokenContext.Provider>

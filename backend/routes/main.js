@@ -28,35 +28,6 @@ router.get('/user/:user', async (req, res) => {
 
 });
 
-router.post('/user', async (req, res) => {
-  try{
-    const newUser = req.body;
-
-    if(!newUser || !newUser.name || !newUser._id || !newUser.email) {
-      return res.status(400).send('Bad request, User data not sent.');
-    }
-
-    const userToAdd = new User({
-      name: newUser.name,
-      _id: newUser._id,
-      homes: [],
-      schedule: [],
-      buffer: 5,
-      designation: newUser.designation,
-      email: newUser.email
-    });
-
-    const savedUser = await userToAdd.save();
-
-    res.status(201).json(savedUser);
-
-  } catch(error) {
-    console.error('Error:', error);
-    res.status(500).send('An error occurred while looking for the User.');
-  }
-  
-});
-
 router.get('/homes/:user', async (req, res) => {
   try{
     const userId = req.params.user;    
@@ -101,6 +72,156 @@ router.get('/schedule/:user', async (req, res) => {
       console.log('Error getting documents');
       res.status(500).send('An error occurred while fetching documents.');
   }
+});
+
+router.get('/routing/:user', async (req, res) => {
+  const userId = req.params.user;
+  let user = await User.findOne({ _id: userId });
+  const userAddress = '19609 South Greenfield Road, Gilbert Az, 85297';
+  const homes = user.homes;
+
+  const groupSchedule = async () => {
+
+    let clonedHomes = [...homes];
+    let groups = [];
+   
+    for (let i = 0; i < 5; i++) {
+     let starter = undefined;
+     let greatestTime = {time: 0};
+     let sixClosest;
+
+     clonedHomes.forEach((cHome) => {
+      cHome.time = 0;
+     });
+  
+      const getTimeDistance = async (home, start) => {
+        const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${home}&origins=${start}&units=imperial&key=${apiKey}`);
+        const distanceData = response.data.rows[0].elements[0].duration.value;
+    
+        return distanceData;
+      };
+  
+      const determineStartingPoint = async () => {
+        for (let j = 0; j < clonedHomes.length; j++) {
+          const home = clonedHomes[j];
+        
+          const distanceData = await getTimeDistance(home.address, userAddress);
+          home.time = distanceData;
+      
+          if(home.time > greatestTime.time) {
+            greatestTime = home;
+          }
+        }
+    
+        starter = greatestTime;
+        clonedHomes = clonedHomes.filter((cloneHome) => cloneHome._id !== starter._id);
+      };
+  
+      const find6Closest = async () => {
+        for (let i = 0; i < clonedHomes.length; i++) {
+          const home = clonedHomes[i];
+        
+          const distanceData = await getTimeDistance(home.address, starter.address);
+          home.time = distanceData;
+        }
+  
+        clonedHomes.sort((a, b) => a.time - b.time);
+  
+        const closest6 = clonedHomes.splice(0, 6);
+  
+        sixClosest = closest6;
+        
+      };
+  
+      const determineGroup = async () => {
+        let closest4 = sixClosest
+        const furthest2 = closest4.splice(-2);
+        let firstH = [];
+        let secondH = [];
+        for (let j = 0; j < furthest2.length; j++) {
+          const fHome = furthest2[j];
+    
+          for (let i = 0; i < clonedHomes.length; i++) {
+            const home = clonedHomes[i];
+          
+            const distanceData = await getTimeDistance(home.address, fHome.address);
+            
+            if(j === 0) {
+              firstH.push(distanceData);
+            } else {
+              secondH.push(distanceData);
+            }
+          };
+        };
+    
+        firstH.sort((a, b) => a - b);
+        secondH.sort((a, b) => a - b);
+    
+        const firstHTop2 = firstH.slice(0,3);
+        const secondHTop2 = secondH.slice(0,3);
+    
+        if(firstHTop2[0] < secondHTop2[0]) {
+          closest4.push(furthest2[0]);
+          clonedHomes.push(furthest2[1])
+        } else if(firstHTop2[0] > secondHTop2[0]) {
+          closest4.push(furthest2[1]);
+          clonedHomes.push(furthest2[0])
+        } else if(firstHTop2[0] === secondHTop2[0]) {
+            if(firstHTop2[1] < secondHTop2[1]) {
+              closest4.push(furthest2[0]);
+              clonedHomes.push(furthest2[1])
+            } else if(firstHTop2[1] > secondHTop2[1]) {
+              closest4.push(furthest2[1]);
+              clonedHomes.push(furthest2[0])
+            }
+        };
+    
+      
+        closest4.push(starter);
+        groups.push(closest4);
+      };
+
+      await determineStartingPoint();
+      await find6Closest();
+      await determineGroup();
+    }
+
+    console.log(groups)
+  
+  };
+
+  groupSchedule();
+
+});
+
+
+router.post('/user', async (req, res) => {
+  try{
+    const newUser = req.body;
+
+    if(!newUser || !newUser.name || !newUser._id || !newUser.email) {
+      return res.status(400).send('Bad request, User data not sent.');
+    }
+
+    const userToAdd = new User({
+      name: newUser.name,
+      _id: newUser._id,
+      homes: [],
+      schedule: [],
+      buffer: 5,
+      designation: newUser.designation,
+      email: newUser.email
+    });
+
+    const savedUser = await userToAdd.save();
+
+    res.status(201).json(savedUser);
+
+  } catch(error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while looking for the User.');
+  }
+  
 });
 
 router.post('/homes/distanceMatrix', async (req, res) => {
@@ -300,4 +421,44 @@ router.delete('/schedule/:user', async (req, res) => {
 module.exports = router;
 
 
+  // const patientAvailability = homes.reduce((accum, home) => {
+  //   const days = home.prefDays
+  //   for (const day in days) {
+  //     if (days.hasOwnProperty(day)) {
+  //       const value = days[day];
 
+  //       if(value) {
+  //         accum[day].push(home);
+  //       }
+  //     }
+  //   };
+
+  //   return accum;
+  // }, 
+  //   {sunday: [], monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: []}
+  // );
+
+
+  // const mondayStart = patientAvailability.monday.map(async (home) => {
+  //   const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${home.address}&origins=${userAddress}&units=imperial&key=${apiKey}`);
+
+  //   const distanceData = response.data.rows[0].elements[0].duration.value;
+
+  //   home.time = distanceData;
+
+  //   return home
+  // });
+
+  // const mondayData = await Promise.all(monday);
+
+  // const starter = (dayData) => {
+  //   const startHome = dayData.reduce((min, home) => {
+  //     return home.time < min.time ? home : min;
+  //   }, dayData[0]);
+
+  //   return startHome;
+  // }
+
+  // for(let i = 0; i <= 6; i++) {
+    
+  // }

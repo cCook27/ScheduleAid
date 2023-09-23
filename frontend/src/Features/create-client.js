@@ -22,7 +22,16 @@ function CreateClient() {
     email: "",
     prefContact: "",
     notes: "",
-    _id: ""
+    _id: "",
+    prefDays: {
+      sunday: false,
+      monday: false,
+      tuesday: false,
+      wednesday: false,
+      thursday: false,
+      friday: false,
+      saturday: false
+    }
   });
 
   useEffect(() => {
@@ -54,8 +63,22 @@ function CreateClient() {
     }));
   };
 
+  const handleCheckboxChange = (event) => {
+    const { id, checked } = event.target;
+  
+    setFormData((prevData) => ({
+      ...prevData,
+      prefDays: {
+        ...prevData.prefDays,
+        [id]: checked,
+      },
+    }));
+  };
+  
+
   const handleSubmit = (event) => {
     event.preventDefault();
+    console.log(formData)
     addNewHome(formData, user._id, accessToken);
 
     window.location.reload();
@@ -158,6 +181,95 @@ function CreateClient() {
                 className="form-control"
               />
             </div>
+
+            <div className="form-group my-3">
+              <label>Patient Can Be Seen On:</label>
+              <br />
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="sunday"
+                  onChange={handleCheckboxChange}
+                />
+                <label className="form-check-label" htmlFor="sunday">
+                  Sunday
+                </label>
+              </div>
+
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="monday"
+                  onChange={handleCheckboxChange}
+                />
+                <label className="form-check-label" htmlFor="monday">
+                  Monday
+                </label>
+              </div>
+
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="tuesday"
+                  onChange={handleCheckboxChange}
+                />
+                <label className="form-check-label" htmlFor="tuesday">
+                  Tuesday
+                </label>
+              </div>
+
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="wednesday"
+                  onChange={handleCheckboxChange}
+                />
+                <label className="form-check-label" htmlFor="wednesday">
+                  Wednesday
+                </label>
+              </div>
+
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="thursday"
+                  onChange={handleCheckboxChange}
+                />
+                <label className="form-check-label" htmlFor="thursday">
+                  Thursday
+                </label>
+              </div>
+
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="friday"
+                  onChange={handleCheckboxChange}
+                />
+                <label className="form-check-label" htmlFor="friday">
+                  Friday
+                </label>
+              </div>
+
+              <div className="form-check">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="saturday"
+                  onChange={handleCheckboxChange}
+                />
+                <label className="form-check-label" htmlFor="saturday">
+                  Saturday
+                </label>
+              </div>
+            </div>
+
 
             <div className="form-group my-3">
               <label>Notes</label>
