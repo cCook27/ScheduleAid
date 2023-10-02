@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/display-homes.css';
 import { useAuth0 } from "@auth0/auth0-react";
@@ -15,6 +15,7 @@ function DisplayClients() {
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
   const { getHomes, removeHome } = useHomeRequests();
+  const [editClient, setEditClient] = useState(null)
 
   const { data: homes, status } = useQuery('homes', 
     () => getHomes(user._id, accessToken)
@@ -29,6 +30,15 @@ function DisplayClients() {
     },
   });
 
+  const handleEdit = (home) => {
+    setEditClient(home)
+  }
+
+  useEffect(() => {
+    console.log(homes)
+    console.log(editClient)
+  }, [homes, editClient])
+
   return (
     <div className="page-container">
       <div className='container-fluid'>
@@ -40,7 +50,7 @@ function DisplayClients() {
                 <h4>Create & Manage Your Clients</h4>
               </div>
               <div className="col">
-                <CreateClient />
+                <CreateClient editClient={editClient} />
               </div>
             </div>
           </div>
@@ -69,9 +79,10 @@ function DisplayClients() {
                         <div className='text-center'>
                           <p>{home.address}</p>
                           <p>{home.number}</p>
+                          {home.active ? <p>{home.active}</p> : null}
                         </div>
                         <div className="btn-container">
-                          <button className="btn btn-primary my-2">
+                          <button onClick={() => handleEdit(home)} className="btn btn-primary my-2">
                             Edit
                           </button>
                           <button onClick={() => deleteHome.mutate(home._id)} className="btn btn-danger mb-2">Delete</button>

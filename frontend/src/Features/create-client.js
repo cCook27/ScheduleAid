@@ -31,7 +31,9 @@ function CreateClient() {
       thursday: false,
       friday: false,
       saturday: false
-    }
+    },
+    active: true,
+    frequency: null
   });
 
   useEffect(() => {
@@ -270,6 +272,29 @@ function CreateClient() {
               </div>
             </div>
 
+            <div className="form-group my-3">
+              <label>Active</label>
+              <select 
+                value={formData.active}
+                onChange={handleState} 
+                name="active" 
+                id="active">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+
+            <div className="form-group my-3">
+              <label>Frequency</label>
+              <input
+                placeholder="2"
+                name="frequency"
+                type='text'
+                value={formData.frequency}
+                onChange={handleState}
+                className="form-control"
+              />
+            </div>
 
             <div className="form-group my-3">
               <label>Notes</label>

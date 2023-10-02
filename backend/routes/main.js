@@ -75,125 +75,273 @@ router.get('/schedule/:user', async (req, res) => {
 });
 
 router.get('/routing/:user', async (req, res) => {
-  const userId = req.params.user;
-  let user = await User.findOne({ _id: userId });
-  const userAddress = '19609 South Greenfield Road, Gilbert Az, 85297';
-  const homes = user.homes;
+  try {
+    const userId = req.params.user;
+    let user = await User.findOne({ _id: userId });
+    const therapistHome = '19609 South Greenfield Road, Gilbert Az, 85297';
+    const homes = user.homes;
+    
+    // const xHomes = homes.filter((home, index) => index < 25);
+    // const yHomes = homes.filter((home, index) => index >= 25);
+    // const destinations = xHomes.map((home) => home.address).map((address) => address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
+    // const responseGroups = Math.ceil(homes.length / 25);
+    // if(!responseGroups) {
+    //   return res.status(400).json({ error: 'Missing or invalid data' });
+    // };
+    // const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${therapistHome}&units=imperial&key=${apiKey}`);
+    // const distanceData = response.data;
+    
 
-  const groupSchedule = async () => {
+    const activePatients = homes.filter((home) => home.active);
+    const fulfillAllFrequecies = activePatients.map((patient) => {
+      const patientFrequency = patient.frequency;
+      if(patientFrequency > 1) {
+        let frequencyArray = [];
+        for (let i = 0; i < patientFrequency; ++i) {
+          frequencyArray.push(patient);
+        }
+        return frequencyArray;
+      } else {
+        return [patient];
+      }
+    });
+    const abbrevationFix = (address) => {
 
-    let clonedHomes = [...homes];
+      const abbreviationMap = {
+        "S": "South",
+        "N": "North",
+        "E": "East",
+        "W": "West",
+        "St": "Street",
+        "Ct": "Court",
+        "Rd": "Road",
+        "Ave": "Avenue",
+        "Blvd": "Boulevard",
+        "Pkwy": "Parkway",
+        "Pl": "Place",
+        "Ln": "Lane",
+        "Aly": "Alley",
+        "Anx": "Anex",
+        "Arc": "Arcade",
+        "Bnd": "Bend",
+        "Bch": "Beach",
+        "Blf": "Bluff",
+        "Blfs": "Bluffs",
+        "Btm": "Bottom",
+        "Br": "Branch",
+        "Brg": "Bridge",
+        "Brk": "Brook",
+        "Brks": "Brooks",
+        "Byp": "Bypass",
+        "Cp": "Camp",
+        "Cyn": "Canyon",
+        "Cpe": "Cape",
+        "Cswy": "Causeway",
+        "Ctr": "Center",
+        "Ctrs": "Centers",
+        "Cir": "Circle",
+        "Cirs": "Circles",
+        "Clf": "Cliff",
+        "Clfs": "Cliffs",
+        "Clb": "Club",
+        "Cmn": "Common",
+        "Cmns": "Commons",
+        "Cor": "Corner",
+        "Cors": "Corners",
+        "Crse": "Course",
+        "Cts": "Courts",
+        "Cv": "Cove",
+        "Cvs": "Coves",
+        "Crk": "Creek",
+        "Cres": "Crescent",
+        "Crst": "Crest",
+        "Xing": "Crossing",
+        "Xrd": "Crossroad",
+        "Xrds": "Crossroads",
+        "Curv": "Curve",
+        "Dl": "Dale",
+        "Dm": "Dam",
+        "Dv": "Divide",
+        "Dr": "Drive",
+        "Drs": "Drives",
+        "Est": "Estate",
+        "Ests": "Estates",
+        "Expy": "Expressway",
+        "Ext": "Extension",
+        "Exts": "Extensions",
+        "Fls": "Falls",
+        "Fry": "Ferry",
+        "Fld": "Field",
+        "Flds": "Fields",
+        "Flt": "Flat",
+        "Flts": "Flats",
+        "Frd": "Ford",
+        "Frds": "Fords",
+        "Frst": "Forest",
+        "Frg": "Forge",
+        "Frgs": "Forges",
+        "Frk": "Fork",
+        "Frks": "Forks",
+        "Ft": "Fort",
+        "Fwy": "Freeway",
+        "Gdn": "Garden",
+        "Gdns": "Gardens",
+        "Gtwy": "Gateway",
+        "Gln": "Glen",
+        "Glns": "Glens",
+        "Grn": "Green",
+        "Grns": "Greens",
+        "Grv": "Grove",
+        "Grvs": "Groves",
+        "Hbr": "Harbor",
+        "Hbrs": "Harbors",
+        "Hvn": "Haven",
+        "Hts": "Heights",
+        "Hwy": "Highway",
+        "Hl": "Hill",
+        "Hls": "Hills",
+        "Holw": "Hollow",
+        "Inlt": "Inlet",
+        "Is": "Island",
+        "Iss": "Islands",
+        "Jct": "Junction",
+        "Jcts": "Junctions",
+        "Ky": "Key",
+        "Kys": "Keys",
+        "Knl": "Knoll",
+        "Knls": "Knolls",
+        "Lk": "Lake",
+        "Lks": "Lakes",
+        "Lndg": "Landing",
+        "Lgts": "Lights",
+        "Lf": "Loaf",
+        "Lck": "Lock",
+        "Lcks": "Locks",
+        "Ldg": "Lodge",
+        "Mnr": "Manor",
+        "Mnrs": "Manors",
+        "Mdw": "Meadow",
+        "Mdws": "Meadows",
+        "Ml": "Mill",
+        "Mls": "Mills",
+        "Msn": "Mission",
+        "Mtwy": "Motorway",
+        "Mt": "Mount",
+        "Mtn": "Mountain",
+        "Mtns": "Mountains",
+        "Nck": "Neck",
+        "Orch": "Orchard",
+        "Psge": "Passage",
+        "Plz": "Plaza",
+        "Pln": "Plain",
+        "Pt": "Point",
+        "Prt": "Port",
+        "Pr": "Prairie",
+        "Radl": "Radial",
+        "Rnch": "Ranch",
+        "Rpds": "Rapids",
+        "Rst": "Rest",
+        "Rdg": "Ridge",
+        "Rte": "Route",
+        "Shls": "Shoals",
+        "Shr": "Shore",
+        "Skwy": "Skyway",
+        "Spg": "Spring",
+        "Spgs": "Springs",
+        "Sq": "Square",
+        "Sta": "Station",
+        "Strm": "Stream",
+        "Smt": "Summit",
+        "Ter": "Terrace",
+        "Trak": "Track",
+        "Trfy": "Trafficway",
+        "Trl": "Trail",
+        "Trlr": "Trailer",
+        "Tunl": "Tunnel",
+        "Tpke": "Turnpike",
+        "Upas": "Underpass",
+        "Un": "Union",
+        "Vly": "Valley",
+        "Vw": "View",
+        "Vlg": "Village",
+        "Vis": "Vista",
+        "Wy": "Way",
+      };
+
+      const words = address.split(/[ ,]+/);
+
+      const fullWords = words.map(word => {
+        const abbreviationToFull = abbreviationMap[word];
+        return abbreviationToFull ? abbreviationToFull : word;
+      });
+    
+      const fullAddress = fullWords.join(" ");
+    
+      return fullAddress;
+
+    };
+    const visits = [].concat(...fulfillAllFrequecies).map((visit) => {
+      visit.address = abbrevationFix(visit.address);
+      return visit;
+    });
+    const workingDays = 5;
+    const maxVisits = 6;
+    
     let groups = [];
+    let visitsRemaining = [...visits];
+
    
-    for (let i = 0; i < 5; i++) {
-     let starter = undefined;
-     let greatestTime = {time: 0};
-     let sixClosest;
+    
+    const findFurthestPoint = async () => {
+      const origin = therapistHome;
+      const loopsNeeded = Math.ceil(visitsRemaining.length / 25);
+      let visitsToTest = [...visitsRemaining]; 
+      let distanceData = []
 
-     clonedHomes.forEach((cHome) => {
-      cHome.time = 0;
-     });
+      for (let i = 0; i < loopsNeeded; i++) {
+        if(visitsToTest.length >= 25) {
+          let destinations = visitsToTest.splice(0, 25).map((visit) => visit.address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
   
-      const getTimeDistance = async (home, start) => {
-        const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${home}&origins=${start}&units=imperial&key=${apiKey}`);
-        const distanceData = response.data.rows[0].elements[0].duration.value;
-    
-        return distanceData;
-      };
-  
-      const determineStartingPoint = async () => {
-        for (let j = 0; j < clonedHomes.length; j++) {
-          const home = clonedHomes[j];
-        
-          const distanceData = await getTimeDistance(home.address, userAddress);
-          home.time = distanceData;
+          const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${origin}&units=imperial&key=${apiKey}`);
+          response.data.rows[0].elements.forEach((element, index) => {
+            distanceData.push({value: element.duration.value, address: abbrevationFix(response.data.destination_addresses[index])});
+          });
+        } else {
+          let destinations = visitsToTest.splice(0, visitsToTest.length).map((visit) => visit.address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
+          const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${origin}&units=imperial&key=${apiKey}`);
+          response.data.rows[0].elements.forEach((element, index) => {
+            distanceData.push({value: element.duration.value, address: abbrevationFix(response.data.destination_addresses[index])});
+          });
+        }  
+      }
       
-          if(home.time > greatestTime.time) {
-            greatestTime = home;
-          }
-        }
-    
-        starter = greatestTime;
-        clonedHomes = clonedHomes.filter((cloneHome) => cloneHome._id !== starter._id);
-      };
-  
-      const find6Closest = async () => {
-        for (let i = 0; i < clonedHomes.length; i++) {
-          const home = clonedHomes[i];
-        
-          const distanceData = await getTimeDistance(home.address, starter.address);
-          home.time = distanceData;
-        }
-  
-        clonedHomes.sort((a, b) => a.time - b.time);
-  
-        const closest6 = clonedHomes.splice(0, 6);
-  
-        sixClosest = closest6;
-        
-      };
-  
-      const determineGroup = async () => {
-        let closest4 = sixClosest
-        const furthest2 = closest4.splice(-2);
-        let firstH = [];
-        let secondH = [];
-        for (let j = 0; j < furthest2.length; j++) {
-          const fHome = furthest2[j];
-    
-          for (let i = 0; i < clonedHomes.length; i++) {
-            const home = clonedHomes[i];
-          
-            const distanceData = await getTimeDistance(home.address, fHome.address);
-            
-            if(j === 0) {
-              firstH.push(distanceData);
-            } else {
-              secondH.push(distanceData);
-            }
-          };
-        };
-    
-        firstH.sort((a, b) => a - b);
-        secondH.sort((a, b) => a - b);
-    
-        const firstHTop2 = firstH.slice(0,3);
-        const secondHTop2 = secondH.slice(0,3);
-    
-        if(firstHTop2[0] < secondHTop2[0]) {
-          closest4.push(furthest2[0]);
-          clonedHomes.push(furthest2[1])
-        } else if(firstHTop2[0] > secondHTop2[0]) {
-          closest4.push(furthest2[1]);
-          clonedHomes.push(furthest2[0])
-        } else if(firstHTop2[0] === secondHTop2[0]) {
-            if(firstHTop2[1] < secondHTop2[1]) {
-              closest4.push(furthest2[0]);
-              clonedHomes.push(furthest2[1])
-            } else if(firstHTop2[1] > secondHTop2[1]) {
-              closest4.push(furthest2[1]);
-              clonedHomes.push(furthest2[0])
-            }
-        };
-    
+      const sortedDistance = distanceData.sort((a, b) => b.value - a.value);
       
-        closest4.push(starter);
-        groups.push(closest4);
-      };
+      const furthestPatient = visits.find((visit) => {
+        const sortedAddress = sortedDistance[0].address. split(' ');
+        const visitAddress = visit.address.split(' ')
+        return sortedAddress[0] === visitAddress[0] && sortedAddress[1] === visitAddress[1] && sortedAddress[2] === visitAddress[2] && sortedAddress[3] === visitAddress[3]; 
+      });
 
-      await determineStartingPoint();
-      await find6Closest();
-      await determineGroup();
+      return furthestPatient
+
     }
 
-    console.log(groups)
-  
-  };
+    // for (let day = 0; day < workingDays; day++) {
+      
+      
+    // }
 
-  groupSchedule();
+    const furthestPoint = await findFurthestPoint()
 
+
+
+
+    console.log(furthestPoint);
+  } catch (error) {
+    console.error('Error:', error);
+  }
 });
-
 
 router.post('/user', async (req, res) => {
   try{
@@ -320,11 +468,11 @@ router.post('/homes/:user', async (req, res) => {
       return res.status(404).send('User not found');
     };
 
-    Object.getOwnPropertyNames(newHomeInfo).forEach((property) => {
-      if(!newHomeInfo[property]) {
-        return res.status(400).send('All fields are required when saving a new client home.');
-      }
-    });
+    // Object.getOwnPropertyNames(newHomeInfo).forEach((property) => {
+    //   if(!newHomeInfo[property]) {
+    //     return res.status(400).send('All fields are required when saving a new client home.');
+    //   }
+    // });
 
     const homeAdded = user.homes.push(newHomeInfo);
     const save = user.save();
@@ -419,46 +567,163 @@ router.delete('/schedule/:user', async (req, res) => {
 
 
 module.exports = router;
-
-
-  // const patientAvailability = homes.reduce((accum, home) => {
-  //   const days = home.prefDays
-  //   for (const day in days) {
-  //     if (days.hasOwnProperty(day)) {
-  //       const value = days[day];
-
-  //       if(value) {
-  //         accum[day].push(home);
-  //       }
-  //     }
-  //   };
-
-  //   return accum;
-  // }, 
-  //   {sunday: [], monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: []}
-  // );
-
-
-  // const mondayStart = patientAvailability.monday.map(async (home) => {
-  //   const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${home.address}&origins=${userAddress}&units=imperial&key=${apiKey}`);
-
-  //   const distanceData = response.data.rows[0].elements[0].duration.value;
-
-  //   home.time = distanceData;
-
-  //   return home
-  // });
-
-  // const mondayData = await Promise.all(monday);
-
-  // const starter = (dayData) => {
-  //   const startHome = dayData.reduce((min, home) => {
-  //     return home.time < min.time ? home : min;
-  //   }, dayData[0]);
-
-  //   return startHome;
-  // }
-
-  // for(let i = 0; i <= 6; i++) {
+  
+  
     
-  // }
+    // const geoCodeAddress = async (address) => {
+    //   try {
+    //     const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+    //     const response = await axios.get(geocodeUrl);
+    
+    //     const results = response.data.results;
+    
+    //     if (results.length > 0) {
+    //       const location = results[0].geometry.location;
+    //       const lat = location.lat;
+    //       const long = location.lng;
+    
+    //       return {
+    //         location: {
+    //           latLng: {
+    //             latitude: lat,
+    //             longitude: long
+    //           }
+    //         }
+    //       }
+    //     } else {
+    //       console.error('No results found for the given address.');
+    //     }
+    //   } catch (error) {
+    //     console.error('Error:', error.message);
+    //     return error.message;
+    //   }
+    // }
+
+    // const geoUserAddress = await geoCodeAddress(userAddress);
+
+    // const geoHomes = await Promise.all(homes.map(async (home) => {
+    //   const geoAddress = await geoCodeAddress(home.address);
+
+    //   return geoAddress;
+    // }));
+
+
+    // router.get('/routing/:user/toolong', async (req, res) => {
+//   const userId = req.params.user;
+//   let user = await User.findOne({ _id: userId });
+//   const userAddress = '19609 South Greenfield Road, Gilbert Az, 85297';
+//   const homes = user.homes;
+
+//   const groupSchedule = async () => {
+
+//     let clonedHomes = [...homes];
+//     let groups = [];
+   
+//     for (let i = 0; i < 5; i++) {
+//      let starter = undefined;
+//      let greatestTime = {time: 0};
+//      let sixClosest;
+
+//      clonedHomes.forEach((cHome) => {
+//       cHome.time = 0;
+//      });
+  
+//       const getTimeDistance = async (home, start) => {
+//         const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${home}&origins=${start}&units=imperial&key=${apiKey}`);
+//         const distanceData = response.data.rows[0].elements[0].duration.value;
+    
+//         return distanceData;
+//       };
+  
+//       const determineStartingPoint = async () => {
+//         for (let j = 0; j < clonedHomes.length; j++) {
+//           const home = clonedHomes[j];
+        
+//           const distanceData = await getTimeDistance(home.address, userAddress);
+//           home.time = distanceData;
+      
+//           if(home.time > greatestTime.time) {
+//             greatestTime = home;
+//           }
+//         }
+    
+//         starter = greatestTime;
+//         clonedHomes = clonedHomes.filter((cloneHome) => cloneHome._id !== starter._id);
+//       };
+  
+//       const find6Closest = async () => {
+//         for (let i = 0; i < clonedHomes.length; i++) {
+//           const home = clonedHomes[i];
+        
+//           const distanceData = await getTimeDistance(home.address, starter.address);
+//           home.time = distanceData;
+//         }
+  
+//         clonedHomes.sort((a, b) => a.time - b.time);
+  
+//         const closest6 = clonedHomes.splice(0, 6);
+  
+//         sixClosest = closest6;
+        
+//       };
+  
+//       const determineGroup = async () => {
+//         let closest4 = sixClosest
+//         const furthest2 = closest4.splice(-2);
+//         let firstH = [];
+//         let secondH = [];
+//         for (let j = 0; j < furthest2.length; j++) {
+//           const fHome = furthest2[j];
+    
+//           for (let i = 0; i < clonedHomes.length; i++) {
+//             const home = clonedHomes[i];
+          
+//             const distanceData = await getTimeDistance(home.address, fHome.address);
+            
+//             if(j === 0) {
+//               firstH.push(distanceData);
+//             } else {
+//               secondH.push(distanceData);
+//             }
+//           };
+//         };
+    
+//         firstH.sort((a, b) => a - b);
+//         secondH.sort((a, b) => a - b);
+    
+//         const firstHTop2 = firstH.slice(0,3);
+//         const secondHTop2 = secondH.slice(0,3);
+    
+//         if(firstHTop2[0] < secondHTop2[0]) {
+//           closest4.push(furthest2[0]);
+//           clonedHomes.push(furthest2[1])
+//         } else if(firstHTop2[0] > secondHTop2[0]) {
+//           closest4.push(furthest2[1]);
+//           clonedHomes.push(furthest2[0])
+//         } else if(firstHTop2[0] === secondHTop2[0]) {
+//             if(firstHTop2[1] < secondHTop2[1]) {
+//               closest4.push(furthest2[0]);
+//               clonedHomes.push(furthest2[1])
+//             } else if(firstHTop2[1] > secondHTop2[1]) {
+//               closest4.push(furthest2[1]);
+//               clonedHomes.push(furthest2[0])
+//             }
+//         };
+    
+      
+//         closest4.push(starter);
+//         groups.push(closest4);
+//       };
+
+//       await determineStartingPoint();
+//       await find6Closest();
+//       await determineGroup();
+//     }
+
+//     console.log(groups)
+  
+//   };
+
+//   groupSchedule();
+
+// });

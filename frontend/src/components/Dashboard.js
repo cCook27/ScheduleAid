@@ -49,7 +49,7 @@ const DashboardHolder = () => {
     } else {
       console.log('skip')
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const retrieveToken = async () => {
     const accessToken = await getAccessTokenSilently({
