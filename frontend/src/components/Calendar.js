@@ -55,8 +55,31 @@ function Calendar(props) {
       saveUserSchedule(user._id, myEvents, accessToken);
       setChangesSaved(true)
     }
-  }, [myEvents])
 
+    const timeSlots = document.querySelectorAll('.rbc-time-slot');
+    const timeSlotsGroups = document.querySelectorAll('.rbc-timeslot-group');
+
+    for (let i = 0; i < timeSlots.length; i++) {
+      if (i % 6 !== 0) {
+        const label = timeSlots[i].querySelector('.rbc-label');
+        if (label) {
+          label.style.display = 'none';
+        }
+      }
+    }
+
+    for (let i = 0; i < timeSlotsGroups.length; i++) {
+      if (i % 6 === 0) {
+        const slotGroup = timeSlotsGroups[i];
+        slotGroup.style.border = '1px solid #a5a4a4';
+      }
+    }
+    
+  }, [myEvents]);
+
+  
+
+  
 
   const eventPropGetter = useCallback(
     (event) => ({
@@ -306,8 +329,8 @@ function Calendar(props) {
       <div className={`row my-5 ${modal | errorModal ? 'overlay' : ''}`}>
 
         {/* calendar */}
-        <div className='col-8 d-flex justify-content-start'>
-          <div style={{height: '75vh', width: '100%'}}>
+        <div className='col d-flex justify-content-start'>
+          <div style={{height: '80vh', width: '100%'}}>
             <DnDCalendar {...props} 
               localizer={localizer} 
               events={myEvents} 
@@ -324,8 +347,46 @@ function Calendar(props) {
           </div>
         </div>
 
-         {/* Homes */}
-         <div className="col ms-3">
+        {modal ? <div className="above-overlay" >
+          <div className="card" style={{width: "18rem", height: "300px"}}>
+            <div className="p-0 card-body text-center">
+              <h2>{client.title}</h2>
+              <h6 className='text-start ps-2 pt-2'>Repeat:</h6>
+              <div className='row pb-4'>
+                <div className="col">
+                  <button className={`repeat ${client.repeat === 'weekly' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'weekly')}>Weekly</button>
+                </div>
+                <div className="col">
+                <button className={`repeat ${client.repeat === 'monthly' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'monthly')}>Monthly</button>
+                </div>
+                <div className="col">
+                <button className={`repeat ${client.repeat === 'never' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'never')}>Never</button>
+                </div>
+              </div>
+              <p>
+                Would you like to remove this client from {client.start}
+              </p>
+              <button className='m-2 remove' onClick={() => removeFromCal(client.id)}>Remove</button>
+              <button className='m-2' onClick={closeModal}>Close</button>
+            </div>
+          </div>
+        </div> : null}
+
+        {errorModal ? <div className="above-overlay" >
+          <div className="card" style={{width: "18rem", height: "175px"}}>
+            <div className="p-0 card-body text-center">
+              <h2>OOPS!</h2>
+              <p>
+                It looks like we're ahving trouble testing your schedule. Try again later. We're on it.
+              </p>
+              <button className='m-2' onClick={closeModal}>Close</button>
+            </div>
+          </div>
+        </div> : null}
+      </div>
+      <div className="row">
+        {/* Homes */}
+        <div className="col ms-3">
           <div className="row d-flex">
             <div className="col">
               <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
@@ -367,45 +428,6 @@ function Calendar(props) {
               )}
             </div>
          </div>
-
-
-         {modal ? <div className="above-overlay" >
-            <div className="card" style={{width: "18rem", height: "300px"}}>
-              <div className="p-0 card-body text-center">
-                <h2>{client.title}</h2>
-                <h6 className='text-start ps-2 pt-2'>Repeat:</h6>
-                <div className='row pb-4'>
-                  <div className="col">
-                    <button className={`repeat ${client.repeat === 'weekly' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'weekly')}>Weekly</button>
-                  </div>
-                  <div className="col">
-                  <button className={`repeat ${client.repeat === 'monthly' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'monthly')}>Monthly</button>
-                  </div>
-                  <div className="col">
-                  <button className={`repeat ${client.repeat === 'never' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'never')}>Never</button>
-                  </div>
-                </div>
-                <p>
-                  Would you like to remove this client from {client.start}
-                </p>
-                <button className='m-2 remove' onClick={() => removeFromCal(client.id)}>Remove</button>
-                <button className='m-2' onClick={closeModal}>Close</button>
-              </div>
-            </div>
-          </div> : null}
-
-          {errorModal ? <div className="above-overlay" >
-            <div className="card" style={{width: "18rem", height: "175px"}}>
-              <div className="p-0 card-body text-center">
-                <h2>OOPS!</h2>
-                <p>
-                  It looks like we're ahving trouble testing your schedule. Try again later. We're on it.
-                </p>
-                <button className='m-2' onClick={closeModal}>Close</button>
-              </div>
-            </div>
-          </div> : null}
-
       </div>
     </div>
   )
