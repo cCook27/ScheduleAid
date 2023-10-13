@@ -668,9 +668,10 @@ button.rbc-input::-moz-focus-inner {
   flex: 1;
 }
 
+/* Lines */
 .rbc-timeslot-group {
-  border-bottom: 1px solid #ddd;
-  min-height: 40px;
+  border-bottom: 1px solid transparent !important;
+  min-height: 10px !important;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -685,10 +686,13 @@ button.rbc-input::-moz-focus-inner {
   -webkit-box-flex: 0;
   -ms-flex: none;
   flex: none;
+  height: 10px;
 }
 
 .rbc-label {
   padding: 0 5px;
+  font-size: 10px;
+  /* display: none; */
 }
 
 .rbc-day-slot {
@@ -792,6 +796,8 @@ button.rbc-input::-moz-focus-inner {
   -webkit-box-flex: 1;
   -ms-flex: 1 0 0px;
   flex: 1 0 0;
+  display: flex;
+  align-items: center;
 }
 .rbc-time-slot.rbc-now {
   font-weight: bold;
@@ -951,4 +957,9 @@ button.rbc-input::-moz-focus-inner {
   height: 1px;
   background-color: #74ad31;
   pointer-events: none;
+}
+
+.rbc-timeslot-group {
+  border-left: none !important;
+  border-right: 1px solid #ddd !important;
 }
