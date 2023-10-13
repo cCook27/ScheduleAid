@@ -1,0 +1,9 @@
+.card {
+  width: auto;
+  height: auto;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: 700;
+}

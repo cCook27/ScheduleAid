@@ -80,17 +80,6 @@ router.get('/routing/:user', async (req, res) => {
     let user = await User.findOne({ _id: userId });
     const therapistHome = '19609 South Greenfield Road, Gilbert Az, 85297';
     const homes = user.homes;
-    
-    // const xHomes = homes.filter((home, index) => index < 25);
-    // const yHomes = homes.filter((home, index) => index >= 25);
-    // const destinations = xHomes.map((home) => home.address).map((address) => address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
-    // const responseGroups = Math.ceil(homes.length / 25);
-    // if(!responseGroups) {
-    //   return res.status(400).json({ error: 'Missing or invalid data' });
-    // };
-    // const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${therapistHome}&units=imperial&key=${apiKey}`);
-    // const distanceData = response.data;
-    
 
     const activePatients = homes.filter((home) => home.active);
     const fulfillAllFrequecies = activePatients.map((patient) => {
@@ -290,33 +279,39 @@ router.get('/routing/:user', async (req, res) => {
     let groups = [];
     let visitsRemaining = [...visits];
 
-   
+   const returnDistanceData = async (origin) => {
+    const loopsNeeded = Math.ceil(visitsRemaining.length / 25);
+    let visitsToTest = visitsRemaining.filter((visit) => visit.address !== origin); 
+    let distanceData = []
+
+    for (let i = 0; i < loopsNeeded; i++) {
+      if(visitsToTest.length >= 25) {
+        let destinations = visitsToTest.splice(0, 25).map((visit) => visit.address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
+
+        const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${origin}&units=imperial&key=${apiKey}`);
+        response.data.rows[0].elements.forEach((element, index) => {
+          distanceData.push({value: element.duration.value, address: abbrevationFix(response.data.destination_addresses[index])});
+        });
+      } else {
+        let destinations = visitsToTest.splice(0, visitsToTest.length).map((visit) => visit.address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
+        const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${origin}&units=imperial&key=${apiKey}`);
+        response.data.rows[0].elements.forEach((element, index) => {
+          distanceData.push({value: element.duration.value, address: abbrevationFix(response.data.destination_addresses[index])});
+        });
+      }  
+    };
+
+    return distanceData;
+
+   };
     
     const findFurthestPoint = async () => {
       const origin = therapistHome;
-      const loopsNeeded = Math.ceil(visitsRemaining.length / 25);
-      let visitsToTest = [...visitsRemaining]; 
-      let distanceData = []
-
-      for (let i = 0; i < loopsNeeded; i++) {
-        if(visitsToTest.length >= 25) {
-          let destinations = visitsToTest.splice(0, 25).map((visit) => visit.address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
-  
-          const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${origin}&units=imperial&key=${apiKey}`);
-          response.data.rows[0].elements.forEach((element, index) => {
-            distanceData.push({value: element.duration.value, address: abbrevationFix(response.data.destination_addresses[index])});
-          });
-        } else {
-          let destinations = visitsToTest.splice(0, visitsToTest.length).map((visit) => visit.address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
-          const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${origin}&units=imperial&key=${apiKey}`);
-          response.data.rows[0].elements.forEach((element, index) => {
-            distanceData.push({value: element.duration.value, address: abbrevationFix(response.data.destination_addresses[index])});
-          });
-        }  
-      }
+      
+      const distanceData = await returnDistanceData(origin);
       
       const sortedDistance = distanceData.sort((a, b) => b.value - a.value);
-      
+
       const furthestPatient = visits.find((visit) => {
         const sortedAddress = sortedDistance[0].address. split(' ');
         const visitAddress = visit.address.split(' ')
@@ -325,19 +320,107 @@ router.get('/routing/:user', async (req, res) => {
 
       return furthestPatient
 
+    };
+
+    const createGroup = async (origin, day) => { 
+      const distanceData = await returnDistanceData(origin);
+
+      const sortedDistance = distanceData.sort((a, b) => a.value - b.value);
+      const uniqueSortedDistance = [];
+      
+      for (let index = 0; index < sortedDistance.length; index++) {
+        const element = sortedDistance[index];
+
+        const isDuplicate = uniqueSortedDistance.find((dist) => {
+          return dist.address == element.address
+        });
+
+        if(!isDuplicate) {
+          uniqueSortedDistance.push(element)
+        }
+        
+      };
+
+      const determineBottomResults = async (topResults) => {
+        let bottomResults;
+        let currentDay = day + 1
+
+        if(currentDay === workingDays || (visitsRemaining.length - maxVisits)/(workingDays - currentDay) > maxVisits) {
+          return topResults;
+        } else if(topResults.length > 4) {
+          bottomResults = topResults.splice((topResults.length - 4), 3);
+        } else if(topResults.length <= 4) {
+          bottomResults = topResults.splice((topResults.length - 1), 1);
+        }
+
+        return bottomResults;
+      };
+
+      if(uniqueSortedDistance.length >= maxVisits) {
+        let topResults = uniqueSortedDistance.splice(0, maxVisits + 1);
+        
+        const bottomResults = await determineBottomResults(topResults);
+
+        if(bottomResults === topResults) {
+          return topResults;
+        } 
+
+        let bottomVisitsToCompare = [];
+
+        for (let i = 0; i < bottomResults.length; i++) {
+          const origin = bottomResults[i].address;
+
+          const bottomDistData = await returnDistanceData(origin);
+
+          const sortedBottomDistance = bottomDistData.sort((a, b) => a.value - b.value);
+
+          const top4Distances = sortedBottomDistance.splice(0, 4).reduce((accum, visit) => {
+            return {
+              value: accum.value + visit.value,
+              address: origin
+            };
+          }, { value: 0, address: origin });
+          
+
+          bottomVisitsToCompare.push(top4Distances);
+          
+        }
+
+        const sortBottomVisits = bottomVisitsToCompare.sort((a, b) => b.value - a.value);
+
+       topResults.push(sortBottomVisits[0]);
+
+       return topResults;
+      } else {
+        const topResults = uniqueSortedDistance.splice(0, uniqueSortedDistance.length);
+        return topResults;
+      }
+
+      
+    };
+
+    for (let day = 0; day < workingDays; day++) {
+      const furthestPointResonse = await findFurthestPoint();
+      const furthestPoint = visitsRemaining.splice(visitsRemaining.findIndex((visit) => visit === furthestPointResonse), 1);
+
+      groups.push(furthestPoint);
+      const finalGroup = await createGroup(furthestPoint[0].address, day);
+
+      for (let i = 0; i < finalGroup.length; i++) {
+        const element = finalGroup[i].address;
+
+        const visitIndex = visitsRemaining.findIndex((visit) => {
+          const elementAddress = element. split(' ');
+          const visitAddress = visit.address.split(' ')
+          return elementAddress[0] === visitAddress[0] && elementAddress[1] === visitAddress[1] && elementAddress[2] === visitAddress[2] && elementAddress[3] === visitAddress[3];
+        });
+        const visitToAdd = visitsRemaining.splice(visitIndex, 1);
+
+        groups[day].push(visitToAdd[0]);
+      }
     }
-
-    // for (let day = 0; day < workingDays; day++) {
-      
-      
-    // }
-
-    const furthestPoint = await findFurthestPoint()
-
-
-
-
-    console.log(furthestPoint);
+    console.log(groups)
+    res.status(200).json(groups);
   } catch (error) {
     console.error('Error:', error);
   }
