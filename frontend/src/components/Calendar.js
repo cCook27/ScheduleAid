@@ -15,6 +15,8 @@ import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+import CreateSchedule from '../Features/create-schedule';
+import DisplayGroups from '../Features/display-groups';
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
 const localizer = momentLocalizer(moment);
@@ -36,6 +38,7 @@ function Calendar(props) {
   const [errorModal, setErrorModal] = useState(false);
   const [client, setClient] = useState(null);
   const [changesSaved, setChangesSaved] = useState(false);
+  const [viewChange, setViewChange] = useState(false);
 
   const { data: homes, status } = useQuery(["homes"], 
     () => getHomes(user._id, accessToken)
@@ -55,7 +58,11 @@ function Calendar(props) {
       saveUserSchedule(user._id, myEvents, accessToken);
       setChangesSaved(true)
     }
+    
+  }, [myEvents]);
 
+  
+  useEffect(() => {
     const timeSlots = document.querySelectorAll('.rbc-time-slot');
     const timeSlotsGroups = document.querySelectorAll('.rbc-timeslot-group');
 
@@ -74,11 +81,11 @@ function Calendar(props) {
         slotGroup.style.border = '1px solid #a5a4a4';
       }
     }
-    
-  }, [myEvents]);
+  },[viewChange])
 
-  
-
+  const changeView = () => {
+    setViewChange(!viewChange);
+  }
   
 
   const eventPropGetter = useCallback(
@@ -329,7 +336,7 @@ function Calendar(props) {
       <div className={`row my-5 ${modal | errorModal ? 'overlay' : ''}`}>
 
         {/* calendar */}
-        <div className='col d-flex justify-content-start'>
+        <div className='col-8 d-flex justify-content-start'>
           <div style={{height: '80vh', width: '100%'}}>
             <DnDCalendar {...props} 
               localizer={localizer} 
@@ -341,11 +348,62 @@ function Calendar(props) {
               onSelectEvent={selectEvent}
               step={5}
               defaultView="week" 
+              onView={changeView}
               resizable
               selectable
             />
           </div>
         </div>
+
+        {/* Homes */}
+        <div className="col ms-3">
+          <div className="row d-flex">
+            <div className="col">
+              <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
+                <button onClick={testSchedule} className="test my-2">Test</button>
+              </div>
+              <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
+                <CreateSchedule />
+              </div>
+            </div>
+
+            <div className="col">
+              <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
+                <button onClick={removeAllEvents} className="test my-2">Delete All</button>
+                <button className="save">All Schedules</button>
+              </div>
+            </div>
+          </div>
+            
+            <div className="row">
+              {status === 'loading' ? (
+                <div><Loading /></div>
+              ) : status === 'error' ? (
+                <div>Error Loading Homes...</div>
+              ) : !homes ? (
+                <div className="col">
+                  <div>No Clients saved</div>     
+                </div>
+              ) : (
+                homes.map(home => (
+                  <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
+                    onDragStart={() =>
+                        handleDragStart(home.name, home.address)
+                      }>
+                    <div  className="card my-3">
+                      <div className="card-body">
+                        <div className="card-title">{home.name}</div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              )
+              )}
+            </div>
+
+            <DisplayGroups />
+         </div>
+      
 
         {modal ? <div className="above-overlay" >
           <div className="card" style={{width: "18rem", height: "300px"}}>
@@ -383,51 +441,6 @@ function Calendar(props) {
             </div>
           </div>
         </div> : null}
-      </div>
-      <div className="row">
-        {/* Homes */}
-        <div className="col ms-3">
-          <div className="row d-flex">
-            <div className="col">
-              <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
-                <button onClick={testSchedule} className="test my-2">Test</button>
-              </div>
-            </div>
-
-            <div className="col">
-              <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
-                <button onClick={removeAllEvents} className="test my-2">Delete All</button>
-                <button className="save">All Schedules</button>
-              </div>
-            </div>
-          </div>
-            
-            <div className="row">
-              {status === 'loading' ? (
-                <div><Loading /></div>
-              ) : status === 'error' ? (
-                <div>Error Loading Homes...</div>
-              ) : !homes ? (
-                <div className="col">
-                  <div>No Clients saved</div>     
-                </div>
-              ) : (
-                homes.map(home => (
-                  <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
-                    onDragStart={() =>
-                        handleDragStart(home.name, home.address)
-                      }>
-                    <div  className="card my-3">
-                      <div className="card-body">
-                        <div className="card-title">{home.name}</div>
-                      </div>
-                    </div>
-                  </div>
-                )
-              )
-              )}
-            </div>
-         </div>
       </div>
     </div>
   )

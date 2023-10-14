@@ -16,6 +16,7 @@ import useUserRequests from '../hooks/user-requests.js';
 import CreateProfile from '../auth/CreateProfile.js';
 import CreateSchedule from '../Features/create-schedule.js';
 import { UserContext, AccessTokenContext } from '../context/context.js';
+import GroupsProvider from '../providers/Groups-Provider.js';
 
 const DashboardHolder = () => {
 
@@ -68,21 +69,23 @@ const DashboardHolder = () => {
         <div>
           <UserContext.Provider value={userInfo}>
             <AccessTokenContext.Provider value={accessToken}>
-              <Router>
-               {currentPath !== '/create-profile' ? <Navbar /> :
-                null
-               }
-                
-                <Switch> 
-                  <Route exact path="/" component={Dashboard}></Route>
-                  <Route exact path="/profile" component={Profile}></Route>
-                  <Route exact path="/logout" component={LogoutButton}></Route>
-                  <Route exact path="/create" component={CreateClient} ></Route>
-                  <Route exact path="/manage" component={DisplayClients} ></Route>
-                  <Route exact path="/scheduling" component={Calendar} ></Route>
-                  <Route exact path="/create-schedule" component={CreateSchedule} ></Route>
-                </Switch>
-              </Router>
+              <GroupsProvider>
+                <Router>
+                {currentPath !== '/create-profile' ? <Navbar /> :
+                  null
+                }
+                  
+                  <Switch> 
+                    <Route exact path="/" component={Dashboard}></Route>
+                    <Route exact path="/profile" component={Profile}></Route>
+                    <Route exact path="/logout" component={LogoutButton}></Route>
+                    <Route exact path="/create" component={CreateClient} ></Route>
+                    <Route exact path="/manage" component={DisplayClients} ></Route>
+                    <Route exact path="/scheduling" component={Calendar} ></Route>
+                    <Route exact path="/create-schedule" component={CreateSchedule} ></Route>
+                  </Switch>
+                </Router>
+               </GroupsProvider>
             </AccessTokenContext.Provider>
           </UserContext.Provider>
         </div>
@@ -99,16 +102,18 @@ const DashboardHolder = () => {
 
         <UserContext.Provider value={userInfo}>
           <AccessTokenContext.Provider value={accessToken}>
-            <Router>                
-              <Switch> 
-                <Route exact path="/" component={Dashboard}></Route>
-                <Route exact path="/profile" component={Profile}></Route>
-                <Route exact path="/logout" component={LogoutButton}></Route>
-                <Route exact path="/create" component={CreateClient} ></Route>
-                <Route exact path="/manage" component={DisplayClients} ></Route>
-                <Route exact path="/scheduling" component={Calendar} ></Route>
-              </Switch>
-            </Router>
+            <GroupsProvider>
+              <Router>                
+                <Switch> 
+                  <Route exact path="/" component={Dashboard}></Route>
+                  <Route exact path="/profile" component={Profile}></Route>
+                  <Route exact path="/logout" component={LogoutButton}></Route>
+                  <Route exact path="/create" component={CreateClient} ></Route>
+                  <Route exact path="/manage" component={DisplayClients} ></Route>
+                  <Route exact path="/scheduling" component={Calendar} ></Route>
+                </Switch>
+              </Router>
+            </GroupsProvider>
           </AccessTokenContext.Provider>
         </UserContext.Provider>
       </div>
