@@ -15,8 +15,7 @@ import Loading from '../pop-ups/loading.js';
 import useUserRequests from '../hooks/user-requests.js';
 import CreateProfile from '../auth/CreateProfile.js';
 import CreateSchedule from '../Features/create-schedule.js';
-import { UserContext, AccessTokenContext } from '../context/context.js';
-import GroupsProvider from '../providers/Groups-Provider.js';
+import { UserContext, AccessTokenContext, GroupsContext } from '../context/context.js';
 
 const DashboardHolder = () => {
 
@@ -26,6 +25,7 @@ const DashboardHolder = () => {
   const [validUser, setValidUser] = useState(false);  
   const [userInfo, setUserInfo] = useState('');
   const [accessToken, setAccessToken] = useState('');
+  const [groups, setGroups] = useState(undefined);
 
   const currentPath = window.location.pathname;
 
@@ -61,7 +61,11 @@ const DashboardHolder = () => {
     });
 
     setAccessToken(accessToken);
-  }
+  };
+
+  const updateGroups = (newGroup) => {
+    setGroups(newGroup);
+  };
 
   if(validUser) {
     return (
@@ -69,7 +73,7 @@ const DashboardHolder = () => {
         <div>
           <UserContext.Provider value={userInfo}>
             <AccessTokenContext.Provider value={accessToken}>
-              <GroupsProvider>
+              <GroupsContext.Provider value={{ groups, updateGroups }}>
                 <Router>
                 {currentPath !== '/create-profile' ? <Navbar /> :
                   null
@@ -82,10 +86,9 @@ const DashboardHolder = () => {
                     <Route exact path="/create" component={CreateClient} ></Route>
                     <Route exact path="/manage" component={DisplayClients} ></Route>
                     <Route exact path="/scheduling" component={Calendar} ></Route>
-                    <Route exact path="/create-schedule" component={CreateSchedule} ></Route>
                   </Switch>
                 </Router>
-               </GroupsProvider>
+               </GroupsContext.Provider>
             </AccessTokenContext.Provider>
           </UserContext.Provider>
         </div>
@@ -102,7 +105,7 @@ const DashboardHolder = () => {
 
         <UserContext.Provider value={userInfo}>
           <AccessTokenContext.Provider value={accessToken}>
-            <GroupsProvider>
+            <GroupsContext.Provider value={{groups, updateGroups}}>
               <Router>                
                 <Switch> 
                   <Route exact path="/" component={Dashboard}></Route>
@@ -113,7 +116,7 @@ const DashboardHolder = () => {
                   <Route exact path="/scheduling" component={Calendar} ></Route>
                 </Switch>
               </Router>
-            </GroupsProvider>
+            </GroupsContext.Provider>
           </AccessTokenContext.Provider>
         </UserContext.Provider>
       </div>
