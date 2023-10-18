@@ -4,7 +4,7 @@ import '../css/calendar.css';
 import { v4 as uuidv4 } from 'uuid';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-import { UserContext, AccessTokenContext } from '../context/context';
+import { UserContext, AccessTokenContext, GroupsContext } from '../context/context';
 import useDistanceRequests from '../hooks/distance-request';
 import useHomeRequests from '../hooks/home-requests.js';
 import useScheduleRequests from '../hooks/schedule-requests';
@@ -15,7 +15,6 @@ import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
-import CreateSchedule from '../Features/create-schedule';
 import DisplayGroups from '../Features/display-groups';
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
@@ -28,17 +27,21 @@ function Calendar(props) {
 
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
+  const {groups, updateGroups} = useContext(GroupsContext)
+
   const {getHomes} = useHomeRequests();
-  const {getTimeDistances} = useDistanceRequests();
+  const {getTimeDistances, getRoutes} = useDistanceRequests();
   const {saveUserSchedule, getUserSchedule, deleteSchedule} = useScheduleRequests();
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
-  const [modal, setModal] = useState(false);
+  const [patientModal, setPatientModal] = useState(false);
+  const [groupModal, setGroupModal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
   const [client, setClient] = useState(null);
   const [changesSaved, setChangesSaved] = useState(false);
   const [viewChange, setViewChange] = useState(false);
+  const [groupFocus, setGroupFocus] = useState(false);
 
   const { data: homes, status } = useQuery(["homes"], 
     () => getHomes(user._id, accessToken)
@@ -282,7 +285,7 @@ function Calendar(props) {
         hours = '12'
       }
 
-      setModal(true);
+      setPatientModal(true);
       setClient({title: event.title,
                  id: event.id,
                  start: `${month}-${day}-${year} at ${hours}:${minutes}`,
@@ -291,6 +294,13 @@ function Calendar(props) {
     },
     []
   );
+
+  const handleGrouping = async () => {
+    const returnedGroups = await getRoutes(user._id, accessToken);
+    updateGroups(returnedGroups);
+    setGroupModal(false);
+    setGroupFocus(true);
+  }
 
   const setClientRepeat = (id, data) => {
     setMyEvents(prev => {
@@ -312,6 +322,10 @@ function Calendar(props) {
     setChangesSaved(false);
   };
 
+  const openGroupModal = () => {
+    setGroupModal(true);
+  }
+
   const removeFromCal = (id) => {
     setMyEvents((prev) => {
       const filteredState = prev.filter((ev) => ev.id !== id);
@@ -319,21 +333,22 @@ function Calendar(props) {
       return [...filteredState];
     });
 
-    setModal(false);
+    setPatientModal(false);
     setClient(null);
     setChangesSaved(false);
   };
 
   const closeModal = () => {
-    setModal(false);
+    setPatientModal(false);
     setErrorModal(false);
+    setGroupModal(false);
     setClient(null);
   };
  
 
   return (
     <div className="container-fluid">
-      <div className={`row my-5 ${modal | errorModal ? 'overlay' : ''}`}>
+      <div className={`row my-5 ${patientModal | groupModal | errorModal ? 'overlay' : ''}`}>
 
         {/* calendar */}
         <div className='col-8 d-flex justify-content-start'>
@@ -363,7 +378,7 @@ function Calendar(props) {
                 <button onClick={testSchedule} className="test my-2">Test</button>
               </div>
               <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
-                <CreateSchedule />
+              <button onClick={openGroupModal} className="test my-2">Group</button>
               </div>
             </div>
 
@@ -384,28 +399,32 @@ function Calendar(props) {
                 <div className="col">
                   <div>No Clients saved</div>     
                 </div>
+              ) : groupFocus ? (
+                <div>
+                  <DisplayGroups handleDragStart={handleDragStart}/>
+                </div>
               ) : (
-                homes.map(home => (
-                  <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
-                    onDragStart={() =>
-                        handleDragStart(home.name, home.address)
-                      }>
-                    <div  className="card my-3">
-                      <div className="card-body">
-                        <div className="card-title">{home.name}</div>
+                  homes.map(home => (
+                    <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
+                      onDragStart={() =>
+                          handleDragStart(home.name, home.address)
+                        }>
+                      <div  className="card my-3">
+                        <div className="card-body">
+                          <div className="card-title">{home.name}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
+                  )
               )
               )}
             </div>
 
-            <DisplayGroups />
+            
          </div>
       
 
-        {modal ? <div className="above-overlay" >
+        {patientModal ? <div className="above-overlay" >
           <div className="card" style={{width: "18rem", height: "300px"}}>
             <div className="p-0 card-body text-center">
               <h2>{client.title}</h2>
@@ -426,6 +445,20 @@ function Calendar(props) {
               </p>
               <button className='m-2 remove' onClick={() => removeFromCal(client.id)}>Remove</button>
               <button className='m-2' onClick={closeModal}>Close</button>
+            </div>
+          </div>
+        </div> : null}
+
+        {groupModal ? <div className="above-overlay" >
+          <div className="card" style={{width: "18rem", height: "300px"}}>
+            <div className="p-0 card-body text-center">
+              <h2>Group Geographically</h2>
+                <button onClick={handleGrouping}>
+                  Go
+                </button>
+                <button onClick={closeModal}>
+                  Cancel
+                </button>
             </div>
           </div>
         </div> : null}

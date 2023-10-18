@@ -15,7 +15,6 @@ import LogoutButton from './auth/LogoutButton.js';
 import Profile from './auth/Profile.js';
 import useUserRequests from './hooks/user-requests.js';
 import CreateProfile from './auth/CreateProfile.js';
-import CreateSchedule from './Features/create-schedule.js';
 import { UserContext, AccessTokenContext, GroupsContext } from './context/context.js';
 
 import './App.css'
@@ -34,7 +33,7 @@ function App() {
 
   if(isLoading) {
     return (
-      <div className="conent-container">
+      <div className="conent-container loading-page">
         <Loading />
       </div>
     )
@@ -48,7 +47,7 @@ function App() {
     )
   }
 
-  if (isAuthenticated && !validUser) {
+  if (isAuthenticated  && !validUser) {
     getUser(user.sub)
       .then((userData) => {
         if (userData.error) {

@@ -123,6 +123,11 @@ button:hover {
   color: white;
 }
 
+.grouping-btn {
+  background: transparent;
+  border: none;
+}
+
 /* calendar */
 
 .rbc-btn {
