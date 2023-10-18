@@ -4,7 +4,7 @@ import '../css/calendar.css';
 import { v4 as uuidv4 } from 'uuid';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-import { UserContext, AccessTokenContext, GroupsContext } from '../context/context';
+import { UserContext, AccessTokenContext } from '../context/context';
 import useDistanceRequests from '../hooks/distance-request';
 import useHomeRequests from '../hooks/home-requests.js';
 import useScheduleRequests from '../hooks/schedule-requests';
@@ -22,15 +22,13 @@ const localizer = momentLocalizer(moment);
 
 
 function Calendar(props) {
-
   const queryClient = useQueryClient();
 
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
-  const {groups, updateGroups} = useContext(GroupsContext)
 
   const {getHomes} = useHomeRequests();
-  const {getTimeDistances, getRoutes} = useDistanceRequests();
+  const {getTimeDistances, createGroups} = useDistanceRequests();
   const {saveUserSchedule, getUserSchedule, deleteSchedule} = useScheduleRequests();
 
   const [myEvents, setMyEvents] = useState([]);
@@ -296,11 +294,10 @@ function Calendar(props) {
   );
 
   const handleGrouping = async () => {
-    const returnedGroups = await getRoutes(user._id, accessToken);
-    updateGroups(returnedGroups);
-    setGroupModal(false);
     setGroupFocus(true);
-  }
+    setGroupModal(false);
+    const returnedGroups = await createGroups(user._id, accessToken);
+  };
 
   const setClientRepeat = (id, data) => {
     setMyEvents(prev => {
@@ -394,16 +391,12 @@ function Calendar(props) {
               {status === 'loading' ? (
                 <div><Loading /></div>
               ) : status === 'error' ? (
-                <div>Error Loading Homes...</div>
+                <div>Error Loading Patients...</div>
               ) : !homes ? (
                 <div className="col">
-                  <div>No Clients saved</div>     
+                  <div>No Patients saved</div>     
                 </div>
-              ) : groupFocus ? (
-                <div>
-                  <DisplayGroups handleDragStart={handleDragStart}/>
-                </div>
-              ) : (
+              ) : !groupFocus ? (
                   homes.map(home => (
                     <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
                       onDragStart={() =>
@@ -417,7 +410,12 @@ function Calendar(props) {
                     </div>
                   )
               )
-              )}
+              ): (
+                <div>
+                  <DisplayGroups handleDragStart={handleDragStart} homes={homes}/>
+                </div>
+              )
+            }
             </div>
 
             

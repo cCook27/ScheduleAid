@@ -19,23 +19,49 @@ function useDistanceRequests () {
     }
   };
 
-  const getRoutes = async (userId, accessToken) => {
+  const createGroups = async (userId, accessToken) => {
     try {
-      const response = await fetch(`${url}/routing/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
+      const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
+      }
+      const response = await fetch(`${url}/grouping/${userId}`, options);
 
       if (!response.ok) {
         throw new Error(`Request failed with status ${response.status}`);
       }
 
-      const routes = await response.json();
-      
-      return routes;
-    
-     
+      return null;
+         
+    } catch (error) {
+      console.error('Error:', error);
+
+      const errorResponse = {
+        error: 'An error occurred while creating user data',
+        message: error.message 
+      };
+
+      return errorResponse;
+    }
+  };
+
+  const getGroups = async (userId, accessToken) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
+      };
+
+      const response = await fetch(`${url}/getGroups/${userId}`, options);
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      };
+
+      const groupData = await response.json();
+
+      return groupData;
+
     } catch (error) {
       console.error('Error:', error);
 
@@ -46,11 +72,12 @@ function useDistanceRequests () {
 
       return errorResponse;
     }
-  };
+  }
 
   return {
    getTimeDistances,
-   getRoutes
+   createGroups,
+   getGroups
   }
 }
 
