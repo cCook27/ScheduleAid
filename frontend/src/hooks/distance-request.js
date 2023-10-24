@@ -19,11 +19,12 @@ function useDistanceRequests () {
     }
   };
 
-  const createGroups = async (userId, accessToken) => {
+  const createGroups = async (userId, accessToken, therapistParameters) => {
     try {
       const options = {
         method: 'POST',
         headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
+        body: JSON.stringify(therapistParameters)
       }
       const response = await fetch(`${url}/grouping/${userId}`, options);
 
@@ -31,7 +32,9 @@ function useDistanceRequests () {
         throw new Error(`Request failed with status ${response.status}`);
       }
 
-      return null;
+      const groupData = await response.json();
+
+      return groupData;
          
     } catch (error) {
       console.error('Error:', error);

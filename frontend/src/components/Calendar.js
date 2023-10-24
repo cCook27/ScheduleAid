@@ -2,7 +2,7 @@ import React, {useEffect, useContext} from 'react';
 import { useState, useCallback } from 'react';
 import '../css/calendar.css';
 import { v4 as uuidv4 } from 'uuid';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 
 import { UserContext, AccessTokenContext } from '../context/context';
 import useDistanceRequests from '../hooks/distance-request';
@@ -33,23 +33,28 @@ function Calendar(props) {
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
-  const [patientModal, setPatientModal] = useState(false);
-  const [groupModal, setGroupModal] = useState(false);
-  const [errorModal, setErrorModal] = useState(false);
+  const [modal, setModal] = useState({
+    patient: false,
+    group: false,
+    error: false
+  });
   const [client, setClient] = useState(null);
   const [changesSaved, setChangesSaved] = useState(false);
   const [viewChange, setViewChange] = useState(false);
   const [groupFocus, setGroupFocus] = useState(false);
+  const [patientGroups, setPatientGroups] = useState(undefined);
+  const [therapistParameters, setTherapistParameters] = useState({
+    workingDays: null,
+  });
 
-  const { data: homes, status } = useQuery(["homes"], 
+  const { data: homes, homeStatus } = useQuery(["homes"], 
     () => getHomes(user._id, accessToken)
   );
 
-  const { data: dbSchedule, stat } = useQuery(["schedule"], 
+  const { data: dbSchedule, dbScheduleStatus } = useQuery(["schedule"], 
     () => getUserSchedule(user._id, accessToken), {
       onSuccess: (data) => {
         fillInCalendar(data); 
-        
       },
     }
   );
@@ -61,6 +66,13 @@ function Calendar(props) {
     }
     
   }, [myEvents]);
+
+  useEffect(() => {
+    setTherapistParameters((prev) => ({
+      ...prev,
+      workingDays: user.workingDays
+    }));
+  }, []);
 
   
   useEffect(() => {
@@ -88,7 +100,6 @@ function Calendar(props) {
     setViewChange(!viewChange);
   }
   
-
   const eventPropGetter = useCallback(
     (event) => ({
       
@@ -148,7 +159,10 @@ function Calendar(props) {
   
         });
       } else {
-        setErrorModal(true);
+        setModal(prev => ({
+          ...prev,
+          error: true
+        }));
       }
      
       setChangesSaved(false);
@@ -283,7 +297,11 @@ function Calendar(props) {
         hours = '12'
       }
 
-      setPatientModal(true);
+      setModal(prev => ({
+        ...prev,
+        patient: true
+      }));
+
       setClient({title: event.title,
                  id: event.id,
                  start: `${month}-${day}-${year} at ${hours}:${minutes}`,
@@ -293,10 +311,25 @@ function Calendar(props) {
     []
   );
 
+  const handleTherapistParameters = (event) => {
+    const {name, value} = event.target;
+    setTherapistParameters((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handleGrouping = async () => {
+    closeModal();
+    setPatientGroups(null);
+    const returnedGroups = await createGroups(
+      user._id, 
+      accessToken, 
+      therapistParameters
+    );
+
+    setPatientGroups(returnedGroups);
     setGroupFocus(true);
-    setGroupModal(false);
-    const returnedGroups = await createGroups(user._id, accessToken);
   };
 
   const setClientRepeat = (id, data) => {
@@ -319,9 +352,12 @@ function Calendar(props) {
     setChangesSaved(false);
   };
 
-  const openGroupModal = () => {
-    setGroupModal(true);
-  }
+  const openGroup = () => {
+    setModal(prev => ({
+      ...prev,
+      group: true
+    }));
+  };
 
   const removeFromCal = (id) => {
     setMyEvents((prev) => {
@@ -330,22 +366,28 @@ function Calendar(props) {
       return [...filteredState];
     });
 
-    setPatientModal(false);
+    setModal(prev => ({
+      ...prev,
+      patient: false
+    }));
     setClient(null);
     setChangesSaved(false);
   };
 
   const closeModal = () => {
-    setPatientModal(false);
-    setErrorModal(false);
-    setGroupModal(false);
+    setModal(prev => ({
+      ...prev,
+      patient: false,
+      group: false,
+      error: false
+    }));
     setClient(null);
   };
  
 
   return (
     <div className="container-fluid">
-      <div className={`row my-5 ${patientModal | groupModal | errorModal ? 'overlay' : ''}`}>
+      <div className={`row my-5 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
 
         {/* calendar */}
         <div className='col-8 d-flex justify-content-start'>
@@ -375,7 +417,7 @@ function Calendar(props) {
                 <button onClick={testSchedule} className="test my-2">Test</button>
               </div>
               <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
-              <button onClick={openGroupModal} className="test my-2">Group</button>
+              <button onClick={openGroup} className="test my-2">Group</button>
               </div>
             </div>
 
@@ -388,9 +430,9 @@ function Calendar(props) {
           </div>
             
             <div className="row">
-              {status === 'loading' ? (
+              {homeStatus === 'loading' ? (
                 <div><Loading /></div>
-              ) : status === 'error' ? (
+              ) : homeStatus === 'error' ? (
                 <div>Error Loading Patients...</div>
               ) : !homes ? (
                 <div className="col">
@@ -412,7 +454,7 @@ function Calendar(props) {
               )
               ): (
                 <div>
-                  <DisplayGroups handleDragStart={handleDragStart} homes={homes}/>
+                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups} />
                 </div>
               )
             }
@@ -422,7 +464,7 @@ function Calendar(props) {
          </div>
       
 
-        {patientModal ? <div className="above-overlay" >
+        {modal.patient ? <div className="above-overlay" >
           <div className="card" style={{width: "18rem", height: "300px"}}>
             <div className="p-0 card-body text-center">
               <h2>{client.title}</h2>
@@ -447,10 +489,14 @@ function Calendar(props) {
           </div>
         </div> : null}
 
-        {groupModal ? <div className="above-overlay" >
+        {modal.group ? <div className="above-overlay" >
           <div className="card" style={{width: "18rem", height: "300px"}}>
             <div className="p-0 card-body text-center">
               <h2>Group Geographically</h2>
+                <div>
+                  <label for="workingDays">Working Days:</label>
+                  <input onChange={handleTherapistParameters} type="number" id="workingDays" value={therapistParameters.workingDays} name="workingDays" min="1" max="7" />
+                </div>
                 <button onClick={handleGrouping}>
                   Go
                 </button>
@@ -461,7 +507,7 @@ function Calendar(props) {
           </div>
         </div> : null}
 
-        {errorModal ? <div className="above-overlay" >
+        {modal.error ? <div className="above-overlay" >
           <div className="card" style={{width: "18rem", height: "175px"}}>
             <div className="p-0 card-body text-center">
               <h2>OOPS!</h2>

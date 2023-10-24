@@ -18,7 +18,7 @@ router.get('/user/:user', async (req, res) => {
       return res.status(404).send('User not found');
     };
    
-    res.status(200).json({ _id: user._id, name: user.name });
+    res.status(200).json({ _id: user._id, name: user.name, workingDays: user.workingDays });
     
 
   } catch(error) {
@@ -102,6 +102,7 @@ router.post('/grouping/:user', async (req, res) => {
     let user = await User.findOne({ _id: userId });
     const therapistHome = '19609 South Greenfield Road, Gilbert Az, 85297';
     const homes = user.homes;
+    const workingDays = isNaN(parseInt(req.body.workingDays)) ? user.workingDays : parseInt(req.body.workingDays);
 
     const activePatients = homes.filter((home) => home.active);
     const fulfillAllFrequecies = activePatients.map((patient) => {
@@ -295,8 +296,42 @@ router.post('/grouping/:user', async (req, res) => {
       visit.address = abbrevationFix(visit.address);
       return visit;
     });
-    const workingDays = 5;
-    const maxVisits = 6;
+
+    const averageVisits = Math.ceil(visits.length/workingDays);
+
+    const currentGroupList = [].concat(...user.groups);
+
+    const sortPatients = (patients) => {
+      const sortedArray = patients.sort((a, b) => a.name.localeCompare(b.name));
+
+      return sortedArray;
+    }
+
+    if(currentGroupList.length === visits.length && user.workingDays === workingDays) {
+      const sortedGroupList = sortPatients(currentGroupList)
+      const sortedVisitList = sortPatients(visits)
+  
+      const groupandVisitMatch = sortedVisitList.map((visit, index) => {
+        if(visit._id === sortedGroupList[index]._id) {
+          return true
+        }
+      });
+
+      if(groupandVisitMatch.length === sortedVisitList.length) {
+        return res.status(200).json(user.groups);
+      }
+
+    } else if(workingDays === 1) {
+      user.groups = visits;
+      user.save();
+      return res.status(200).json(user.groups);
+    } else if( workingDays === 2) {
+      let returnVisits = [...visits];
+      const firstHalf = returnVisits.splice(0, Math.ceil(returnVisits.length/2))
+      user.groups = [firstHalf, [returnVisits]];
+      await user.save()
+      return res.status(200).json(user.groups);
+    }
     
     let groups = [];
     let visitsRemaining = [...visits];
@@ -335,7 +370,7 @@ router.post('/grouping/:user', async (req, res) => {
       const sortedDistance = distanceData.sort((a, b) => b.value - a.value);
 
       const furthestPatient = visits.find((visit) => {
-        const sortedAddress = sortedDistance[0].address. split(' ');
+        const sortedAddress = sortedDistance[0].address.split(' ');
         const visitAddress = visit.address.split(' ')
         return sortedAddress[0] === visitAddress[0] && sortedAddress[1] === visitAddress[1] && sortedAddress[2] === visitAddress[2] && sortedAddress[3] === visitAddress[3]; 
       });
@@ -367,7 +402,7 @@ router.post('/grouping/:user', async (req, res) => {
         let bottomResults;
         let currentDay = day + 1
 
-        if(currentDay === workingDays || (visitsRemaining.length - maxVisits)/(workingDays - currentDay) > maxVisits) {
+        if(currentDay === workingDays) {
           return topResults;
         } else if(topResults.length > 4) {
           bottomResults = topResults.splice((topResults.length - 4), 3);
@@ -378,8 +413,9 @@ router.post('/grouping/:user', async (req, res) => {
         return bottomResults;
       };
 
-      if(uniqueSortedDistance.length >= maxVisits) {
-        let topResults = uniqueSortedDistance.splice(0, maxVisits + 1);
+      if(uniqueSortedDistance.length >= averageVisits) {
+
+        let topResults = uniqueSortedDistance.splice(0, averageVisits + 1); 
         
         const bottomResults = await determineBottomResults(topResults);
 
@@ -416,12 +452,17 @@ router.post('/grouping/:user', async (req, res) => {
       } else {
         const topResults = uniqueSortedDistance.splice(0, uniqueSortedDistance.length);
         return topResults;
-      }
-
-      
+      }      
     };
 
     for (let day = 0; day < workingDays; day++) {
+      if(visitsRemaining.length === 0) {
+        user.groups = groups;
+
+        console.log(user.groups);
+        await user.save();
+        return res.status(201).json(user.groups);
+      }
       const furthestPointResonse = await findFurthestPoint();
       const furthestPoint = visitsRemaining.splice(visitsRemaining.findIndex((visit) => visit === furthestPointResonse), 1);
 
@@ -441,10 +482,11 @@ router.post('/grouping/:user', async (req, res) => {
         groups[day].push(visitToAdd[0]);
       }
     }
-    console.log(groups)
+
     user.groups = groups;
     await user.save();
-    res.status(201);
+
+    res.status(201).json(user.groups);
   } catch (error) {
     console.error('Error:', error);
   }
@@ -617,6 +659,25 @@ router.post('/schedule/:user', async (req, res) => {
       console.log('Error inserting document:');
       res.status(500).json({ error: 'Failed to save in database' });
   }
+});
+
+router.put('/user/:user', async (req, res) => {
+  try{
+    const userInfo = req.body;
+    const userId = req.params.user;
+    const user = await User.findOne({_id: userId});
+
+    user.workingDays = userInfo.workingDays;
+
+    await user.save();
+
+    return res.status(201).json(user);
+
+  } catch(error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while looking for the User.');
+  }
+  
 });
 
 router.delete('/homes/:home/:user', async (req,res) => {

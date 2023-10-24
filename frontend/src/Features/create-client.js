@@ -80,7 +80,6 @@ function CreateClient() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(formData)
     addNewHome(formData, user._id, accessToken);
 
     window.location.reload();
