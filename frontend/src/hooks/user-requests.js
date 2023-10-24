@@ -44,7 +44,6 @@ function useUserRequests () {
       const accessToken = await getAccessTokenSilently({
         authorizationParams: {
           audience: `https://www.Home2Home-api.com`,
-          scope: "read:current_user",
         },
       });
 
@@ -75,9 +74,40 @@ function useUserRequests () {
     }
   };
 
+  const updateUser = async (userId, accessToken, userInfo) => {
+    try {
+
+      const options = {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
+        body: JSON.stringify(userInfo)
+      };
+
+      const response = await fetch(`${url}/user/${userId}`, options);
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const userUpdated = await response.json();
+
+      return userUpdated;
+    } catch (error) {
+      console.error('Error:', error);
+
+      const errorResponse = {
+        error: 'An error occurred while creating user data',
+        message: error.message 
+      };
+
+      return errorResponse;
+    }
+  };
+
   return {
     getUser,
-    addUser
+    addUser,
+    updateUser
   };
 }
 

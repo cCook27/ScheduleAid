@@ -9,7 +9,9 @@ const UserSchema = new Schema({
     groups: Array,
     buffer: Number,
     designation: String,
-    email: String
+    email: String,
+    maxVisits: Number,
+    workingDays: Number
 
 });
 

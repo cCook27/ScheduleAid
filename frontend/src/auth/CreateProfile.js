@@ -15,7 +15,8 @@ const CreateProfile = () => {
     designation: '',
     address: '',
     email: '',
-    _id: ''
+    _id: '',
+    workingDays: ''
   });
 
   useEffect(() => {
@@ -68,7 +69,6 @@ const CreateProfile = () => {
             />
           </div>
 
-          
           <div className="form-group my-3">
             <label>Designation</label>
             <input
@@ -108,6 +108,22 @@ const CreateProfile = () => {
               </div>
             </div>
           </div>
+
+          <div className="row">
+            <div className="col">
+              <div className="form-group my-3">
+                <label>Working Days</label>
+                <input
+                  placeholder="example@email.com"
+                  name="workingDays"
+                  value={formData.workingDays}
+                  onChange={handleState}
+                  className="form-control"
+                />
+              </div>
+            </div>
+          </div>
+
         </div>
         <div className="row mt-3">
           <div className="col pe-0">
