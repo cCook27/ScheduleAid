@@ -16,7 +16,8 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups }) => {
       </div>
     ) : !patientGroups ? (
       <div><Loading /></div>
-    ) : patientGroups.map((group) => (
+    ) : (patientGroups.length >= 1 && patientGroups.length <= 7) ? (
+       patientGroups.map((group) => (
         <div className="col-6 group">
           <div className="row">
             {group.map((patient) => (
@@ -26,7 +27,19 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups }) => {
             ))}
           </div>
         </div>
-      ))}
+      ))
+    ) : (
+      patientGroups.map((patient) => (
+        <div className="col-6 group">
+          <div className="row">
+            <div draggable onDragStart={() => handleDragStart(patient.name, patient.address)} className="col-12">
+              {patient.name}
+            </div>
+          </div>
+        </div>
+      ))
+    )
+   }
    </div>
   )
 }

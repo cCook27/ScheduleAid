@@ -307,7 +307,7 @@ router.post('/grouping/:user', async (req, res) => {
       return sortedArray;
     }
 
-    if(currentGroupList.length === visits.length && user.workingDays === workingDays) {
+    if(currentGroupList.length === visits.length && user.workingDays === workingDays && user.groups.length === workingDays) {
       const sortedGroupList = sortPatients(currentGroupList)
       const sortedVisitList = sortPatients(visits)
   
@@ -324,12 +324,14 @@ router.post('/grouping/:user', async (req, res) => {
     } else if(workingDays === 1) {
       user.groups = visits;
       user.save();
+      console.log(user.groups)
       return res.status(200).json(user.groups);
     } else if( workingDays === 2) {
       let returnVisits = [...visits];
       const firstHalf = returnVisits.splice(0, Math.ceil(returnVisits.length/2))
-      user.groups = [firstHalf, [returnVisits]];
+      user.groups = [firstHalf, returnVisits];
       await user.save()
+      console.log(user.groups)
       return res.status(200).json(user.groups);
     }
     
@@ -413,9 +415,15 @@ router.post('/grouping/:user', async (req, res) => {
         return bottomResults;
       };
 
-      if(uniqueSortedDistance.length >= averageVisits) {
+      if(uniqueSortedDistance.length >= averageVisits || (workingDays === day+1 && visitsRemaining.length > uniqueSortedDistance.length)) {
+        let topResults;
 
-        let topResults = uniqueSortedDistance.splice(0, averageVisits + 1); 
+        if(workingDays === day+1 && visitsRemaining.length > uniqueSortedDistance.length) {
+          topResults = sortedDistance.splice(0, visitsRemaining.length);
+        } else {
+          topResults = uniqueSortedDistance.splice(0, averageVisits + 1);
+        }
+         
         
         const bottomResults = await determineBottomResults(topResults);
 
@@ -467,7 +475,9 @@ router.post('/grouping/:user', async (req, res) => {
       const furthestPoint = visitsRemaining.splice(visitsRemaining.findIndex((visit) => visit === furthestPointResonse), 1);
 
       groups.push(furthestPoint);
-      const finalGroup = await createGroup(furthestPoint[0].address, day);
+      let finalGroup = await createGroup(furthestPoint[0].address, day);
+
+      
 
       for (let i = 0; i < finalGroup.length; i++) {
         const element = finalGroup[i].address;

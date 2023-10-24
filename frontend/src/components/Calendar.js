@@ -328,6 +328,7 @@ function Calendar(props) {
       therapistParameters
     );
 
+    console.log(returnedGroups)
     setPatientGroups(returnedGroups);
     setGroupFocus(true);
   };
