@@ -16,6 +16,7 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import DisplayGroups from '../Features/display-groups';
+import DisplayPatients from '../Features/display-patients';
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
 const localizer = momentLocalizer(moment);
@@ -431,32 +432,12 @@ function Calendar(props) {
           </div>
             
             <div className="row">
-              {homeStatus === 'loading' ? (
-                <div><Loading /></div>
-              ) : homeStatus === 'error' ? (
-                <div>Error Loading Patients...</div>
-              ) : !homes ? (
-                <div className="col">
-                  <div>No Patients saved</div>     
-                </div>
-              ) : !groupFocus ? (
-                  homes.map(home => (
-                    <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
-                      onDragStart={() =>
-                          handleDragStart(home.name, home.address)
-                        }>
-                      <div  className="card my-3">
-                        <div className="card-body">
-                          <div className="card-title">{home.name}</div>
-                        </div>
-                      </div>
-                    </div>
-                  )
-              )
+              {!groupFocus ? (
+                 <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus}/>
               ): (
-                <div>
-                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups} />
-                </div>
+                  <div>
+                    <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups} />
+                  </div>
               )
             }
             </div>
