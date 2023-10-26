@@ -48,14 +48,14 @@ function useDistanceRequests () {
     }
   };
 
-  const getGroups = async (userId, accessToken) => {
+  const checkGroups = async (userId, accessToken) => {
     try {
       const options = {
         method: 'POST',
         headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
       };
 
-      const response = await fetch(`${url}/getGroups/${userId}`, options);
+      const response = await fetch(`${url}/checkGroups/${userId}`, options);
 
       if (!response.ok) {
         throw new Error(`Request failed with status ${response.status}`);
@@ -80,7 +80,7 @@ function useDistanceRequests () {
   return {
    getTimeDistances,
    createGroups,
-   getGroups
+   checkGroups
   }
 }
 

@@ -32,7 +32,7 @@ function Calendar(props) {
   const accessToken = useContext(AccessTokenContext);
 
   const {getHomes} = useHomeRequests();
-  const {getTimeDistances, createGroups} = useDistanceRequests();
+  const {getTimeDistances, createGroups, checkGroups} = useDistanceRequests();
   const {saveUserSchedule, getUserSchedule, deleteSchedule} = useScheduleRequests();
 
   const [myEvents, setMyEvents] = useState([]);
@@ -45,7 +45,10 @@ function Calendar(props) {
   const [client, setClient] = useState(null);
   const [changesSaved, setChangesSaved] = useState(false);
   const [viewChange, setViewChange] = useState(false);
-  const [groupFocus, setGroupFocus] = useState(false);
+  const [groupFocus, setGroupFocus] = useState({
+    showGroups: false,
+    groupParams: false
+  });
   const [patientGroups, setPatientGroups] = useState(undefined);
   const [therapistParameters, setTherapistParameters] = useState({
     workingDays: null,
@@ -98,7 +101,7 @@ function Calendar(props) {
         slotGroup.style.border = '1px solid #a5a4a4';
       }
     }
-  },[viewChange])
+  },[viewChange]);
 
   const changeView = () => {
     setViewChange(!viewChange);
@@ -259,16 +262,9 @@ function Calendar(props) {
           ...accum, [day]: [...accum[day], event].sort((a, b) => a.start - b.start)
         }
         }, {
-            Mon: [],
-            Tue: [],
-            Wed: [],
-            Thu: [],
-            Fri: [],
-            Sat: [],
-            Sun: []
+            Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: [], Sun: []
           }
       );
-      console.log(weeklySchedule)
       const viabilityData = await getTimeDistances(weeklySchedule, accessToken);
 
       eventViability(viabilityData);
@@ -283,10 +279,7 @@ function Calendar(props) {
 
   const selectEvent = useCallback(
     (event) => {
-
       const date = new Date(event.start);
-
-
       const year = date.getFullYear();
       const month = date.getMonth() + 1; 
       const day = date.getDate();
@@ -311,9 +304,34 @@ function Calendar(props) {
                  start: `${month}-${day}-${year} at ${hours}:${minutes}`,
                  repeat: event.repeat
                 });
-    },
-    []
-  );
+    },[]);
+
+    const viewCheck = async (event) => {
+      if(event.target.checked) {
+        const checkingGroups = await checkGroups(user._id, accessToken);
+
+        if(checkingGroups) {
+          setPatientGroups(checkingGroups);
+          setGroupFocus(prev => ({
+            ...prev,
+            showGroups: true
+          }));
+        } else {
+          setGroupFocus(prev => ({
+            ...prev,
+            showGroups: false,
+            groupParams: true
+          }))
+        }
+      } else {
+        setGroupFocus(prev => ({
+          ...prev,
+          showGroups: false,
+          groupParams: false
+        }));
+      }
+      
+    }
 
   const handleTherapistParameters = (event) => {
     const {name, value} = event.target;
@@ -324,7 +342,6 @@ function Calendar(props) {
   };
 
   const handleGrouping = async () => {
-    closeModal();
     setPatientGroups(null);
 
     const returnedGroups = await createGroups(
@@ -334,7 +351,11 @@ function Calendar(props) {
     );
 
     setPatientGroups(returnedGroups);
-    setGroupFocus(true);
+    setGroupFocus(prev => ({
+      ...prev,
+      showGroups: true,
+      groupParams: false
+    }))
   };
 
   const setClientRepeat = (id, data) => {
@@ -418,43 +439,42 @@ function Calendar(props) {
         <div className="col ms-3">
           <div className="row d-flex">
             <div className="col">
-              <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
-                <button onClick={testSchedule} className="test my-2">Test</button>
-              </div>
-              <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
-              <button onClick={openGroup} className="test my-2">Group</button>
+              <div className='d-flex justify-content-center align-items-center mb-3'>
+                <button onClick={testSchedule} className="test m-2">Test</button>
+                <button onClick={removeAllEvents} className="test m-2">Delete All</button>
+                <button className="save m-2">All Schedules</button>
               </div>
             </div>
+          </div>
 
-            <div className="col">
-              <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
-                <button onClick={removeAllEvents} className="test my-2">Delete All</button>
-                <button className="save">All Schedules</button>
+          <div className="row">
+            <div className="col d-flex justify-content-center">
+              <div className="form-check form-switch m-2">
+                <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onClick={viewCheck} />
+                <div>Group View</div>
               </div>
             </div>
           </div>
             
-            <div className="row">
-              {!groupFocus ? (
-                 <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus}/>
-              ): (
-                  <div>
-                    <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups} />
-                  </div>
-              )
+          <div className="row">
+            {!groupFocus.showGroups && !groupFocus.groupParams ? (
+                <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus}/>
+            ) : groupFocus.showGroups ? (
+                <div>
+                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups} />
+                </div>
+            ) : groupFocus.groupParams ? (
+              <GroupModal therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
+              handleGrouping={handleGrouping}
+              closeModal={closeModal} />
+            ) : null
             }
-            </div>
+          </div>
          </div>
       
 
         {modal.patient ? <div className="above-overlay" >
           <PatientModal client={client} setClientRepeat={setClientRepeat} removeFromCal={removeFromCal} closeModal={closeModal} />
-        </div> : null}
-
-        {modal.group ? <div className="above-overlay" >
-            <GroupModal therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
-            handleGrouping={handleGrouping}
-            closeModal={closeModal} />
         </div> : null}
 
         {modal.error ? <div className="above-overlay" >
@@ -463,8 +483,6 @@ function Calendar(props) {
       </div>
     </div>
   )
-
-
 }
 
 export default Calendar;
@@ -475,7 +493,9 @@ export default Calendar;
 
 
        
-
+{/* <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
+<button onClick={openGroup} className="test my-2">Group</button>
+</div> */}
 
        
 
