@@ -17,6 +17,9 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import DisplayGroups from '../Features/display-groups';
 import DisplayPatients from '../Features/display-patients';
+import GroupModal from '../pop-ups/group-modal';
+import ErrorModal from '../pop-ups/error-modal';
+import PatientModal from '../pop-ups/patient-modal';
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
 const localizer = momentLocalizer(moment);
@@ -323,13 +326,13 @@ function Calendar(props) {
   const handleGrouping = async () => {
     closeModal();
     setPatientGroups(null);
+
     const returnedGroups = await createGroups(
       user._id, 
       accessToken, 
       therapistParameters
     );
 
-    console.log(returnedGroups)
     setPatientGroups(returnedGroups);
     setGroupFocus(true);
   };
@@ -441,64 +444,21 @@ function Calendar(props) {
               )
             }
             </div>
-
-            
          </div>
       
 
         {modal.patient ? <div className="above-overlay" >
-          <div className="card" style={{width: "18rem", height: "300px"}}>
-            <div className="p-0 card-body text-center">
-              <h2>{client.title}</h2>
-              <h6 className='text-start ps-2 pt-2'>Repeat:</h6>
-              <div className='row pb-4'>
-                <div className="col">
-                  <button className={`repeat ${client.repeat === 'weekly' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'weekly')}>Weekly</button>
-                </div>
-                <div className="col">
-                <button className={`repeat ${client.repeat === 'monthly' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'monthly')}>Monthly</button>
-                </div>
-                <div className="col">
-                <button className={`repeat ${client.repeat === 'never' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'never')}>Never</button>
-                </div>
-              </div>
-              <p>
-                Would you like to remove this client from {client.start}
-              </p>
-              <button className='m-2 remove' onClick={() => removeFromCal(client.id)}>Remove</button>
-              <button className='m-2' onClick={closeModal}>Close</button>
-            </div>
-          </div>
+          <PatientModal client={client} setClientRepeat={setClientRepeat} removeFromCal={removeFromCal} closeModal={closeModal} />
         </div> : null}
 
         {modal.group ? <div className="above-overlay" >
-          <div className="card" style={{width: "18rem", height: "300px"}}>
-            <div className="p-0 card-body text-center">
-              <h2>Group Geographically</h2>
-                <div>
-                  <label for="workingDays">Working Days:</label>
-                  <input onChange={handleTherapistParameters} type="number" id="workingDays" value={therapistParameters.workingDays} name="workingDays" min="1" max="7" />
-                </div>
-                <button onClick={handleGrouping}>
-                  Go
-                </button>
-                <button onClick={closeModal}>
-                  Cancel
-                </button>
-            </div>
-          </div>
+            <GroupModal therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
+            handleGrouping={handleGrouping}
+            closeModal={closeModal} />
         </div> : null}
 
         {modal.error ? <div className="above-overlay" >
-          <div className="card" style={{width: "18rem", height: "175px"}}>
-            <div className="p-0 card-body text-center">
-              <h2>OOPS!</h2>
-              <p>
-                It looks like we're ahving trouble testing your schedule. Try again later. We're on it.
-              </p>
-              <button className='m-2' onClick={closeModal}>Close</button>
-            </div>
-          </div>
+          <ErrorModal closeModal={closeModal} />
         </div> : null}
       </div>
     </div>
