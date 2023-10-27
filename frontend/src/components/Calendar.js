@@ -47,7 +47,8 @@ function Calendar(props) {
   const [viewChange, setViewChange] = useState(false);
   const [groupFocus, setGroupFocus] = useState({
     showGroups: false,
-    groupParams: false
+    groupParams: false,
+    view: 'Patient'
   });
   const [patientGroups, setPatientGroups] = useState(undefined);
   const [therapistParameters, setTherapistParameters] = useState({
@@ -307,31 +308,30 @@ function Calendar(props) {
     },[]);
 
     const viewCheck = async (event) => {
-      if(event.target.checked) {
-        const checkingGroups = await checkGroups(user._id, accessToken);
+      if(event.target.id === 'Group') {
 
-        if(checkingGroups) {
-          setPatientGroups(checkingGroups);
-          setGroupFocus(prev => ({
-            ...prev,
-            showGroups: true
-          }));
-        } else {
+        setGroupFocus(prev => ({
+          ...prev,
+          view: 'Group'
+        }));
+
+        handleGrouping();
+      } else if(event.target.id === 'Patient') {
           setGroupFocus(prev => ({
             ...prev,
             showGroups: false,
-            groupParams: true
-          }))
-        }
-      } else {
-        setGroupFocus(prev => ({
-          ...prev,
-          showGroups: false,
-          groupParams: false
-        }));
-      }
-      
-    }
+            groupParams: false,
+            view: 'Patient'
+          }));
+      } else if(event.target.id === 'Edit') {
+          setGroupFocus(prev => ({
+            ...prev,
+            showGroups: false,
+            groupParams: true,
+            view: 'Edit'
+          }));
+      } 
+    };
 
   const handleTherapistParameters = (event) => {
     const {name, value} = event.target;
@@ -354,7 +354,8 @@ function Calendar(props) {
     setGroupFocus(prev => ({
       ...prev,
       showGroups: true,
-      groupParams: false
+      groupParams: false,
+      view: 'Group'
     }))
   };
 
@@ -376,13 +377,6 @@ function Calendar(props) {
     }));
 
     setChangesSaved(false);
-  };
-
-  const openGroup = () => {
-    setModal(prev => ({
-      ...prev,
-      group: true
-    }));
   };
 
   const removeFromCal = (id) => {
@@ -448,25 +442,38 @@ function Calendar(props) {
           </div>
 
           <div className="row">
-            <div className="col d-flex justify-content-center">
-              <div className="form-check form-switch m-2">
-                <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onClick={viewCheck} />
-                <div>Group View</div>
+            <div className="col d-flex flex-column justify-content-center">
+              <div className="btn-group" role="group" aria-label="Basic radio  toggle button group">
+                
+                <input type="radio" className="btn-check" name="Patient" id="Patient" autocomplete="off" 
+                checked={groupFocus.view === 'Patient'}  onChange={viewCheck}
+                />
+                <label className="btn btn-outline-primary" for="Patient">Patient View</label>
+
+                <input type="radio" className="btn-check" name="Edit" id="Edit" autocomplete="off" checked={groupFocus.view === 'Edit'}  onChange={viewCheck} />
+                <label className="btn btn-outline-primary" for="Edit">Edit Group</label>
+
+                <input type="radio" className="btn-check" name="Group" id="Group" autocomplete="off" checked={groupFocus.view === 'Group'}  onChange={viewCheck} />
+                <label className="btn btn-outline-primary" for="Group">Group View</label>
               </div>
             </div>
           </div>
             
           <div className="row">
             {!groupFocus.showGroups && !groupFocus.groupParams ? (
+              <div>
                 <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus}/>
+              </div>
             ) : groupFocus.showGroups ? (
                 <div>
                   <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups} />
                 </div>
             ) : groupFocus.groupParams ? (
-              <GroupModal therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
-              handleGrouping={handleGrouping}
-              closeModal={closeModal} />
+                <div>
+                  <GroupModal therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
+                  handleGrouping={handleGrouping}
+                  closeModal={closeModal} />
+                </div>
             ) : null
             }
           </div>
@@ -488,15 +495,10 @@ function Calendar(props) {
 export default Calendar;
 
 
-      
-      
-
-
-       
-{/* <div className='d-flex flex-column justify-content-center align-items-center mb-3'>
-<button onClick={openGroup} className="test my-2">Group</button>
-</div> */}
-
        
 
 
+// <select onChange={viewCheck}>
+//                 <option value="Patient">Patient View</option>
+//                 <option value="Group">Group View</option>
+//               </select>

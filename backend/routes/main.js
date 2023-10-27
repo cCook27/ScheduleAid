@@ -295,6 +295,8 @@ router.post('/checkGroups/:user', async (req, res) => {
 
       if(groupandVisitMatch.length === sortedVisitList.length) {
         return res.status(200).json(user.groups);
+      } else {
+        // return a warning and the prior 
       }
 
     } else if(workingDays === 1) {
@@ -530,7 +532,7 @@ router.post('/grouping/:user', async (req, res) => {
       return sortedArray;
     }
 
-    if(currentGroupList.length === visits.length && user.workingDays === workingDays && user.groups.length === workingDays) {
+    if(currentGroupList.length === visits.length && user.groups.length === workingDays) {
       const sortedGroupList = sortPatients(currentGroupList)
       const sortedVisitList = sortPatients(visits)
   
