@@ -537,12 +537,16 @@ router.post('/grouping/:user', async (req, res) => {
       const sortedVisitList = sortPatients(visits)
   
       const groupandVisitMatch = sortedVisitList.map((visit, index) => {
-        if(visit._id === sortedGroupList[index]._id) {
-          return true
+        if(visit._id === sortedGroupList[index]._id && visit.name === sortedGroupList[index].name) {
+          return 'match'
+        } else {
+          return 'noMatch'
         }
       });
 
-      if(groupandVisitMatch.length === sortedVisitList.length) {
+      const findGroupFailure = groupandVisitMatch.find((element) => element === 'noMatch');
+
+      if(!findGroupFailure) {
         return res.status(200).json(user.groups);
       }
 
