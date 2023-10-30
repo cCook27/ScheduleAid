@@ -629,20 +629,20 @@ router.post('/grouping/:user', async (req, res) => {
         
       };
 
-      const determineBottomResults = async (topResults) => {
-        let bottomResults;
-        let currentDay = day + 1
+      // const determineBottomResults = async (topResults) => {
+      //   let bottomResults;
+      //   let currentDay = day + 1
 
-        if(currentDay === workingDays) {
-          return topResults;
-        } else if(topResults.length > 4) {
-          bottomResults = topResults.splice((topResults.length - 4), 3);
-        } else if(topResults.length <= 4) {
-          bottomResults = topResults.splice((topResults.length - 1), 1);
-        }
+      //   if(currentDay === workingDays) {
+      //     return topResults;
+      //   } else if(topResults.length > 4) {
+      //     bottomResults = topResults.splice((topResults.length - 4), 3);
+      //   } else if(topResults.length <= 4) {
+      //     bottomResults = topResults.splice((topResults.length - 1), 1);
+      //   }
 
-        return bottomResults;
-      };
+      //   return bottomResults;
+      // };
 
       if(uniqueSortedDistance.length >= averageVisits || (workingDays === day+1 && visitsRemaining.length > uniqueSortedDistance.length)) {
         let topResults;
@@ -650,42 +650,42 @@ router.post('/grouping/:user', async (req, res) => {
         if(workingDays === day+1 && visitsRemaining.length > uniqueSortedDistance.length) {
           topResults = sortedDistance.splice(0, visitsRemaining.length);
         } else {
-          topResults = uniqueSortedDistance.splice(0, averageVisits + 1);
+          topResults = uniqueSortedDistance.splice(0, averageVisits - 1);
         }
          
         
-        const bottomResults = await determineBottomResults(topResults);
+        // const bottomResults = await determineBottomResults(topResults);
 
-        if(bottomResults === topResults) {
-          return topResults;
-        } 
+        // if(bottomResults === topResults) {
+        //   return topResults;
+        // } 
 
-        let bottomVisitsToCompare = [];
+        // let bottomVisitsToCompare = [];
 
-        for (let i = 0; i < bottomResults.length; i++) {
-          const origin = bottomResults[i].address;
+        // for (let i = 0; i < bottomResults.length; i++) {
+        //   const origin = bottomResults[i].address;
 
-          const bottomDistData = await returnDistanceData(origin);
+        //   const bottomDistData = await returnDistanceData(origin);
 
-          const sortedBottomDistance = bottomDistData.sort((a, b) => a.value - b.value);
+        //   const sortedBottomDistance = bottomDistData.sort((a, b) => a.value - b.value);
 
-          const top4Distances = sortedBottomDistance.splice(0, 4).reduce((accum, visit) => {
-            return {
-              value: accum.value + visit.value,
-              address: origin
-            };
-          }, { value: 0, address: origin });
+        //   const top4Distances = sortedBottomDistance.splice(0, 4).reduce((accum, visit) => {
+        //     return {
+        //       value: accum.value + visit.value,
+        //       address: origin
+        //     };
+        //   }, { value: 0, address: origin });
           
 
-          bottomVisitsToCompare.push(top4Distances);
+        //   bottomVisitsToCompare.push(top4Distances);
           
-        }
+        // }
 
-        const sortBottomVisits = bottomVisitsToCompare.sort((a, b) => b.value - a.value);
+        // const sortBottomVisits = bottomVisitsToCompare.sort((a, b) => a.value - b.value);
 
-       topResults.push(sortBottomVisits[0]);
+        // topResults.push(sortBottomVisits[0]);
 
-       return topResults;
+        return topResults;
       } else {
         const topResults = uniqueSortedDistance.splice(0, uniqueSortedDistance.length);
         return topResults;
@@ -700,8 +700,8 @@ router.post('/grouping/:user', async (req, res) => {
         await user.save();
         return res.status(201).json(user.groups);
       }
-      const furthestPointResonse = await findFurthestPoint();
-      const furthestPoint = visitsRemaining.splice(visitsRemaining.findIndex((visit) => visit === furthestPointResonse), 1);
+      const furthestPointRes = await findFurthestPoint();
+      const furthestPoint = visitsRemaining.splice(visitsRemaining.findIndex((visit) => visit === furthestPointRes), 1);
 
       groups.push(furthestPoint);
       let finalGroup = await createGroup(furthestPoint[0].address, day);
