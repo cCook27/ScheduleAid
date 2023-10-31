@@ -344,10 +344,10 @@ function Calendar(props) {
   const handleGrouping = async () => {
     setPatientGroups(null);
 
-    const returnedGroups = await createGroups(
+    const returnedGroups = await checkGroups(
       user._id, 
       accessToken, 
-      therapistParameters
+      
     );
 
     setPatientGroups(returnedGroups);
