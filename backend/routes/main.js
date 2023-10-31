@@ -107,6 +107,19 @@ router.post('/checkGroups/:user', async (req, res) => {
 
       return direction;
   }
+
+  const getLatLng = async () => {
+    const address = '2237 east plum court';
+
+    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+      params: {
+        address: address,
+        key: apiKey
+      }
+    });
+
+    console.log(response);
+  }
   
   // Example usage:
   const originLat = 33.2700655;  // Latitude of New York City
@@ -115,6 +128,7 @@ router.post('/checkGroups/:user', async (req, res) => {
   const destLon = -111.7413139;  // Longitude of Los Angeles
   
   const direction = getDirection(originLat, originLon, destLat, destLon);
+  const stuff = getLatLng();
   console.log(`The destination is to the ${direction} from the origin.`);
   
   
