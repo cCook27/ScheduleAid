@@ -862,6 +862,17 @@ router.post('/homes/:user', async (req, res) => {
     //   }
     // });
 
+    const address = newHomeInfo.address;
+
+    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+      params: {
+        address: address,
+        key: apiKey
+      }
+    });
+
+    newHomeInfo['coordinates'] = response.data.results[0].geometry.location;
+
     const homeAdded = user.homes.push(newHomeInfo);
     const save = user.save();
 
