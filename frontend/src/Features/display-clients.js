@@ -30,8 +30,13 @@ function DisplayClients() {
     },
   });
 
-  const handleEdit = (home) => {
+  const handleEdit = async (home) => {
     setEditClient(home)
+    const options = {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
+    }
+    const response = await fetch(`http://localhost:8080/coordiantes/${user._id}/${home.address}`, options);
   }
 
   useEffect(() => {

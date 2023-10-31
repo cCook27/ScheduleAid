@@ -76,60 +76,68 @@ router.get('/schedule/:user', async (req, res) => {
 
 router.post('/checkGroups/:user', async (req, res) => {
   try {
+    const userId = req.params.user
+    const user = await User.findOne({_id: userId});
 
-    function getDirection(originLat, originLon, destLat, destLon) {
-      const deltaLon = destLon - originLon;
-      const originLatRad = (originLat * Math.PI) / 180;
-      const destLatRad = (destLat * Math.PI) / 180;
-      const deltaLonRad = (deltaLon * Math.PI) / 180;
-  
-      const angle = Math.atan2(Math.sin(deltaLonRad), Math.cos(originLatRad) * Math.tan(destLatRad) - Math.sin(originLatRad) * Math.cos(deltaLonRad));
-      const angleDeg = (angle * 180) / Math.PI;
-      let direction;
-  
-      if(angleDeg >= -22.5 && angleDeg <= 22.5) {
-        direction = 'North';
-      } else if(angleDeg > 22.5 && angleDeg <= 67.5) {
-        direction = 'NorthEast';
-      } else if(angleDeg > 67.5 && angleDeg <= 112.5) {
-        direction = 'East';
-      } else if(angleDeg >112.5 && angleDeg <= 157.5) {
-        direction = 'SouthEast';
-      } else if(angleDeg > -157.5 && angleDeg <= -112.5) {
-        direction = 'SouthWest';
-      } else if(angleDeg > -112.5 && angleDeg <= -67.5) {
-        direction = 'West';
-      } else if(angleDeg > -67.5 && angleDeg <= -22.5) {
-        direction = 'NorthWest';
-      } else {
-        direction = 'South';
-      }
+ 
 
-      return direction;
-  }
+  let newHomes = [];
 
-  const getLatLng = async () => {
-    const address = '2237 east plum court';
+  for (let i = 0; i < user.homes.length; i++) {
+    const home = user.homes[i];
 
     const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
       params: {
-        address: address,
+        address: home.address,
         key: apiKey
       }
     });
 
-    console.log(response);
+    home['coordinates'] = response.data.results[0].geometry.location
+    
+    newHomes.push(home);
   }
+
+  user.homes = newHomes;
+  await user.save();
+   //   function getDirection(originLat, originLon, destLat, destLon) {
+  //     const deltaLon = destLon - originLon;
+  //     const originLatRad = (originLat * Math.PI) / 180;
+  //     const destLatRad = (destLat * Math.PI) / 180;
+  //     const deltaLonRad = (deltaLon * Math.PI) / 180;
   
+  //     const angle = Math.atan2(Math.sin(deltaLonRad), Math.cos(originLatRad) * Math.tan(destLatRad) - Math.sin(originLatRad) * Math.cos(deltaLonRad));
+  //     const angleDeg = (angle * 180) / Math.PI;
+  //     let direction;
+  
+  //     if(angleDeg >= -22.5 && angleDeg <= 22.5) {
+  //       direction = 'North';
+  //     } else if(angleDeg > 22.5 && angleDeg <= 67.5) {
+  //       direction = 'NorthEast';
+  //     } else if(angleDeg > 67.5 && angleDeg <= 112.5) {
+  //       direction = 'East';
+  //     } else if(angleDeg >112.5 && angleDeg <= 157.5) {
+  //       direction = 'SouthEast';
+  //     } else if(angleDeg > -157.5 && angleDeg <= -112.5) {
+  //       direction = 'SouthWest';
+  //     } else if(angleDeg > -112.5 && angleDeg <= -67.5) {
+  //       direction = 'West';
+  //     } else if(angleDeg > -67.5 && angleDeg <= -22.5) {
+  //       direction = 'NorthWest';
+  //     } else {
+  //       direction = 'South';
+  //     }
+
+  //     return direction;
+  // }
   // Example usage:
-  const originLat = 33.2700655;  // Latitude of New York City
-  const originLon = -111.7363954; // Longitude of New York City
-  const destLat = 33.2313596;    // Latitude of Los Angeles
-  const destLon = -111.7413139;  // Longitude of Los Angeles
+  const originLat = 33.2700655;  
+  const originLon = -111.7363954; 
+  const destLat = 33.2313596;    
+  const destLon = -111.7413139;  
   
-  const direction = getDirection(originLat, originLon, destLat, destLon);
-  const stuff = getLatLng();
-  console.log(`The destination is to the ${direction} from the origin.`);
+  // const direction = getDirection(originLat, originLon, destLat, destLon);
+  
   
   
 
@@ -716,6 +724,37 @@ router.post('/schedule/:user', async (req, res) => {
       console.log('Error inserting document:');
       res.status(500).json({ error: 'Failed to save in database' });
   }
+});
+
+router.put('/coordiantes/:user/:address', async (req, res) => {
+  try {
+    const userId = req.params.user;    
+    const address = req.params.address;
+    const user = await User.findOne({_id: userId});
+
+    const index = user.homes.findIndex((home) => home.address === address);
+
+    let newHomeInfo = user.homes[index];
+
+    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+      params: {
+        address: address,
+        key: apiKey
+      }
+    });
+
+    newHomeInfo['coordinates'] = response.data.results[0].geometry.location;
+
+    user.homes[index] = newHomeInfo;
+
+    await user.save();
+    
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while looking for the User.');
+  }
+
+
 });
 
 router.put('/user/:user', async (req, res) => {
