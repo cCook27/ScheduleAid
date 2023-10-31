@@ -568,33 +568,41 @@ router.post('/grouping/:user', async (req, res) => {
     let visitsRemaining = [...visits];
 
    const returnDistanceData = async (origin) => {
-    const loopsNeeded = Math.ceil(visitsRemaining.length / 25);
     let visitsToTest = visitsRemaining.filter((visit) => visit.address !== origin); 
-    let distanceData = []
+    let distanceData = [];
 
-    for (let i = 0; i < loopsNeeded; i++) {
-      if(visitsToTest.length >= 25) {
-        let destinations = visitsToTest.splice(0, 25).map((visit) => visit.address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
+    for (let i = 0; i < visitsToTest.length; i++) {
+      const visit = visitsToTest[i];
 
-        const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${origin}&units=imperial&key=${apiKey}`);
-        response.data.rows[0].elements.forEach((element, index) => {
-          distanceData.push({value: element.duration.value, address: abbrevationFix(response.data.destination_addresses[index])});
-        });
-      } else {
-        let destinations = visitsToTest.splice(0, visitsToTest.length).map((visit) => visit.address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
-        const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${origin}&units=imperial&key=${apiKey}`);
-        response.data.rows[0].elements.forEach((element, index) => {
-          distanceData.push({value: element.duration.value, address: abbrevationFix(response.data.destination_addresses[index])});
-        });
-      }  
-    };
+      const earthRadius = 6371;
+      const degToRad = (degrees) => degrees * (Math.PI / 180);
+      
+      const dLat = degToRad(visit.coordinates.lat - origin.lat);
+      const dLon = degToRad(visit.coordinates.lng - origin.lng);
+
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(degToRad(origin.lat)) * Math.cos(degToRad(visit.lat)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      const distance = earthRadius * c;
+
+      distanceData.push({
+        value: distance,
+        address: visit.address
+      });
+    }
 
     return distanceData;
 
    };
     
     const findFurthestPoint = async () => {
-      const origin = therapistHome;
+      const origin = {
+        lat: 33.2700655,
+        lng: -111.7363954
+      };
       
       const distanceData = await returnDistanceData(origin);
       
