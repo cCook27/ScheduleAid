@@ -581,7 +581,7 @@ router.post('/grouping/:user', async (req, res) => {
       const dLon = degToRad(visit.coordinates.lng - origin.lng);
 
       const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(degToRad(origin.lat)) * Math.cos(degToRad(visit.lat)) *
+        Math.cos(degToRad(origin.lat)) * Math.cos(degToRad(visit.coordinates.lat)) *
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
@@ -590,7 +590,8 @@ router.post('/grouping/:user', async (req, res) => {
 
       distanceData.push({
         value: distance,
-        address: visit.address
+        address: visit.address,
+        coordinates: visit.coordinates
       });
     }
 
@@ -671,7 +672,7 @@ router.post('/grouping/:user', async (req, res) => {
         let bottomVisitsToCompare = [];
 
         for (let i = 0; i < bottomResults.length; i++) {
-          const origin = bottomResults[i].address;
+          const origin = bottomResults[i].coordinates;
 
           const bottomDistData = await returnDistanceData(origin);
 
@@ -680,9 +681,10 @@ router.post('/grouping/:user', async (req, res) => {
           const top4Distances = sortedBottomDistance.splice(0, 4).reduce((accum, visit) => {
             return {
               value: accum.value + visit.value,
-              address: origin
+              coordinates: origin,
+              address: bottomResults[i].address
             };
-          }, { value: 0, address: origin });
+          }, { value: 0, address: bottomResults[i].address, coordinates: origin });
           
 
           bottomVisitsToCompare.push(top4Distances);
@@ -712,7 +714,7 @@ router.post('/grouping/:user', async (req, res) => {
       const furthestPoint = visitsRemaining.splice(visitsRemaining.findIndex((visit) => visit === furthestPointResonse), 1);
 
       groups.push(furthestPoint);
-      let finalGroup = await createGroup(furthestPoint[0].address, day);
+      let finalGroup = await createGroup(furthestPoint[0].coordinates, day);
 
       
 
