@@ -568,33 +568,42 @@ router.post('/grouping/:user', async (req, res) => {
     let visitsRemaining = [...visits];
 
    const returnDistanceData = async (origin) => {
-    const loopsNeeded = Math.ceil(visitsRemaining.length / 25);
     let visitsToTest = visitsRemaining.filter((visit) => visit.address !== origin); 
-    let distanceData = []
+    let distanceData = [];
 
-    for (let i = 0; i < loopsNeeded; i++) {
-      if(visitsToTest.length >= 25) {
-        let destinations = visitsToTest.splice(0, 25).map((visit) => visit.address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
+    for (let i = 0; i < visitsToTest.length; i++) {
+      const visit = visitsToTest[i];
 
-        const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${origin}&units=imperial&key=${apiKey}`);
-        response.data.rows[0].elements.forEach((element, index) => {
-          distanceData.push({value: element.duration.value, address: abbrevationFix(response.data.destination_addresses[index])});
-        });
-      } else {
-        let destinations = visitsToTest.splice(0, visitsToTest.length).map((visit) => visit.address.split(', ')).map((splitAddress) => encodeURIComponent(splitAddress)).join('|');
-        const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destinations}&origins=${origin}&units=imperial&key=${apiKey}`);
-        response.data.rows[0].elements.forEach((element, index) => {
-          distanceData.push({value: element.duration.value, address: abbrevationFix(response.data.destination_addresses[index])});
-        });
-      }  
-    };
+      const earthRadius = 6371;
+      const degToRad = (degrees) => degrees * (Math.PI / 180);
+      
+      const dLat = degToRad(visit.coordinates.lat - origin.lat);
+      const dLon = degToRad(visit.coordinates.lng - origin.lng);
+
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(degToRad(origin.lat)) * Math.cos(degToRad(visit.coordinates.lat)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      const distance = earthRadius * c;
+
+      distanceData.push({
+        value: distance,
+        address: visit.address,
+        coordinates: visit.coordinates
+      });
+    }
 
     return distanceData;
 
    };
     
     const findFurthestPoint = async () => {
-      const origin = therapistHome;
+      const origin = {
+        lat: 33.2700655,
+        lng: -111.7363954
+      };
       
       const distanceData = await returnDistanceData(origin);
       
@@ -663,7 +672,7 @@ router.post('/grouping/:user', async (req, res) => {
         let bottomVisitsToCompare = [];
 
         for (let i = 0; i < bottomResults.length; i++) {
-          const origin = bottomResults[i].address;
+          const origin = bottomResults[i].coordinates;
 
           const bottomDistData = await returnDistanceData(origin);
 
@@ -672,9 +681,10 @@ router.post('/grouping/:user', async (req, res) => {
           const top4Distances = sortedBottomDistance.splice(0, 4).reduce((accum, visit) => {
             return {
               value: accum.value + visit.value,
-              address: origin
+              coordinates: origin,
+              address: bottomResults[i].address
             };
-          }, { value: 0, address: origin });
+          }, { value: 0, address: bottomResults[i].address, coordinates: origin });
           
 
           bottomVisitsToCompare.push(top4Distances);
@@ -704,7 +714,7 @@ router.post('/grouping/:user', async (req, res) => {
       const furthestPoint = visitsRemaining.splice(visitsRemaining.findIndex((visit) => visit === furthestPointResonse), 1);
 
       groups.push(furthestPoint);
-      let finalGroup = await createGroup(furthestPoint[0].address, day);
+      let finalGroup = await createGroup(furthestPoint[0].coordinates, day);
 
       
 
@@ -861,6 +871,17 @@ router.post('/homes/:user', async (req, res) => {
     //     return res.status(400).send('All fields are required when saving a new client home.');
     //   }
     // });
+
+    const address = newHomeInfo.address;
+
+    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+      params: {
+        address: address,
+        key: apiKey
+      }
+    });
+
+    newHomeInfo['coordinates'] = response.data.results[0].geometry.location;
 
     const homeAdded = user.homes.push(newHomeInfo);
     const save = user.save();
