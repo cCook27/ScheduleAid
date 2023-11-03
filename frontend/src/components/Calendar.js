@@ -466,7 +466,7 @@ function Calendar(props) {
               </div>
             ) : groupFocus.showGroups ? (
                 <div>
-                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups} />
+                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} />
                 </div>
             ) : groupFocus.groupParams ? (
                 <div>
