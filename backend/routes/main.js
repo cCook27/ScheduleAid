@@ -625,7 +625,7 @@ router.post('/grouping/:user', async (req, res) => {
 
    };
     
-    const findFurthestPoint = async () => { ``
+    const findFurthestPoint = async () => {
       // my house
       const origin = {
         lat: 33.2700655,
@@ -636,13 +636,31 @@ router.post('/grouping/:user', async (req, res) => {
       
       const sortedDistance = distanceData.sort((a, b) => b.value - a.value);
 
-      const furthestPatient = visits.find((visit) => {
-        const sortedAddress = sortedDistance[0].address.split(' ');
+      let furthestPatient;
+
+      for (let i = 0; i < sortedDistance.length; i++) {
+        const data = sortedDistance[i];
+        let checkMarks = 0
+
+        groups.forEach((group) => {
+          if(group[0].address !== data.address) {
+            checkMarks = checkMarks + 1;
+          }
+        });
+
+        if(checkMarks === groups.length) {
+          furthestPatient = data;
+          break;
+        }
+      }
+
+      const returnPatient = visits.find((visit) => {
+        const sortedAddress = furthestPatient.address.split(' ');
         const visitAddress = visit.address.split(' ')
         return sortedAddress[0] === visitAddress[0] && sortedAddress[1] === visitAddress[1] && sortedAddress[2] === visitAddress[2] && sortedAddress[3] === visitAddress[3]; 
       });
 
-      return furthestPatient
+      return returnPatient;
 
     };
 
