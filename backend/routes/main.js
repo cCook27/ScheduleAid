@@ -527,7 +527,7 @@ router.post('/grouping/:user', async (req, res) => {
     const currentGroupList = [].concat(...user.groups);
 
     const sortPatients = (patients) => {
-      const sortedArray = patients.sort((a, b) => a.name.localeCompare(b.name));
+      const sortedArray = patients.sort((a, b) => a.name - b.name);
 
       return sortedArray;
     }
@@ -565,14 +565,15 @@ router.post('/grouping/:user', async (req, res) => {
     }
     
     let groups = [];
+    let considerDoubleSession = [];
     let visitsRemaining = [...visits];
 
    const returnDistanceData = async (origin) => {
-    let visitsToTest = visitsRemaining.filter((visit) => visit.address !== origin); 
+    let visitsTovisit = visitsRemaining.filter((visit) => visit.address !== origin); 
     let distanceData = [];
 
-    for (let i = 0; i < visitsToTest.length; i++) {
-      const visit = visitsToTest[i];
+    for (let i = 0; i < visitsTovisit.length; i++) {
+      const visit = visitsTovisit[i];
 
       const earthRadius = 6371;
       const degToRad = (degrees) => degrees * (Math.PI / 180);
@@ -598,8 +599,34 @@ router.post('/grouping/:user', async (req, res) => {
     return distanceData;
 
    };
+
+   const remainderDistanceData = (visit, group, index) => {
+    const groupVisit = group[0].address === visit.address ? group[1] : group[0];
+
+    const earthRadius = 6371;
+    const degToRad = (degrees) => degrees * (Math.PI / 180);
     
-    const findFurthestPoint = async () => {
+    const dLat = degToRad(visit.coordinates.lat - groupVisit.coordinates.lat);
+    const dLon = degToRad(visit.coordinates.lng - groupVisit.coordinates.lng);
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(degToRad(groupVisit.coordinates.lat)) * Math.cos(degToRad(visit.coordinates.lat)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const distance = earthRadius * c;
+
+    return {
+      value: distance,
+      address: visit.address,
+      groupNum: index
+    }
+
+   };
+    
+    const findFurthestPoint = async () => { ``
+      // my house
       const origin = {
         lat: 33.2700655,
         lng: -111.7363954
@@ -623,100 +650,39 @@ router.post('/grouping/:user', async (req, res) => {
       const distanceData = await returnDistanceData(origin);
 
       const sortedDistance = distanceData.sort((a, b) => a.value - b.value);
-      const uniqueSortedDistance = [];
-      
+
+      let topDistances = [];
+
       for (let index = 0; index < sortedDistance.length; index++) {
-        const element = sortedDistance[index];
+        const visit = sortedDistance[index];
 
-        const isDuplicate = uniqueSortedDistance.find((dist) => {
-          return dist.address == element.address
-        });
+        if(topDistances.length < averageVisits -1 ) {
+          const findDuplicate = topDistances.find((element) => element.address === visit.address);
 
-        if(!isDuplicate) {
-          uniqueSortedDistance.push(element)
-        }
-        
-      };
-
-      const determineBottomResults = async (topResults) => {
-        let bottomResults;
-        let currentDay = day + 1
-
-        if(currentDay === workingDays) {
-          return topResults;
-        } else if(topResults.length > 4) {
-          bottomResults = topResults.splice((topResults.length - 4), 3);
-        } else if(topResults.length <= 4) {
-          bottomResults = topResults.splice((topResults.length - 1), 1);
-        }
-
-        return bottomResults;
-      };
-
-      if(uniqueSortedDistance.length >= averageVisits || (workingDays === day+1 && visitsRemaining.length > uniqueSortedDistance.length)) {
-        let topResults;
-
-        if(workingDays === day+1 && visitsRemaining.length > uniqueSortedDistance.length) {
-          topResults = sortedDistance.splice(0, visitsRemaining.length);
+          !findDuplicate && visit.value > 0 ? topDistances.push(visit) : null;
         } else {
-          topResults = uniqueSortedDistance.splice(0, averageVisits + 1);
-        }
-         
-        
-        const bottomResults = await determineBottomResults(topResults);
-
-        if(bottomResults === topResults) {
-          return topResults;
-        } 
-
-        let bottomVisitsToCompare = [];
-
-        for (let i = 0; i < bottomResults.length; i++) {
-          const origin = bottomResults[i].coordinates;
-
-          const bottomDistData = await returnDistanceData(origin);
-
-          const sortedBottomDistance = bottomDistData.sort((a, b) => a.value - b.value);
-
-          const top4Distances = sortedBottomDistance.splice(0, 4).reduce((accum, visit) => {
-            return {
-              value: accum.value + visit.value,
-              coordinates: origin,
-              address: bottomResults[i].address
-            };
-          }, { value: 0, address: bottomResults[i].address, coordinates: origin });
-          
-
-          bottomVisitsToCompare.push(top4Distances);
-          
+            break;
         }
 
-        const sortBottomVisits = bottomVisitsToCompare.sort((a, b) => b.value - a.value);
-
-       topResults.push(sortBottomVisits[0]);
-
-       return topResults;
-      } else {
-        const topResults = uniqueSortedDistance.splice(0, uniqueSortedDistance.length);
-        return topResults;
-      }      
+      }
+     
+      return topDistances;
     };
 
     for (let day = 0; day < workingDays; day++) {
       if(visitsRemaining.length === 0) {
         user.groups = groups;
 
-        console.log(user.groups);
         await user.save();
         return res.status(201).json(user.groups);
-      }
+      };
+
       const furthestPointResonse = await findFurthestPoint();
       const furthestPoint = visitsRemaining.splice(visitsRemaining.findIndex((visit) => visit === furthestPointResonse), 1);
 
       groups.push(furthestPoint);
       let finalGroup = await createGroup(furthestPoint[0].coordinates, day);
 
-      
 
       for (let i = 0; i < finalGroup.length; i++) {
         const element = finalGroup[i].address;
@@ -732,10 +698,97 @@ router.post('/grouping/:user', async (req, res) => {
       }
     }
 
+    if(visitsRemaining.length === 1) {
+      const remainderData = groups.map((group, index) => {
+        const duplicateCheck = group.find((element) => element.address === visitsRemaining[0].address);
+          return !duplicateCheck ? remainderDistanceData(visitsRemaining[0], group, index) : {value: undefined, groupNum: index, address: visitsRemaining[0].address};
+      });
+
+      const sortedRemainderData = remainderData.sort((a, b) => a.value - b.value);
+
+      const visitToAdd = visitsRemaining.splice(0, 1);
+
+      groups[(sortedRemainderData[0].groupNum)].push(visitToAdd[0]);
+    }
+
+
+    if(visitsRemaining.length > 1) {
+      const remainderValues = visitsRemaining.map((visit) => {
+
+        const remainderData = groups.map((group, index) => {
+          const duplicateCheck = group.find((element) => element.address === visit.address);
+            return !duplicateCheck ? remainderDistanceData(visit, group, index) : {value: undefined, groupNum: index, address: visit.address};
+          });
+
+        return remainderData.sort((a, b) => a.value - b.value);
+      });
+
+
+      let topPicks = []
+
+      visitsRemaining.forEach((visit) => {
+        topPicks.push([]);
+      });
+
+      for (let i = 0; i < remainderValues.length; i++) {
+        const dataArray = remainderValues[i];
+        
+        dataArray.forEach((data, index) => {
+          topPicks[index].push(data);
+        })
+      }
+
+      for (let j = 0; j < topPicks.length; j++) {
+        const pickArray = topPicks[j];
+
+        const executeImplementation = (val) => {
+          const visitIndex = visitsRemaining.findIndex((visit) => visit.address === val.address);
+
+          const visitToAdd = visitsRemaining.splice(visitIndex, 1);
+
+          groups[val.groupNum].push(visitToAdd[0]);
+        }
+
+        if(j === 0) {
+          const filterUndefined = pickArray.filter((pick) => pick.value === undefined);
+          
+          filterUndefined.forEach((value) => {
+            const visitIndex = visitsRemaining.findIndex((visit) => visit.address === value.address);
+            const visitToAdd = visitsRemaining.splice(visitIndex, 1);
+            considerDoubleSession.push(visitToAdd[0]);
+          });
+
+          const filterValues = pickArray.filter((pick) => pick.value !== undefined);
+
+          if(filterValues.length > 0) {
+            filterValues.forEach((value) => {
+              const isDuplicateGroup = filterValues.filter((element) => element.groupNum === value.groupNum);
+  
+              if(isDuplicateGroup.length === 1) {
+                executeImplementation(value);
+              } else {
+                  const sortedDuplicates = isDuplicateGroup.sort((a, b) => a.value - b.value);
+                  executeImplementation(sortedDuplicates[0]);
+              }
+            });
+          }
+        } else {
+            if(visitsRemaining.length !== 0) {
+              visitsRemaining.forEach((value, index) => {
+                const visitToAdd = visitsRemaining.splice(index, 1);
+                considerDoubleSession.push(visitToAdd[0]);
+              })
+            }
+        }
+        
+      }
+    }
+
+
     user.groups = groups;
     await user.save();
 
-    res.status(201).json(user.groups);
+    res.status(201).json({groups: user.groups, considerDoubleSession: considerDoubleSession});
   } catch (error) {
     console.error('Error:', error);
   }
@@ -775,7 +828,7 @@ router.post('/homes/distanceMatrix', async (req, res) => {
     const weeklySchedule = Object.values(req.body);
 
     if(weeklySchedule.length === 0 || !weeklySchedule) {
-      return res.status(400).send('No schedule body sent, no testing required');
+      return res.status(400).send('No schedule body sent, no visiting required');
     };
 
     const convertToSeconds = (timeStamp) => {
@@ -999,3 +1052,19 @@ module.exports = router;
   
     
   
+
+
+
+    // if(visitsRemaining.length !== 0) {
+    //   const remainderValues = visitsRemaining.map((visit) => {
+
+    //     const remainderData = groups.map((group, index) => {
+    //       const duplicateCheck = group.find((element) => element.address === visit.address);
+    //         return !duplicateCheck ? remainderDistanceData(visit, group, index) : {value: null, groupNum: index, address: visit.address};
+    //       });
+
+    //     return remainderData.sort((a, b) => a.value - b.value);
+    //   });
+
+      
+    // }
