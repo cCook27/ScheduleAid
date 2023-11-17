@@ -21,7 +21,7 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus }) => {
             homes.map(home => (
               <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
                 onDragStart={() =>
-                    handleDragStart(home.name, home.address)
+                    handleDragStart(home.name, home.address, home.coordinates)
                   }>
                 <div  className="card my-3">
                   <div className="card-body">

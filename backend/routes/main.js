@@ -330,6 +330,7 @@ router.post('/grouping/:user', async (req, res) => {
     const workingDays = isNaN(parseInt(req.body.workingDays)) ? user.workingDays : parseInt(req.body.workingDays);
 
     const activePatients = homes.filter((home) => home.active);
+
     const fulfillAllFrequecies = activePatients.map((patient) => {
       const patientFrequency = patient.frequency;
       if(patientFrequency > 1) {
@@ -342,6 +343,7 @@ router.post('/grouping/:user', async (req, res) => {
         return [patient];
       }
     });
+
     const abbrevationFix = (address) => {
 
       const abbreviationMap = {
@@ -517,6 +519,7 @@ router.post('/grouping/:user', async (req, res) => {
       return fullAddress;
 
     };
+
     const visits = [].concat(...fulfillAllFrequecies).map((visit) => {
       visit.address = abbrevationFix(visit.address);
       return visit;
@@ -626,7 +629,6 @@ router.post('/grouping/:user', async (req, res) => {
    };
     
     const findFurthestPoint = async () => {
-      // my house
       const origin = {
         lat: 33.2700655,
         lng: -111.7363954
@@ -654,8 +656,12 @@ router.post('/grouping/:user', async (req, res) => {
         }
       }
 
+      if(!furthestPatient) {
+        furthestPatient = sortedDistance[0];
+      }
+
+      const sortedAddress = furthestPatient.address.split(' ');
       const returnPatient = visits.find((visit) => {
-        const sortedAddress = furthestPatient.address.split(' ');
         const visitAddress = visit.address.split(' ')
         return sortedAddress[0] === visitAddress[0] && sortedAddress[1] === visitAddress[1] && sortedAddress[2] === visitAddress[2] && sortedAddress[3] === visitAddress[3]; 
       });
@@ -864,18 +870,19 @@ router.post('/homes/distanceMatrix', async (req, res) => {
           const event = day[i];
 
           if(day[i+1]) {
-            const origin = event.address;
-            const destination = day[i+1].address;
+
+            const origin = event.coordinates;
+            const destination = day[i+1].coordinates;
 
             const endTime = convertToSeconds(event.end);
             const startTime = convertToSeconds(day[i+1].start);
 
             try {
-              const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination}&origins=${origin}&units=imperial&key=${apiKey}`);
+              const response = await axios.get(`https://api.mapbox.com/directions-matrix/v1/mapbox/driving/${origin.lng},${origin.lat};${origin.lng},${origin.lat};${destination.lng},${destination.lat}?approaches=curb;curb;curb&access_token=pk.eyJ1IjoiY29ubm9yY29va2RldiIsImEiOiJjbHAxdWpzZmowbDVwMmxwNWk3cTcyenF0In0.kJiFCWKK_yzkZOK7amzd0g`);
 
               const distanceData = response.data;
 
-              if((startTime - endTime) > distanceData.rows[0].elements[0].duration.value) {
+              if((startTime - endTime) > distanceData.durations[0][2]) {
                 scheduleViability.push( 
                   {
                     isViable: true,

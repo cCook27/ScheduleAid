@@ -215,12 +215,14 @@ function Calendar(props) {
 
       const {client} = draggedClient;
       const {address} = draggedClient
+      const {coordinates} = draggedClient
       const calId = uuidv4();
 
       const event = {
         title: client,
         id: calId,
         address: address,
+        coordinates: coordinates,
         start,
         end,
         isAllDay,
@@ -252,7 +254,7 @@ function Calendar(props) {
       [setMyEvents]
   );
 
-  const handleDragStart = useCallback((client, address) => setDraggedClient({client: client, address: address}), []);
+  const handleDragStart = useCallback((client, address, coordinates) => setDraggedClient({client: client, address: address, coordinates: coordinates}), []);
 
   const testSchedule = useCallback(
     async () => {
@@ -307,31 +309,31 @@ function Calendar(props) {
                 });
     },[]);
 
-    const viewCheck = async (event) => {
-      if(event.target.id === 'Group') {
+  const viewCheck = async (event) => {
+    if(event.target.id === 'Group') {
 
+      setGroupFocus(prev => ({
+        ...prev,
+        view: 'Group'
+      }));
+
+      handleGrouping();
+    } else if(event.target.id === 'Patient') {
         setGroupFocus(prev => ({
           ...prev,
-          view: 'Group'
+          showGroups: false,
+          groupParams: false,
+          view: 'Patient'
         }));
-
-        handleGrouping();
-      } else if(event.target.id === 'Patient') {
-          setGroupFocus(prev => ({
-            ...prev,
-            showGroups: false,
-            groupParams: false,
-            view: 'Patient'
-          }));
-      } else if(event.target.id === 'Edit') {
-          setGroupFocus(prev => ({
-            ...prev,
-            showGroups: false,
-            groupParams: true,
-            view: 'Edit'
-          }));
-      } 
-    };
+    } else if(event.target.id === 'Edit') {
+        setGroupFocus(prev => ({
+          ...prev,
+          showGroups: false,
+          groupParams: true,
+          view: 'Edit'
+        }));
+    } 
+  };
 
   const handleTherapistParameters = (event) => {
     const {name, value} = event.target;

@@ -22,7 +22,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions }
               <div className="col-6 group">
                 <div className="row">
                   {group.map((patient) => (
-                    <div draggable onDragStart={() => handleDragStart(patient.name, patient.address)} className="col-12">
+                    <div draggable onDragStart={() => handleDragStart(patient.name, patient.address, patient.coordinates)} className="col-12">
                       {patient.name}
                     </div>
                   ))}
@@ -33,7 +33,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions }
             patientGroups.map((patient) => (
               <div className="col-6 group">
                 <div className="row">
-                  <div draggable onDragStart={() => handleDragStart(patient.name, patient.address)} className="col-12">
+                  <div draggable onDragStart={() => handleDragStart(patient.name, patient.address, patient.coordinates)} className="col-12">
                     {patient.name}
                   </div>
                 </div>
