@@ -44,12 +44,13 @@ function Calendar(props) {
   });
   const [client, setClient] = useState(null);
   const [changesSaved, setChangesSaved] = useState(false);
-  const [viewChange, setViewChange] = useState(false);
+  const [calViewChange, setCalViewChange] = useState(false);
   const [groupFocus, setGroupFocus] = useState({
     showGroups: false,
     groupParams: false,
     view: 'Patient'
   });
+  const [testSelection, setTestSelection] = useState(undefined);
   const [patientGroups, setPatientGroups] = useState(undefined);
   const [therapistParameters, setTherapistParameters] = useState({
     workingDays: null,
@@ -102,10 +103,10 @@ function Calendar(props) {
         slotGroup.style.border = '1px solid #a5a4a4';
       }
     }
-  },[viewChange]);
+  },[calViewChange]);
 
   const changeView = () => {
-    setViewChange(!viewChange);
+    setCalViewChange(!calViewChange);
   }
   
   const eventPropGetter = useCallback(
@@ -215,14 +216,12 @@ function Calendar(props) {
 
       const {client} = draggedClient;
       const {address} = draggedClient
-      const {coordinates} = draggedClient
       const calId = uuidv4();
 
       const event = {
         title: client,
         id: calId,
         address: address,
-        coordinates: coordinates,
         start,
         end,
         isAllDay,
@@ -254,7 +253,7 @@ function Calendar(props) {
       [setMyEvents]
   );
 
-  const handleDragStart = useCallback((client, address, coordinates) => setDraggedClient({client: client, address: address, coordinates: coordinates}), []);
+  const handleDragStart = useCallback((client, address) => setDraggedClient({client: client, address: address}), []);
 
   const testSchedule = useCallback(
     async () => {
@@ -334,6 +333,35 @@ function Calendar(props) {
         }));
     } 
   };
+
+  const testSelectionCheck = (event) => {
+    switch (event.target.id) {
+      case 'Sunday':
+        setTestSelection('Sunday');
+        break;
+      case 'Monday':
+        setTestSelection('Monday');
+        break;
+      case 'Tuesday':
+        setTestSelection('Tuesday');
+        break;
+      case 'Wednesday':
+        setTestSelection('Wednesday');
+        break;
+      case 'Thursday':
+        setTestSelection('Thursday');
+        break;
+      case 'Friday':
+        setTestSelection('Friday');
+        break;
+      case 'Saturday':
+        setTestSelection('Saturday');
+        break;
+      default:
+        setTestSelection(undefined);
+        break;
+    }
+  }
 
   const handleTherapistParameters = (event) => {
     const {name, value} = event.target;
@@ -432,13 +460,51 @@ function Calendar(props) {
         </div>
 
         {/* Homes */}
-        <div className="col ms-3">
+        <div className="col d-flex flex-column justify-content-center align-items-center ms-3">
           <div className="row d-flex">
             <div className="col">
+              <div className="btn-group d-flex justify-content-center">   
+                <input type="radio" className="btn-check" name="Sunday" id="Sunday" autocomplete="off" onChange={testSelectionCheck} 
+                checked={testSelection === 'Sunday'}
+                />
+                <label className="btn btn-outline-primary" for="Sunday">Sunday</label>
+
+                <input type="radio" className="btn-check" name="Monday" id="Monday" autocomplete="off" onChange={testSelectionCheck}
+                checked={testSelection === 'Monday'}
+                />
+                <label className="btn btn-outline-primary" for="Monday">Monday</label>
+
+                <input type="radio" className="btn-check" name="Tuesday" id="Tuesday" autocomplete="off" onChange={testSelectionCheck}
+                checked={testSelection === 'Tuesday'}
+                />
+                <label className="btn btn-outline-primary" for="Tuesday">Tuesday</label>
+
+                <input type="radio" className="btn-check" name="Wednesday" id="Wednesday" autocomplete="off" onChange={testSelectionCheck}
+                checked={testSelection === 'Wednesday'}
+                />
+                <label className="btn btn-outline-primary" for="Wednesday">Wednesday</label>
+              </div>
+
+              <div className="btn-group d-flex justify-content-center">
+                <input type="radio" className="btn-check" name="Thursday" id="Thursday" autocomplete="off" onChange={testSelectionCheck}
+                checked={testSelection === 'Thursday'}
+                />
+                <label className="btn btn-outline-primary" for="Thursday">Thursday</label>
+
+                <input type="radio" className="btn-check" name="Friday" id="Friday" autocomplete="off" onChange={testSelectionCheck}
+                checked={testSelection === 'Friday'}
+                />
+                <label className="btn btn-outline-primary" for="Friday">Friday</label>
+
+                <input type="radio" className="btn-check" name="Saturday" id="Saturday" autocomplete="off" onChange={testSelectionCheck}
+                checked={testSelection === 'Saturday'}
+                />
+                <label className="btn btn-outline-primary" for="Saturday">Saturday</label>
+              </div>
+
               <div className='d-flex justify-content-center align-items-center mb-3'>
                 <button onClick={testSchedule} className="test m-2">Test</button>
                 <button onClick={removeAllEvents} className="test m-2">Delete All</button>
-                <button className="save m-2">All Schedules</button>
               </div>
             </div>
           </div>
@@ -447,15 +513,15 @@ function Calendar(props) {
             <div className="col d-flex flex-column justify-content-center">
               <div className="btn-group" role="group" aria-label="Basic radio  toggle button group">
                 
-                <input type="radio" className="btn-check" name="Patient" id="Patient" autocomplete="off" 
+                <input type="radio" className="btn-check view-btn" name="Patient" id="Patient" autocomplete="off" 
                 checked={groupFocus.view === 'Patient'}  onChange={viewCheck}
                 />
                 <label className="btn btn-outline-primary" for="Patient">Patient View</label>
 
-                <input type="radio" className="btn-check" name="Edit" id="Edit" autocomplete="off" checked={groupFocus.view === 'Edit'}  onChange={viewCheck} />
+                <input type="radio" className="btn-check view-btn" name="Edit" id="Edit" autocomplete="off" checked={groupFocus.view === 'Edit'}  onChange={viewCheck} />
                 <label className="btn btn-outline-primary" for="Edit">Edit Group</label>
 
-                <input type="radio" className="btn-check" name="Group" id="Group" autocomplete="off" checked={groupFocus.view === 'Group'}  onChange={viewCheck} />
+                <input type="radio" className="btn-check view-btn" name="Group" id="Group" autocomplete="off" checked={groupFocus.view === 'Group'}  onChange={viewCheck} />
                 <label className="btn btn-outline-primary" for="Group">Group View</label>
               </div>
             </div>
@@ -495,12 +561,3 @@ function Calendar(props) {
 }
 
 export default Calendar;
-
-
-       
-
-
-// <select onChange={viewCheck}>
-//                 <option value="Patient">Patient View</option>
-//                 <option value="Group">Group View</option>
-//               </select>
