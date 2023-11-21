@@ -32,7 +32,7 @@ function Calendar(props) {
   const accessToken = useContext(AccessTokenContext);
 
   const {getHomes} = useHomeRequests();
-  const {getTimeDistances, createGroups, checkGroups} = useDistanceRequests();
+  const {getTimeDistances, createGroups} = useDistanceRequests();
   const {saveUserSchedule, getUserSchedule, deleteSchedule} = useScheduleRequests();
 
   const [myEvents, setMyEvents] = useState([]);
@@ -55,6 +55,8 @@ function Calendar(props) {
   const [therapistParameters, setTherapistParameters] = useState({
     workingDays: null,
   });
+  const [viewStartDate, setViewStartDate] = useState(null);
+  const [viewEndDate, setViewEndDate] = useState(null);
 
   const { data: homes, homeStatus } = useQuery(["homes"], 
     () => getHomes(user._id, accessToken)
@@ -68,12 +70,35 @@ function Calendar(props) {
     }
   );
 
-  useEffect(() => {
-    if(changesSaved) {
-      saveUserSchedule(user._id, myEvents, accessToken);
-      setChangesSaved(true)
+  const handleNavigate = date => {
+    let newStart, newEnd;
+
+    const newDate = new Date(date);
+    const today = new Date(moment())
+
+    if(newDate.getTime() > today.getTime()) {
+      newStart = localizer.add(viewStartDate, 7, 'days');
+      newEnd = localizer.add(viewEndDate, 7, 'days');
+    } else {
+      newStart = localizer.add(viewStartDate, -7, 'days');
+      newEnd = localizer.add(viewEndDate, -7, 'days');
     }
-    
+
+    setViewStartDate(newStart);
+    setViewEndDate(newEnd);
+  };
+
+  useEffect(() => {
+    const currentDay = new Date(moment().toLocaleString('en-US', { weekday: 'short' })).getDay();
+    const startDate = localizer.add(moment(), -currentDay, 'days');
+    const endDate = localizer.add(moment(), (6-currentDay), 'days'); 
+
+    setViewStartDate(startDate);
+    setViewEndDate(endDate);
+  }, []);
+
+  useEffect(() => {
+    saveUserSchedule(user._id, myEvents, accessToken);
   }, [myEvents]);
 
   useEffect(() => {
@@ -83,7 +108,6 @@ function Calendar(props) {
     }));
   }, []);
 
-  
   useEffect(() => {
     const timeSlots = document.querySelectorAll('.rbc-time-slot');
     const timeSlotsGroups = document.querySelectorAll('.rbc-timeslot-group');
@@ -216,12 +240,14 @@ function Calendar(props) {
 
       const {client} = draggedClient;
       const {address} = draggedClient
+      const {coordinates} = draggedClient
       const calId = uuidv4();
 
       const event = {
         title: client,
         id: calId,
         address: address,
+        coordinates: coordinates,
         start,
         end,
         isAllDay,
@@ -253,25 +279,30 @@ function Calendar(props) {
       [setMyEvents]
   );
 
-  const handleDragStart = useCallback((client, address) => setDraggedClient({client: client, address: address}), []);
-
+  const handleDragStart = useCallback((client, address, coordinates) => setDraggedClient({client: client, address: address, coordinates: coordinates}), []);
+  
   const testSchedule = useCallback(
     async () => {
-      const weeklySchedule = myEvents.reduce((accum, event) => {
-        const day = event.start.toLocaleString('en-US', { weekday: 'short' });
+      const viewStart = new Date(viewStartDate).getTime();
+      const viewEnd = new Date(viewEndDate).getTime();
 
-        return {
-          ...accum, [day]: [...accum[day], event].sort((a, b) => a.start - b.start)
+      const selectedDaySchedule = myEvents.filter((event) => {
+        const day = event.start.toLocaleString('en-US', { weekday: 'long' });
+
+        const start = new Date(event.start).getTime();
+
+        if(day === testSelection && (start >= viewStart && start <= viewEnd)) {
+          return event;
         }
-        }, {
-            Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: [], Sun: []
-          }
-      );
-      const viabilityData = await getTimeDistances(weeklySchedule, accessToken);
+      }).sort((a, b) => a.start - b.start);
 
-      eventViability(viabilityData);
+      if(selectedDaySchedule.length > 1) {
+        const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
+        eventViability(viabilityData);
+        setTestSelection(undefined);
+      }
     },
-    [myEvents]
+    [myEvents, testSelection]
   );
 
   const removeAllEvents = () => {
@@ -452,6 +483,7 @@ function Calendar(props) {
               onSelectEvent={selectEvent}
               step={5}
               defaultView="week" 
+              onNavigate={handleNavigate}
               onView={changeView}
               resizable
               selectable
@@ -464,46 +496,46 @@ function Calendar(props) {
           <div className="row d-flex">
             <div className="col">
               <div className="btn-group d-flex justify-content-center">   
-                <input type="radio" className="btn-check" name="Sunday" id="Sunday" autocomplete="off" onChange={testSelectionCheck} 
+                <input type="radio" className="btn-check" name="Sunday" id="Sunday" onChange={testSelectionCheck} 
                 checked={testSelection === 'Sunday'}
                 />
-                <label className="btn btn-outline-primary" for="Sunday">Sunday</label>
+                <label className="btn btn-outline-primary" htmlFor="Sunday">Sunday</label>
 
-                <input type="radio" className="btn-check" name="Monday" id="Monday" autocomplete="off" onChange={testSelectionCheck}
+                <input type="radio" className="btn-check" name="Monday" id="Monday" onChange={testSelectionCheck}
                 checked={testSelection === 'Monday'}
                 />
-                <label className="btn btn-outline-primary" for="Monday">Monday</label>
+                <label className="btn btn-outline-primary" htmlFor="Monday">Monday</label>
 
-                <input type="radio" className="btn-check" name="Tuesday" id="Tuesday" autocomplete="off" onChange={testSelectionCheck}
+                <input type="radio" className="btn-check" name="Tuesday" id="Tuesday" onChange={testSelectionCheck}
                 checked={testSelection === 'Tuesday'}
                 />
-                <label className="btn btn-outline-primary" for="Tuesday">Tuesday</label>
+                <label className="btn btn-outline-primary" htmlFor="Tuesday">Tuesday</label>
 
-                <input type="radio" className="btn-check" name="Wednesday" id="Wednesday" autocomplete="off" onChange={testSelectionCheck}
+                <input type="radio" className="btn-check" name="Wednesday" id="Wednesday" onChange={testSelectionCheck}
                 checked={testSelection === 'Wednesday'}
                 />
-                <label className="btn btn-outline-primary" for="Wednesday">Wednesday</label>
+                <label className="btn btn-outline-primary" htmlFor="Wednesday">Wednesday</label>
               </div>
 
               <div className="btn-group d-flex justify-content-center">
-                <input type="radio" className="btn-check" name="Thursday" id="Thursday" autocomplete="off" onChange={testSelectionCheck}
+                <input type="radio" className="btn-check" name="Thursday" id="Thursday" onChange={testSelectionCheck}
                 checked={testSelection === 'Thursday'}
                 />
-                <label className="btn btn-outline-primary" for="Thursday">Thursday</label>
+                <label className="btn btn-outline-primary" htmlFor="Thursday">Thursday</label>
 
-                <input type="radio" className="btn-check" name="Friday" id="Friday" autocomplete="off" onChange={testSelectionCheck}
+                <input type="radio" className="btn-check" name="Friday" id="Friday" onChange={testSelectionCheck}
                 checked={testSelection === 'Friday'}
                 />
-                <label className="btn btn-outline-primary" for="Friday">Friday</label>
+                <label className="btn btn-outline-primary" htmlFor="Friday">Friday</label>
 
-                <input type="radio" className="btn-check" name="Saturday" id="Saturday" autocomplete="off" onChange={testSelectionCheck}
+                <input type="radio" className="btn-check" name="Saturday" id="Saturday" onChange={testSelectionCheck}
                 checked={testSelection === 'Saturday'}
                 />
-                <label className="btn btn-outline-primary" for="Saturday">Saturday</label>
+                <label className="btn btn-outline-primary" htmlFor="Saturday">Saturday</label>
               </div>
 
               <div className='d-flex justify-content-center align-items-center mb-3'>
-                <button onClick={testSchedule} className="test m-2">Test</button>
+                <button onClick={testSchedule} className="test m-2" disabled={!testSelection}>Test</button>
                 <button onClick={removeAllEvents} className="test m-2">Delete All</button>
               </div>
             </div>
@@ -513,16 +545,16 @@ function Calendar(props) {
             <div className="col d-flex flex-column justify-content-center">
               <div className="btn-group" role="group" aria-label="Basic radio  toggle button group">
                 
-                <input type="radio" className="btn-check view-btn" name="Patient" id="Patient" autocomplete="off" 
+                <input type="radio" className="btn-check view-btn" name="Patient" id="Patient" 
                 checked={groupFocus.view === 'Patient'}  onChange={viewCheck}
                 />
-                <label className="btn btn-outline-primary" for="Patient">Patient View</label>
+                <label className="btn btn-outline-primary" htmlFor="Patient">Patient View</label>
 
-                <input type="radio" className="btn-check view-btn" name="Edit" id="Edit" autocomplete="off" checked={groupFocus.view === 'Edit'}  onChange={viewCheck} />
-                <label className="btn btn-outline-primary" for="Edit">Edit Group</label>
+                <input type="radio" className="btn-check view-btn" name="Edit" id="Edit" checked={groupFocus.view === 'Edit'}  onChange={viewCheck} />
+                <label className="btn btn-outline-primary" htmlFor="Edit">Edit Group</label>
 
-                <input type="radio" className="btn-check view-btn" name="Group" id="Group" autocomplete="off" checked={groupFocus.view === 'Group'}  onChange={viewCheck} />
-                <label className="btn btn-outline-primary" for="Group">Group View</label>
+                <input type="radio" className="btn-check view-btn" name="Group" id="Group" checked={groupFocus.view === 'Group'}  onChange={viewCheck} />
+                <label className="btn btn-outline-primary" htmlFor="Group">Group View</label>
               </div>
             </div>
           </div>

@@ -132,6 +132,10 @@ button:hover {
   border: 2px solid black;
 }
 
+.test:disabled {
+  background: #8c8c8c;
+}
+
 /* calendar */
 
 .rbc-btn {

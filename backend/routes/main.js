@@ -849,9 +849,9 @@ router.post('/user', async (req, res) => {
 
 router.post('/homes/distanceMatrix', async (req, res) => {
   try {
-    const weeklySchedule = Object.values(req.body);
+    const selectedDaySchedule = Object.values(req.body);
 
-    if(weeklySchedule.length === 0 || !weeklySchedule) {
+    if(selectedDaySchedule.length === 0 || !selectedDaySchedule) {
       return res.status(400).send('No schedule body sent, no visiting required');
     };
 
@@ -865,58 +865,58 @@ router.post('/homes/distanceMatrix', async (req, res) => {
     const timeChecker = async () => {
       let scheduleViability = [];
 
-      await Promise.all(weeklySchedule.map(async (day) => {
-        for (let i = 0; i < day.length; i++) {
-          const event = day[i];
+      
+      for (let i = 0; i < selectedDaySchedule.length; i++) {
+        const event = selectedDaySchedule[i];
 
-          if(day[i+1]) {
+        if(selectedDaySchedule[i+1]) {
 
-            const origin = event.coordinates;
-            const destination = day[i+1].coordinates;
+          const origin = event.coordinates;
+          const destination = selectedDaySchedule[i+1].coordinates;
 
-            const endTime = convertToSeconds(event.end);
-            const startTime = convertToSeconds(day[i+1].start);
+          const endTime = convertToSeconds(event.end);
+          const startTime = convertToSeconds(selectedDaySchedule[i+1].start);
 
-            try {
-              const response = await axios.get(`https://api.mapbox.com/directions-matrix/v1/mapbox/driving/${origin.lng},${origin.lat};${origin.lng},${origin.lat};${destination.lng},${destination.lat}?approaches=curb;curb;curb&access_token=pk.eyJ1IjoiY29ubm9yY29va2RldiIsImEiOiJjbHAxdWpzZmowbDVwMmxwNWk3cTcyenF0In0.kJiFCWKK_yzkZOK7amzd0g`);
+          try {
+            const response = await axios.get(`https://api.mapbox.com/directions-matrix/v1/mapbox/driving/${origin.lng},${origin.lat};${origin.lng},${origin.lat};${destination.lng},${destination.lat}?approaches=curb;curb;curb&access_token=${apiKey}`);
 
-              const distanceData = response.data;
+            const distanceData = response.data;
 
-              if((startTime - endTime) > distanceData.durations[0][2]) {
-                scheduleViability.push( 
-                  {
-                    isViable: true,
-                    originId: event.id,
-                    destinationId: day[i+1].id
-                  });
-                } else {
-                    scheduleViability.push( 
-                      {
-                        isViable: false,
-                        originId: event.id,
-                        destinationId: day[i+1].id
-                      });
-                  } 
-            } catch (error) {
-              console.error("Error making the request:", error);
-
-              if (error.response) {
-                if (error.response.status === 404) {
-                  res.status(404).send("Resource not found");
-                } else if (error.response.status === 401) {
-                  res.status(401).send("Unauthorized");
-                } else {
-                  res.status(error.response.status).send("An error occurred during the request");
-                }
-              } else if (error.request) {
-                res.status(500).send("No response received from the server");
+            if((startTime - endTime) > distanceData.durations[0][2]) {
+              scheduleViability.push( 
+                {
+                  isViable: true,
+                  originId: event.id,
+                  destinationId: selectedDaySchedule[i+1].id
+                });
               } else {
-                res.status(500).send(`Request setup error: ${error.message}`);
+                  scheduleViability.push( 
+                    {
+                      isViable: false,
+                      originId: event.id,
+                      destinationId: selectedDaySchedule[i+1].id
+                    });
+                } 
+          } catch (error) {
+            console.error("Error making the request:", error);
+
+            if (error.response) {
+              if (error.response.status === 404) {
+                res.status(404).send("Resource not found");
+              } else if (error.response.status === 401) {
+                res.status(401).send("Unauthorized");
+              } else {
+                res.status(error.response.status).send("An error occurred during the request");
               }
-            };
-          }
+            } else if (error.request) {
+              res.status(500).send("No response received from the server");
+            } else {
+              res.status(500).send(`Request setup error: ${error.message}`);
+            }
+          };
         }
-      }));
+      }
+     
 
       return scheduleViability;
     };
