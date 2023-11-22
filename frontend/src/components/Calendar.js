@@ -279,7 +279,9 @@ function Calendar(props) {
       [setMyEvents]
   );
 
-  const handleDragStart = useCallback((client, address, coordinates) => setDraggedClient({client: client, address: address, coordinates: coordinates}), []);
+  const handleDragStart = useCallback((client, address, coordinates) => {
+    setDraggedClient({client: client, address: address, coordinates: coordinates})
+  },[])
   
   const testSchedule = useCallback(
     async () => {
@@ -291,9 +293,7 @@ function Calendar(props) {
 
         const start = new Date(event.start).getTime();
 
-        if(day === testSelection && (start >= viewStart && start <= viewEnd)) {
-          return event;
-        }
+        return day === testSelection && (start >= viewStart && start <= viewEnd);
       }).sort((a, b) => a.start - b.start);
 
       if(selectedDaySchedule.length > 1) {
@@ -337,7 +337,7 @@ function Calendar(props) {
                  start: `${month}-${day}-${year} at ${hours}:${minutes}`,
                  repeat: event.repeat
                 });
-    },[]);
+  },[]);
 
   const viewCheck = async (event) => {
     if(event.target.id === 'Group') {
@@ -562,7 +562,7 @@ function Calendar(props) {
           <div className="row">
             {!groupFocus.showGroups && !groupFocus.groupParams ? (
               <div>
-                <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus}/>
+                <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate}/>
               </div>
             ) : groupFocus.showGroups ? (
                 <div>
