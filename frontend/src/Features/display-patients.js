@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import Loading from "../pop-ups/loading";
 
-import "../css/display-groups.css"
+import "../css/display-patients.css"
 
 const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, end }) => {
 
@@ -19,12 +19,13 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
         return eventStart >= viewStart && eventStart <= viewEnd;
       });
   
-      const homesRemaining = homes.filter((home) => {
+      const homesRemaining = homes.map((home) => {
         const frequency = parseInt(home.frequency);
       
-        return frequency !== eventsUsed.filter((event) => event.address === home.address).length;
+        if(frequency !== eventsUsed.filter((event) => event.address === home.address && event.title === home.name).length) {
+          return home;
+        }
       });
-      
   
       setRemainingHomes(homesRemaining);
     }
@@ -43,8 +44,9 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
           <div>No Patients saved</div>     
         </div>
       ) : (
-        remainingHomes.map(home => (
-              <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
+        remainingHomes.map((home, index) => (
+              home ? (
+                <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
                 onDragStart={() =>
                     handleDragStart(home.name, home.address, home.coordinates)
                   }>
@@ -54,6 +56,16 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
                   </div>
                 </div>
               </div>
+              ) : (
+                <div key={homes[index]._id} className="col d-flex justify-content-end align-items-center" >
+                    <div  className="card my-3 used">
+                      <div className="card-body">
+                        <div className="card-title">{homes[index].name}</div>
+                      </div>
+                    </div>
+                </div>
+              )
+              
               )
             )
           )

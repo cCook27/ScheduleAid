@@ -5,8 +5,9 @@ import Loading from "../pop-ups/loading";
 
 import "../css/display-groups.css"
 
-const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions }) => {
+const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions }) =>{
  
+  
 
   return (
     <div className="container">
