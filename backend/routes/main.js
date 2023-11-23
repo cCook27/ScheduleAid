@@ -808,7 +808,6 @@ router.post('/grouping/:user', async (req, res) => {
       }
     }
 
-
     user.groups = groups;
     await user.save();
 
@@ -1080,16 +1079,33 @@ module.exports = router;
 
 
 
-    // if(visitsRemaining.length !== 0) {
-    //   const remainderValues = visitsRemaining.map((visit) => {
-
-    //     const remainderData = groups.map((group, index) => {
-    //       const duplicateCheck = group.find((element) => element.address === visit.address);
-    //         return !duplicateCheck ? remainderDistanceData(visit, group, index) : {value: null, groupNum: index, address: visit.address};
-    //       });
-
-    //     return remainderData.sort((a, b) => a.value - b.value);
-    //   });
-
+    
       
-    // }
+// for (let i = 0; i < groups.length; i++) {
+//   const group = groups[i];
+//   for (let j = 0; j < group.length; j++) {
+//     const patient = group[j];
+
+//     const flatGroup = groups.flat();
+//     const matches = flatGroup.filter((flatPatient) => flatPatient._id === patient._id);
+
+//     matches.length === 1 ? patient['groupNumber'] = i : patient['groupNumber'] = null;
+
+//     let newHomes = homes.filter((home) => home._id !== patient._id);
+
+//     newHomes.push(patient);
+//     user.homes = newHomes;
+
+//     const updatedSchedule = user.schedule.map((element) => {
+//       const patientMatch = newHomes.find((home) => {
+//         return home.address === element.address;
+//       });
+
+//       patientMatch ? element.groupNumber = patientMatch.groupNumber : null;
+
+//       return element;
+//     });
+
+//     user.schedule = updatedSchedule;
+//   }
+// }

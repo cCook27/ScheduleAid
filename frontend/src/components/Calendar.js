@@ -240,7 +240,8 @@ function Calendar(props) {
 
       const {client} = draggedClient;
       const {address} = draggedClient
-      const {coordinates} = draggedClient
+      const {coordinates} = draggedClient;
+      const {groupNumber} = draggedClient
       const calId = uuidv4();
 
       const event = {
@@ -248,6 +249,8 @@ function Calendar(props) {
         id: calId,
         address: address,
         coordinates: coordinates,
+        scheduled: undefined,
+        groupNumber: groupNumber,
         start,
         end,
         isAllDay,
@@ -279,8 +282,8 @@ function Calendar(props) {
       [setMyEvents]
   );
 
-  const handleDragStart = useCallback((client, address, coordinates) => {
-    setDraggedClient({client: client, address: address, coordinates: coordinates})
+  const handleDragStart = useCallback((client, address, coordinates, groupNumber) => {
+    setDraggedClient({client: client, address: address, coordinates: coordinates, groupNumber})
   },[])
   
   const testSchedule = useCallback(
@@ -566,7 +569,7 @@ function Calendar(props) {
               </div>
             ) : groupFocus.showGroups ? (
                 <div>
-                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} />
+                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} myEvents={myEvents} start={viewStartDate} end={viewEndDate} />
                 </div>
             ) : groupFocus.groupParams ? (
                 <div>

@@ -31,7 +31,7 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
     }
     
 
-  },[myEvents])
+  },[myEvents, start])
 
   return (
     <div className="row">
