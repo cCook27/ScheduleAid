@@ -1,5 +1,4 @@
-import React, {useEffect, useContext} from 'react';
-import { useState, useCallback } from 'react';
+import React, {useEffect, useContext, useState, useCallback} from 'react';
 import '../css/calendar.css';
 import { v4 as uuidv4 } from 'uuid';
 import { useQuery, useQueryClient } from 'react-query';
@@ -133,102 +132,91 @@ function Calendar(props) {
     setCalViewChange(!calViewChange);
   }
   
-  const eventPropGetter = useCallback(
-    (event) => ({
-      
-      ...(event.isViableDest === false && event.isViableOrg === true && {
-        className: 'orgVDestN',
-      }),
-      ...(event.isViableDest === true && event.isViableOrg === false && {
-        className: 'orgNDestV',
-      }),
-
-      ...(event.isViableDest === false && event.isViableOrg === null && {
-        className: 'orgNullDestN',
-      }),
-      ...(event.isViableDest === null && event.isViableOrg === false && {
-        className: 'orgNDestNull',
-      }),
-
-      ...(event.isViableDest === null && event.isViableOrg === true && {
-        className: 'orgVDestNull',
-      }),
-      ...(event.isViableDest === true && event.isViableOrg === null && {
-        className: 'orgNullDestV',
-      }),
-
-
-      ...(event.isViableDest === false && event.isViableOrg === false && {
-        className: 'bothNotViable',
-      }),
-      ...(event.isViableDest === true && event.isViableOrg === true && {
-        className: 'bothViable',
-      }),
+  const eventPropGetter = (event) => ({
+    ...(event.isViableDest === false && event.isViableOrg === true && {
+      className: 'orgVDestN',
     }),
-    [myEvents]
-  );
+    ...(event.isViableDest === true && event.isViableOrg === false && {
+      className: 'orgNDestV',
+    }),
 
-  const eventViability = useCallback(
-    (viabilityData) => {
-      if(viabilityData) {
-        viabilityData.forEach((element) => {
-          setMyEvents((prev) => {
-            let origin = prev.find((event) => event.id === element.originId);
-            origin.isViableOrg = element.isViable;
-  
-            const filteredState = prev.filter((event) => event.id !== element.originId);
-  
-            return [...filteredState, {...origin}]
-          });
-  
-          setMyEvents((prev) => {
-            let destination = prev.find((event) => event.id === element.destinationId);
-            destination.isViableDest = element.isViable;
-  
-            const filteredState = prev.filter((event) => event.id !== element.destinationId);
-  
-            return [...filteredState, {...destination}]
-          });
-  
+    ...(event.isViableDest === false && event.isViableOrg === null && {
+      className: 'orgNullDestN',
+    }),
+    ...(event.isViableDest === null && event.isViableOrg === false && {
+      className: 'orgNDestNull',
+    }),
+
+    ...(event.isViableDest === null && event.isViableOrg === true && {
+      className: 'orgVDestNull',
+    }),
+    ...(event.isViableDest === true && event.isViableOrg === null && {
+      className: 'orgNullDestV',
+    }),
+    ...(event.isViableDest === false && event.isViableOrg === false && {
+      className: 'bothNotViable',
+    }),
+    ...(event.isViableDest === true && event.isViableOrg === true && {
+      className: 'bothViable',
+    }),
+  });
+
+  const handleEventsUpdate = (events) => {
+    setMyEvents(events);
+  };
+
+  const eventViability = (viabilityData) => {
+    if(viabilityData) {
+      viabilityData.forEach((element) => {
+        setMyEvents((prev) => {
+          let origin = prev.find((event) => event.id === element.originId);
+          origin.isViableOrg = element.isViable;
+
+          const filteredState = prev.filter((event) => event.id !== element.originId);
+
+          return [...filteredState, {...origin}]
         });
-      } else {
-        setModal(prev => ({
-          ...prev,
-          error: true
-        }));
-      }
-     
-      setChangesSaved(false);
-    },
-      []
-  );
 
-  const fillInCalendar = useCallback(
-    (dbSchedule) => {
-      const schedule = dbSchedule.map((event) => {
-        const startTime = new Date(event.start);
-        const endTime = new Date(event.end);
+        setMyEvents((prev) => {
+          let destination = prev.find((event) => event.id === element.destinationId);
+          destination.isViableDest = element.isViable;
 
-        event.start = startTime;
-        event.end = endTime;
+          const filteredState = prev.filter((event) => event.id !== element.destinationId);
 
-        return event; 
+          return [...filteredState, {...destination}]
+        });
+
       });
+    } else {
+      setModal(prev => ({
+        ...prev,
+        error: true
+      }));
+    }
+    
+    setChangesSaved(false);
+  };
 
-      
-      setMyEvents([...schedule]);
-    },
-    []
-  );
+  const fillInCalendar = (dbSchedule) => {
+    const schedule = dbSchedule.map((event) => {
+      const startTime = new Date(event.start);
+      const endTime = new Date(event.end);
+
+      event.start = startTime;
+      event.end = endTime;
+
+      return event; 
+    });
+
+    
+    setMyEvents([...schedule]);
+  }
 
   const newEvent = useCallback(
     (event) => {
       setMyEvents((prev) => {
         return [...prev, { ...event }]
       });
-
-      setChangesSaved(true);
-      
     },
     [setMyEvents]
   );
@@ -286,35 +274,31 @@ function Calendar(props) {
     setDraggedClient({client: client, address: address, coordinates: coordinates, groupNumber})
   },[])
   
-  const testSchedule = useCallback(
-    async () => {
-      const viewStart = new Date(viewStartDate).getTime();
-      const viewEnd = new Date(viewEndDate).getTime();
+  const testSchedule = async () => {
+    const viewStart = new Date(viewStartDate).getTime();
+    const viewEnd = new Date(viewEndDate).getTime();
 
-      const selectedDaySchedule = myEvents.filter((event) => {
-        const day = event.start.toLocaleString('en-US', { weekday: 'long' });
+    const selectedDaySchedule = myEvents.filter((event) => {
+      const day = event.start.toLocaleString('en-US', { weekday: 'long' });
 
-        const start = new Date(event.start).getTime();
+      const start = new Date(event.start).getTime();
 
-        return day === testSelection && (start >= viewStart && start <= viewEnd);
-      }).sort((a, b) => a.start - b.start);
+      return day === testSelection && (start >= viewStart && start <= viewEnd);
+    }).sort((a, b) => a.start - b.start);
 
-      if(selectedDaySchedule.length > 1) {
-        const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
-        eventViability(viabilityData);
-        setTestSelection(undefined);
-      }
-    },
-    [myEvents, testSelection]
-  );
+    if(selectedDaySchedule.length > 1) {
+      const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
+      eventViability(viabilityData);
+      setTestSelection(undefined);
+    }
+  }
 
   const removeAllEvents = () => {
     setMyEvents([]);
     deleteSchedule(user._id, accessToken)
   };
 
-  const selectEvent = useCallback(
-    (event) => {
+  const selectEvent = (event) => {
       const date = new Date(event.start);
       const year = date.getFullYear();
       const month = date.getMonth() + 1; 
@@ -340,8 +324,8 @@ function Calendar(props) {
                  start: `${month}-${day}-${year} at ${hours}:${minutes}`,
                  repeat: event.repeat
                 });
-  },[]);
-
+  };
+  
   const viewCheck = async (event) => {
     if(event.target.id === 'Group') {
 
@@ -565,7 +549,7 @@ function Calendar(props) {
           <div className="row">
             {!groupFocus.showGroups && !groupFocus.groupParams ? (
               <div>
-                <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate}/>
+                <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate}/>
               </div>
             ) : groupFocus.showGroups ? (
                 <div>

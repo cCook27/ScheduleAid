@@ -13,6 +13,25 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
     if(homes) {
       const viewStart = new Date(start).getTime();
       const viewEnd = new Date(end).getTime();
+
+      const activePatients = homes.filter((home) => home.active);
+      const fulfillAllFrequecies = activePatients.map((patient) => {
+        const patientFrequency = patient.frequency;
+        if(patientFrequency > 1) {
+          let frequencyArray = [];
+          for (let i = 0; i < patientFrequency; ++i) {
+            frequencyArray.push(patient);
+          }
+          return frequencyArray;
+        } else {
+          return [patient];
+        }
+      });
+      const visits = [].concat(...fulfillAllFrequecies).map((visit) => {
+        return visit;
+      });
+
+      const duplicates = visits.filter((visit, index, arr) => arr.indexOf(visit) !== index)
     
       const eventsUsed = myEvents.filter((event) => {
         const eventStart = new Date(event.start).getTime();
@@ -48,7 +67,7 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
               home ? (
                 <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
                 onDragStart={() =>
-                    handleDragStart(home.name, home.address, home.coordinates)
+                    handleDragStart(home.name, home.address, home.coordinates, null)
                   }>
                 <div  className="card my-3">
                   <div className="card-body">
