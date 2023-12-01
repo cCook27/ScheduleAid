@@ -10,123 +10,169 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
   const [groups, setGroups] = useState([]);
  
   useEffect(() => {
-
     if(patientGroups) {
-   
-      const viewStart = new Date(start).getTime();
-      const viewEnd = new Date(end).getTime();
-
+      const viewStart = new Date(start.setHours(0, 0, 0, 0)).getTime();
+      const viewEnd = new Date(end.setHours(23, 59, 59, 999)).getTime();
+      
       const currentEvents = myEvents.filter((event) => {
         const eventStart = new Date(event.start).getTime();
         return eventStart >= viewStart && eventStart <= viewEnd;
       });
 
+      const duplicateDaysArr = findDuplicateDays(currentEvents);
+
       const updatedGroups = patientGroups.map((group, index) => {
         const editGroup = group.map((patient) => {
           const frequency = parseInt(patient.frequency);
-
+  
           const isScheduled = currentEvents.filter((event) => event.address === patient.address);
 
+          const duplicateDays = duplicateDaysArr.find((element) => {
+            return element.address === patient.address;
+          });
+  
           if(isScheduled.length === 0) {
             return patient;
           } else if(isScheduled.length === frequency) {
             patient.scheduled = 'done';
             return patient;
           }
-
+  
           isScheduled.forEach((event) => {
             if(event.groupNumber === index) {
               patient.scheduled = 'done';
-            } else if(event.groupNumber === null) {
-              patient.scheduled = 'user-marks'
+            } else if(duplicateDays) {
+              patient.scheduled = duplicateDays.days;
             }
           });
-
+  
           
           return patient;
         });
-
+  
         return editGroup;
       });
-
+  
       setGroups(updatedGroups)
+      
      
     };
+
+  
     
   }, [start, myEvents]);
 
-  const checkMark = (id, checkedGroup) => {
-    const matchedPatient = homes.find((home) => {
-      return home._id === id;
+  const findDuplicateDays = (currentEvents) => {
+    const frequentEvents = currentEvents.filter((event) => {
+      const frequency = parseInt(event.frequency);
+      return frequency > 1;
     });
 
-    const frequency = parseInt(matchedPatient.frequency);
+    const uniqueArray = createUniqueSet(frequentEvents);
 
-    let completedChecks = frequency;
-    
-    const viewStart = new Date(start).getTime();
-    const viewEnd = new Date(end).getTime();
+    const duplicateDays = uniqueArray.map((event) => {
+      let days = [];
+      const matches = frequentEvents.filter((item) => item.address === event.address);
 
-    const currentEvents = myEvents.filter((event) => {
-      const eventStart = new Date(event.start).getTime();
-      return eventStart >= viewStart && eventStart <= viewEnd;
-    });
+      matches.forEach((match) => {
+        const options = { weekday: 'short' };
+        const timeStamp = new Date(match.start);
+        const dayShorthand = new Intl.DateTimeFormat('en-US', options).format(timeStamp);
 
-    const isScheduled = currentEvents.filter((event) => event.address === matchedPatient.address);
-    
-    const updatedGroups = groups.map((group, index) => {
-      const editGroup = group.map((patient) => {
-        if(patient._id !== id) {
-          return patient;
-        }
+        const doesExist = days.find((day) => {
+          return day === dayShorthand;
+        });
 
-        if(patient._id === id && index === checkedGroup) {
-          patient.scheduled = 'done';
-        } else if(patient._id === id && index !== checkedGroup) {
-          patient.scheduled = undefined;
-        }
-
-        return patient;
+       if (!doesExist) {
+        days.push(dayShorthand);
+      }
       });
 
-      return editGroup;
+      return {
+        name: event.title,
+        address: event.address,
+        days: days
+      }
     });
 
-    setGroups(updatedGroups);
+    return duplicateDays;
   }
+
+  const createUniqueSet = (frequentEvents) => {
+    const uniqueSet = new Set();
+    const uniqueArray = frequentEvents.filter((item) => {
+      if (!uniqueSet.has(item.name)) {
+        uniqueSet.add(item.name);
+        return true;
+      }
+  
+      return false;
+    });
+
+    return uniqueArray;
+  };
+
 
   return (
     <div className="container">
       <div className="row">
-        {!homes ? (
+        {!homes ? 
+        (
           <div className="col">
             <div>No Patients saved</div>     
           </div>
-          ) : !patientGroups ? (
+          ) : 
+          
+          !patientGroups ? 
+          (
             <div><Loading /></div>
-          ) : (groups.length >= 1 && groups.length <= 7) ? (
+          ) : 
+
+          ///////////////////////////////////////
+          
+          (groups.length >= 1 && groups.length <= 7) ? 
+          
+          (
             groups.map((group, index) => (
               <div className="col-6 group">
                 <div className="row">
+
                   {group.map((patient) => (
-                    patient.scheduled === 'done' ? (
-                      <div className="col-12">
+                    patient.scheduled === 'done' ? 
+                    (
+                      <div className="col-12" draggable onDragStart={() => handleDragStart(patient.name, patient.address, patient.coordinates, index, patient.frequency)}> 
                         <div key={patient._id} className="used">{patient.name}</div>
                       </div>
-                    ) : (patient.scheduled === 'user-marks') ? (
-                      <div className="col-12">
-                        <div key={patient._id} onClick={() => checkMark(patient._id, index)}>{patient.name} check mark</div>
+                    ) : 
+                    
+                    (patient.scheduled) ? 
+                    
+                    (
+                      <div className="col-12" draggable onDragStart={() => handleDragStart(patient.name, patient.address, patient.coordinates, index, patient.frequency)}>
+                        {patient.name} {patient.scheduled.map((day, dayIndex) => (
+                          <span key={dayIndex}>
+                            <input
+                              type="checkbox"
+                            />
+                            {day}
+                          </span>
+                        ))}
                       </div>
-                    ) : (
-                      <div key={patient._id} draggable onDragStart={() => handleDragStart(patient.name, patient.address, patient.coordinates, index)} className="col-12">
+                    ) : 
+                    
+                    (
+                      <div key={patient._id} draggable onDragStart={() => handleDragStart(patient.name, patient.address, patient.coordinates, index, patient.frequency)} className="col-12">
                         {patient.name}
                       </div>
                     )
                   ))}
+
                 </div>
               </div>
             ))
-          ) : (
+          ) : 
+          
+          (
             patientGroups.map((patient) => (
               <div className="col-6 group">
                 <div className="row">
@@ -211,3 +257,86 @@ export default DisplayGroups;
   
 
 // }, [start, myEvents])
+
+
+
+// useEffect(() => {
+
+//   if(patientGroups) {
+ 
+//     const viewStart = new Date(start).getTime();
+//     const viewEnd = new Date(end).getTime();
+
+//     const currentEvents = myEvents.filter((event) => {
+//       const eventStart = new Date(event.start).getTime();
+//       return eventStart >= viewStart && eventStart <= viewEnd;
+//     });
+
+//     const updatedGroups = patientGroups.map((group, index) => {
+//       const editGroup = group.map((patient) => {
+//         const frequency = parseInt(patient.frequency);
+
+//         const isScheduled = currentEvents.filter((event) => event.address === patient.address);
+
+//         if(isScheduled.length === 0) {
+//           return patient;
+//         } else if(isScheduled.length === frequency) {
+//           patient.scheduled = 'done';
+//           return patient;
+//         }
+
+//         isScheduled.forEach((event) => {
+//           if(event.groupNumber === index) {
+//             patient.scheduled = 'done';
+//           } else if(event.groupNumber === null) {
+//             patient.scheduled = 'user-marks'
+//           }
+//         });
+
+        
+//         return patient;
+//       });
+
+//       return editGroup;
+//     });
+
+//     setGroups(updatedGroups)
+   
+//   };
+  
+// }, [start, myEvents]);
+
+
+
+
+
+
+// const updatedGroups = patientGroups.map((group, index) => {
+      //   const editGroup = group.map((patient) => {
+      //     const frequency = parseInt(patient.frequency);
+  
+      //     const isScheduled = currentEvents.filter((event) => event.address === patient.address);
+  
+      //     if(isScheduled.length === 0) {
+      //       return patient;
+      //     } else if(isScheduled.length === frequency) {
+      //       patient.scheduled = 'done';
+      //       return patient;
+      //     }
+  
+      //     isScheduled.forEach((event) => {
+      //       if(event.groupNumber === index) {
+      //         patient.scheduled = 'done';
+      //       } else if(event.groupNumber === null) {
+      //         patient.scheduled = 'user-marks'
+      //       }
+      //     });
+  
+          
+      //     return patient;
+      //   });
+  
+      //   return editGroup;
+      // });
+  
+      // setGroups(updatedGroups)

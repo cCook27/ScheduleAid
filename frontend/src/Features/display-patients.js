@@ -11,8 +11,8 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
   useEffect(() => {
 
     if(homes) {
-      const viewStart = new Date(start).getTime();
-      const viewEnd = new Date(end).getTime();
+      const viewStart = new Date(start.setHours(0, 0, 0, 0)).getTime();
+      const viewEnd = new Date(end.setHours(23, 59, 59, 999)).getTime();
 
       const activePatients = homes.filter((home) => home.active);
       const fulfillAllFrequecies = activePatients.map((patient) => {
@@ -67,7 +67,7 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
               home ? (
                 <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
                 onDragStart={() =>
-                    handleDragStart(home.name, home.address, home.coordinates, null)
+                    handleDragStart(home.name, home.address, home.coordinates, null, home.frequency)
                   }>
                 <div  className="card my-3">
                   <div className="card-body">

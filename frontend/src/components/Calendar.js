@@ -226,10 +226,7 @@ function Calendar(props) {
 
       const end = new Date(start.getTime() + 60 * 60 * 1000);
 
-      const {client} = draggedClient;
-      const {address} = draggedClient
-      const {coordinates} = draggedClient;
-      const {groupNumber} = draggedClient
+      const {client, address, coordinates, groupNumber, frequency} = draggedClient;
       const calId = uuidv4();
 
       const event = {
@@ -239,6 +236,7 @@ function Calendar(props) {
         coordinates: coordinates,
         scheduled: undefined,
         groupNumber: groupNumber,
+        frequency: frequency,
         start,
         end,
         isAllDay,
@@ -270,8 +268,9 @@ function Calendar(props) {
       [setMyEvents]
   );
 
-  const handleDragStart = useCallback((client, address, coordinates, groupNumber) => {
-    setDraggedClient({client: client, address: address, coordinates: coordinates, groupNumber})
+  const handleDragStart = useCallback(
+    (client, address, coordinates, groupNumber, frequency) => {
+      setDraggedClient({client: client, address: address, coordinates: coordinates, groupNumber: groupNumber, frequency: frequency});
   },[])
   
   const testSchedule = async () => {
