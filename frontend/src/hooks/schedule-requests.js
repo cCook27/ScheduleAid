@@ -38,7 +38,6 @@ function useScheduleRequests () {
     }
   };
 
-  
   const deleteSchedule = async (userId, accessToken) => {
     try {
       const options = {
@@ -54,10 +53,27 @@ function useScheduleRequests () {
     }
   };
 
+  const deletePatientSchedule = async (userId, schedule, accessToken) => {
+    try {
+      const options = {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
+        body: JSON.stringify(schedule)
+      };
+
+      const response = await fetch(`${url}/schedule/patient/${userId}`, options); 
+      const data = await response.json();
+
+    } catch (error) {
+        console.log(error);
+    }
+  };
+
   return {
    saveUserSchedule,
    getUserSchedule,
-   deleteSchedule
+   deleteSchedule,
+   deletePatientSchedule
   }
 }
 

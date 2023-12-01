@@ -1058,9 +1058,28 @@ router.delete('/schedule/:user', async (req, res) => {
       {new: true}
     );
 
-    if (!updatedUser) {
-      return res.status(404).send('User not found');
-    }
+    res.status(204).json(deletedSchedule);
+
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while looking for client homes.');
+  }
+});
+
+router.delete('/schedule/patient/:user/', async (req, res) => {
+  try {
+    const userId = req.params.user;
+    const newSchedule = req.body;
+
+    if(!userId) {
+      return res.status(400).send('Bad request, User information not sent.');
+    } 
+
+    const deletedSchedule = await User.findOneAndUpdate(
+      {_id: userId},
+      {$set: {schedule: newSchedule}},
+      {new: true}
+    );
 
     res.status(204).json(deletedSchedule);
 
@@ -1068,7 +1087,7 @@ router.delete('/schedule/:user', async (req, res) => {
     console.error('Error:', error);
     res.status(500).send('An error occurred while looking for client homes.');
   }
-})
+});
 
 
 module.exports = router;

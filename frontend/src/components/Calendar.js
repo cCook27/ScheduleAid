@@ -32,7 +32,7 @@ function Calendar(props) {
 
   const {getHomes} = useHomeRequests();
   const {getTimeDistances, createGroups} = useDistanceRequests();
-  const {saveUserSchedule, getUserSchedule, deleteSchedule} = useScheduleRequests();
+  const {saveUserSchedule, getUserSchedule, deleteSchedule, deletePatientSchedule} = useScheduleRequests();
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
@@ -429,7 +429,7 @@ function Calendar(props) {
   const removeFromCal = (id) => {
     setMyEvents((prev) => {
       const filteredState = prev.filter((ev) => ev.id !== id);
-
+      deletePatientSchedule(user._id, filteredState, accessToken);
       return [...filteredState];
     });
 
@@ -438,7 +438,6 @@ function Calendar(props) {
       patient: false
     }));
     setClient(null);
-    setChangesSaved(false);
   };
 
   const closeModal = () => {
