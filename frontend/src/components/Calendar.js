@@ -7,7 +7,6 @@ import { UserContext, AccessTokenContext } from '../context/context';
 import useDistanceRequests from '../hooks/distance-request';
 import useHomeRequests from '../hooks/home-requests.js';
 import useScheduleRequests from '../hooks/schedule-requests';
-import Loading from '../pop-ups/loading.js';
 
 import { momentLocalizer, Calendar as BigCalendar } from 'react-big-calendar';
 import moment from "moment";
@@ -42,15 +41,15 @@ function Calendar(props) {
     error: false
   });
   const [client, setClient] = useState(null);
-  const [changesSaved, setChangesSaved] = useState(false);
   const [calViewChange, setCalViewChange] = useState(false);
-  const [groupFocus, setGroupFocus] = useState({
+  const [viewFocus, setViewFocus] = useState({
     showGroups: false,
     groupParams: false,
     view: 'Patient'
   });
   const [testSelection, setTestSelection] = useState(undefined);
   const [patientGroups, setPatientGroups] = useState(undefined);
+  const [groupManualChoices, setGroupManualChoices] = useState([]);
   const [therapistParameters, setTherapistParameters] = useState({
     workingDays: null,
   });
@@ -130,7 +129,7 @@ function Calendar(props) {
 
   const changeView = () => {
     setCalViewChange(!calViewChange);
-  }
+  };
   
   const eventPropGetter = (event) => ({
     ...(event.isViableDest === false && event.isViableOrg === true && {
@@ -159,11 +158,28 @@ function Calendar(props) {
     ...(event.isViableDest === true && event.isViableOrg === true && {
       className: 'bothViable',
     }),
+    ...(event.groupNumber === null && viewFocus.view === 'Group' && {
+      className: 'assign-day',
+    }),
   });
 
   const handleEventsUpdate = (events) => {
     setMyEvents(events);
+  };  
+
+  const handleGroupManual = (patientInfo) => {
+    setGroupManualChoices((prev) => {
+      const uniqueChoices = new Set(prev);
+ 
+      if (!uniqueChoices.has(patientInfo._id)) {
+        uniqueChoices.add(patientInfo._id);
+        return Array.from(uniqueChoices).map((id) => prev.find((choice) => choice._id === id));
+      }
+
+      return prev;
+    });
   };
+  
 
   const eventViability = (viabilityData) => {
     if(viabilityData) {
@@ -194,7 +210,6 @@ function Calendar(props) {
       }));
     }
     
-    setChangesSaved(false);
   };
 
   const fillInCalendar = (dbSchedule) => {
@@ -229,6 +244,8 @@ function Calendar(props) {
       const {client, address, coordinates, groupNumber, frequency} = draggedClient;
       const calId = uuidv4();
 
+      const freq = parseInt(frequency);
+
       const event = {
         title: client,
         id: calId,
@@ -244,6 +261,11 @@ function Calendar(props) {
         isViableDest: null,
         repeat: null
       }
+
+      if(groupNumber === null && freq === 1) {
+        event.groupNumber = 'done';
+      }
+
       newEvent(event);
     },
     [newEvent, draggedClient]
@@ -261,9 +283,6 @@ function Calendar(props) {
 
         return [...filteredState, {...existingEvent, start, end, isAllDay}]
       });
-
-      setChangesSaved(true);
-
     }, 
       [setMyEvents]
   );
@@ -319,6 +338,7 @@ function Calendar(props) {
       }));
 
       setClient({title: event.title,
+                address: event.address,
                  id: event.id,
                  start: `${month}-${day}-${year} at ${hours}:${minutes}`,
                  repeat: event.repeat
@@ -328,21 +348,21 @@ function Calendar(props) {
   const viewCheck = async (event) => {
     if(event.target.id === 'Group') {
 
-      setGroupFocus(prev => ({
+      setViewFocus(prev => ({
         ...prev,
         view: 'Group'
       }));
 
       handleGrouping();
     } else if(event.target.id === 'Patient') {
-        setGroupFocus(prev => ({
+        setViewFocus(prev => ({
           ...prev,
           showGroups: false,
           groupParams: false,
           view: 'Patient'
         }));
     } else if(event.target.id === 'Edit') {
-        setGroupFocus(prev => ({
+        setViewFocus(prev => ({
           ...prev,
           showGroups: false,
           groupParams: true,
@@ -398,32 +418,12 @@ function Calendar(props) {
     );
 
     setPatientGroups(returnedGroups);
-    setGroupFocus(prev => ({
+    setViewFocus(prev => ({
       ...prev,
       showGroups: true,
       groupParams: false,
       view: 'Group'
     }))
-  };
-
-  const setClientRepeat = (id, data) => {
-    setMyEvents(prev => {
-      const updatedEvents = prev.map((event) => {
-        if(event.id === id) {
-          return {...event, repeat: data}
-        }
-
-        return event
-      });
-
-      return updatedEvents;
-    }); 
-    
-    setClient(prev => ({
-      ...prev, repeat: data
-    }));
-
-    setChangesSaved(false);
   };
 
   const removeFromCal = (id) => {
@@ -450,7 +450,6 @@ function Calendar(props) {
     setClient(null);
   };
  
-
   return (
     <div className="container-fluid">
       <div className={`row my-5 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
@@ -531,29 +530,29 @@ function Calendar(props) {
               <div className="btn-group" role="group" aria-label="Basic radio  toggle button group">
                 
                 <input type="radio" className="btn-check view-btn" name="Patient" id="Patient" 
-                checked={groupFocus.view === 'Patient'}  onChange={viewCheck}
+                checked={viewFocus.view === 'Patient'}  onChange={viewCheck}
                 />
                 <label className="btn btn-outline-primary" htmlFor="Patient">Patient View</label>
 
-                <input type="radio" className="btn-check view-btn" name="Edit" id="Edit" checked={groupFocus.view === 'Edit'}  onChange={viewCheck} />
+                <input type="radio" className="btn-check view-btn" name="Edit" id="Edit" checked={viewFocus.view === 'Edit'}  onChange={viewCheck} />
                 <label className="btn btn-outline-primary" htmlFor="Edit">Edit Group</label>
 
-                <input type="radio" className="btn-check view-btn" name="Group" id="Group" checked={groupFocus.view === 'Group'}  onChange={viewCheck} />
+                <input type="radio" className="btn-check view-btn" name="Group" id="Group" checked={viewFocus.view === 'Group'}  onChange={viewCheck} />
                 <label className="btn btn-outline-primary" htmlFor="Group">Group View</label>
               </div>
             </div>
           </div>
             
           <div className="row">
-            {!groupFocus.showGroups && !groupFocus.groupParams ? (
+            {!viewFocus.showGroups && !viewFocus.groupParams ? (
               <div>
-                <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate}/>
+                <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} />
               </div>
-            ) : groupFocus.showGroups ? (
+            ) : viewFocus.showGroups ? (
                 <div>
-                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} myEvents={myEvents} start={viewStartDate} end={viewEndDate} />
+                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} handleGroupManual={handleGroupManual} />
                 </div>
-            ) : groupFocus.groupParams ? (
+            ) : viewFocus.groupParams ? (
                 <div>
                   <GroupModal therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
                   handleGrouping={handleGrouping}
@@ -566,7 +565,7 @@ function Calendar(props) {
       
 
         {modal.patient ? <div className="above-overlay" >
-          <PatientModal client={client} setClientRepeat={setClientRepeat} removeFromCal={removeFromCal} closeModal={closeModal} />
+          <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groupManualChoices={groupManualChoices} />
         </div> : null}
 
         {modal.error ? <div className="above-overlay" >

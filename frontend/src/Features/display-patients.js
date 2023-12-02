@@ -6,7 +6,7 @@ import "../css/display-patients.css"
 
 const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, end }) => {
 
-  const [remainingHomes, setRemainingHomes]=useState([]);
+  const [remainingPatients, setRemainingPatients]=useState([]);
  
   useEffect(() => {
 
@@ -15,41 +15,23 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
       const viewEnd = new Date(end.setHours(23, 59, 59, 999)).getTime();
 
       const activePatients = homes.filter((home) => home.active);
-      const fulfillAllFrequecies = activePatients.map((patient) => {
-        const patientFrequency = patient.frequency;
-        if(patientFrequency > 1) {
-          let frequencyArray = [];
-          for (let i = 0; i < patientFrequency; ++i) {
-            frequencyArray.push(patient);
-          }
-          return frequencyArray;
-        } else {
-          return [patient];
-        }
-      });
-      const visits = [].concat(...fulfillAllFrequecies).map((visit) => {
-        return visit;
-      });
-
-      const duplicates = visits.filter((visit, index, arr) => arr.indexOf(visit) !== index)
-    
+      
       const eventsUsed = myEvents.filter((event) => {
         const eventStart = new Date(event.start).getTime();
         return eventStart >= viewStart && eventStart <= viewEnd;
       });
   
-      const homesRemaining = homes.map((home) => {
-        const frequency = parseInt(home.frequency);
+      const patientsRemaining = activePatients.map((patient) => {
+        const frequency = parseInt(patient.frequency);
       
-        if(frequency !== eventsUsed.filter((event) => event.address === home.address && event.title === home.name).length) {
-          return home;
+        if(frequency !== eventsUsed.filter((event) => event.address === patient.address && event.title === patient.name).length) {
+          return patient;
         }
       });
   
-      setRemainingHomes(homesRemaining);
+      setRemainingPatients(patientsRemaining);
     }
-    
-
+  
   },[myEvents, start])
 
   return (
@@ -63,19 +45,21 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
           <div>No Patients saved</div>     
         </div>
       ) : (
-        remainingHomes.map((home, index) => (
-              home ? (
-                <div key={home._id} draggable className="col d-flex justify-content-end align-items-center" 
+        remainingPatients.map((patient, index) => (
+          patient ? 
+              (
+                <div key={patient._id} draggable className="col d-flex justify-content-end align-items-center" 
                 onDragStart={() =>
-                    handleDragStart(home.name, home.address, home.coordinates, null, home.frequency)
+                    handleDragStart(patient.name, patient.address, patient.coordinates, null, patient.frequency)
                   }>
                 <div  className="card my-3">
                   <div className="card-body">
-                    <div className="card-title">{home.name}</div>
+                    <div className="card-title">{patient.name}</div>
                   </div>
                 </div>
               </div>
-              ) : (
+              ) : 
+              (
                 <div key={homes[index]._id} className="col d-flex justify-content-end align-items-center" >
                     <div  className="card my-3 used">
                       <div className="card-body">

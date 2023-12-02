@@ -79,6 +79,12 @@
   border-bottom: 5px solid green !important;
 }
 
+.assign-day {
+  background: transparent !important;
+  color: #003271 !important;
+  border: 2px dotted red !important;
+}
+
 button {
   border: 1px solid #003271;
   border-radius: 5px;

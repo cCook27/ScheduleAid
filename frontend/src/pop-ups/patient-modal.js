@@ -1,23 +1,35 @@
 import React from "react";
+import { useEffect, useState } from "react";
 
-const PatientModal = ({client, setClientRepeat, removeFromCal, closeModal}) => {
+const PatientModal = ({client, removeFromCal, closeModal, groupManualChoices}) => {
+
+  const [groupNums, setGroupNums] = useState([]);
+
+  useEffect(() => {
+    const patientMatches = groupManualChoices.filter((patient) => patient._id === client._id);
+
+    const patientNumbersAvailable = patientMatches.map((patient) => {
+      return {
+        id: patient._id,
+        group: patient.group
+      }
+    });
+
+    setGroupNums(patientNumbersAvailable);
+  }, []);
 
   return(
     <div className="card" style={{width: "18rem", height: "300px"}}>
     <div className="p-0 card-body text-center">
       <h2>{client.title}</h2>
-      <h6 className='text-start ps-2 pt-2'>Repeat:</h6>
-      <div className='row pb-4'>
-        <div className="col">
-          <button className={`repeat ${client.repeat === 'weekly' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'weekly')}>Weekly</button>
-        </div>
-        <div className="col">
-        <button className={`repeat ${client.repeat === 'monthly' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'monthly')}>Monthly</button>
-        </div>
-        <div className="col">
-        <button className={`repeat ${client.repeat === 'never' ? 'repeat-selected' : ''}`} onClick={() => setClientRepeat(client.id, 'never')}>Never</button>
-        </div>
-      </div>
+      <h6 className='text-start ps-2 pt-2'>Choose the Group this Patient Belongs to:</h6>
+        {
+          groupNums ? (
+            groupNums.map((num, index) => (
+              <div key={index}>{num.group}</div>
+            ))
+          ): null
+        }
       <p>
         Would you like to remove this client from {client.start}
       </p>
