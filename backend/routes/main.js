@@ -39,7 +39,15 @@ router.get('/homes/:user', async (req, res) => {
       return res.status(404).send('User not found');
     }
 
-    const userHomes = user.homes;
+    const userHomes = user.homes.map((home) => {
+      if (home.hasOwnProperty('groupNumber')) {
+        // Remove the property
+        delete home['groupNumber'];
+      }
+      return home;
+    });
+
+    user.save();
     
     if(userHomes.length === 0) {
       return res.send([]);
@@ -808,7 +816,20 @@ router.post('/grouping/:user', async (req, res) => {
       }
     }
 
-    user.groups = groups;
+    user.groups = groups.map((group) => {
+      const updatedGroup = group.map((patient) => {
+        if (patient.hasOwnProperty('groupNumber')) {
+          // Remove the property
+          delete patient['groupNumber'];
+        }
+
+        return patient;
+      });
+
+      return updatedGroup;
+    });
+
+    
     await user.save();
 
     res.status(201).json({groups: user.groups, considerDoubleSession: considerDoubleSession});
@@ -1100,31 +1121,3 @@ module.exports = router;
 
     
       
-// for (let i = 0; i < groups.length; i++) {
-//   const group = groups[i];
-//   for (let j = 0; j < group.length; j++) {
-//     const patient = group[j];
-
-//     const flatGroup = groups.flat();
-//     const matches = flatGroup.filter((flatPatient) => flatPatient._id === patient._id);
-
-//     matches.length === 1 ? patient['groupNumber'] = i : patient['groupNumber'] = null;
-
-//     let newHomes = homes.filter((home) => home._id !== patient._id);
-
-//     newHomes.push(patient);
-//     user.homes = newHomes;
-
-//     const updatedSchedule = user.schedule.map((element) => {
-//       const patientMatch = newHomes.find((home) => {
-//         return home.address === element.address;
-//       });
-
-//       patientMatch ? element.groupNumber = patientMatch.groupNumber : null;
-
-//       return element;
-//     });
-
-//     user.schedule = updatedSchedule;
-//   }
-// }

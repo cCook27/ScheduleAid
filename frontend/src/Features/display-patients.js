@@ -50,7 +50,7 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
               (
                 <div key={patient._id} draggable className="col d-flex justify-content-end align-items-center" 
                 onDragStart={() =>
-                    handleDragStart(patient.name, patient.address, patient.coordinates, null, patient.frequency)
+                    handleDragStart(patient.name, patient.address, patient.coordinates)
                   }>
                 <div  className="card my-3">
                   <div className="card-body">

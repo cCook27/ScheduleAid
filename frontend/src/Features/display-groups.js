@@ -6,7 +6,7 @@ import "../css/display-groups.css"
 const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, myEvents, start, end, handleEventsUpdate }) => {
 
   const [groups, setGroups] = useState([]);
-  const [groupingManual, setGroupingManual] = useState([]);
+  // const [groupingManual, setGroupingManual] = useState([]);
   
  
   useEffect(() => {
@@ -22,32 +22,42 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
       const updatedGroups = patientGroups.map((group, index) => {
         const editGroup = group.map((patient) => {
           const frequency = parseInt(patient.frequency);
-  
           const isScheduled = currentEvents.filter((event) => event.address === patient.address && event.title === patient.name);
-  
+
           if(isScheduled.length === 0) {
-            return patient;
-          } else if(isScheduled.length === 1 && frequency === 1) {
-            isScheduled.forEach((event) => {
-              if(event.groupNumber === null) {
-                event.groupNumber = index;
-                updateEvents(event);
-              }
-            });
-            patient.scheduled = 'done';
+            patient.scheduled = false;
             return patient;
           }
 
-          isScheduled.forEach((event) => {
-            if(event.groupNumber === index) {
-              patient.scheduled = 'done';
-              patient.groupNumber = index;
+          if(isScheduled.length === 1 && frequency === 1) {
+            let schedEvent = isScheduled[0];
+
+            if(schedEvent.groupNumber === undefined) {
+              schedEvent.groupNumber = index;
+              updateEvents(schedEvent);
+              // might need to say patient.scheduled = true;
+            };
+
+            if(schedEvent.groupNumber) {
+              patient.scheduled = true;
               return patient;
-            } else if(event.groupNumber === null && patient.scheduled !== 'done') {
-              const patientInfo = {name: patient.name, id: event.id, address: patient.address, group: index}
-              setGroupingManual((prev) => [...prev, patientInfo]);
+            };
+          }
+
+          if(isScheduled.length > 0) {
+            const hasGroupNum = isScheduled.filter((ev) => ev.groupNumber === index);
+
+            if(hasGroupNum.length === 0) {
+              patient.scheduled = false;
+              return patient;
             }
-          });
+
+            if(hasGroupNum.length === 1) {
+              patient.scheduled = true;
+              return patient;
+            }
+          }
+
 
           return patient;
         });
@@ -60,19 +70,19 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
     
   }, [start, myEvents]);
 
-  useEffect(() => {
-    const uniqueObjectsMap = new Map();
+  // useEffect(() => {
+  //   const uniqueObjectsMap = new Map();
 
-    groupingManual.forEach(obj => {
-      uniqueObjectsMap.set(obj.group, obj);
-    });
+  //   groupingManual.forEach(obj => {
+  //     uniqueObjectsMap.set(obj.group, obj);
+  //   });
 
-    const patientGrpNums = Array.from(uniqueObjectsMap.values());
+  //   const patientGrpNums = Array.from(uniqueObjectsMap.values());
 
 
-    // handleGroupManual(patientGrpNums);
-    // console.log(patientGrpNums);
-  }, [groupingManual])
+  //   // handleGroupManual(patientGrpNums);
+  //   // console.log(patientGrpNums);
+  // }, [groupingManual])
 
 
   const updateEvents = (event) => {
@@ -85,6 +95,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
       handleEventsUpdate(updatedEvents);
     }
   };
+
 
   return (
     <div className="container">
@@ -109,15 +120,15 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
                 <div className="row">
 
                   {group.map((patient) => (
-                    patient.scheduled === 'done' ? 
+                    patient.scheduled === true ? 
                     (
-                      <div className="col-12" draggable onDragStart={() => handleDragStart(patient.name, patient.address, patient.coordinates, index, patient.frequency)}> 
+                      <div className="col-12"> 
                         <div key={patient._id} className="used">{patient.name}</div>
                       </div>
                     ) : 
                     
                     (
-                      <div key={patient._id} draggable onDragStart={() => handleDragStart(patient.name, patient.address, patient.coordinates, index, patient.frequency)} className="col-12">
+                      <div key={patient._id} draggable onDragStart={() => handleDragStart(patient.name, patient.address, patient.coordinates, index)} className="col-12">
                         {patient.name}
                       </div>
                     )
