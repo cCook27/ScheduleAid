@@ -168,16 +168,7 @@ function Calendar(props) {
   };  
 
   const handleGroupManual = (patientInfo) => {
-    setGroupManualChoices((prev) => {
-      const uniqueChoices = new Set(prev);
- 
-      if (!uniqueChoices.has(patientInfo._id)) {
-        uniqueChoices.add(patientInfo._id);
-        return Array.from(uniqueChoices).map((id) => prev.find((choice) => choice._id === id));
-      }
-
-      return prev;
-    });
+    setGroupManualChoices(patientInfo);
   };
   
 
@@ -309,7 +300,7 @@ function Calendar(props) {
       eventViability(viabilityData);
       setTestSelection(undefined);
     }
-  }
+  };
 
   const removeAllEvents = () => {
     setMyEvents([]);
@@ -341,7 +332,6 @@ function Calendar(props) {
                 address: event.address,
                  id: event.id,
                  start: `${month}-${day}-${year} at ${hours}:${minutes}`,
-                 repeat: event.repeat
                 });
   };
   

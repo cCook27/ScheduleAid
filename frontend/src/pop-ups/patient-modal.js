@@ -6,17 +6,19 @@ const PatientModal = ({client, removeFromCal, closeModal, groupManualChoices}) =
   const [groupNums, setGroupNums] = useState([]);
 
   useEffect(() => {
-    const patientMatches = groupManualChoices.filter((patient) => patient._id === client._id);
+    const patientMatches = groupManualChoices.filter((patient) => {
+      return patient.id === client.id;
+    });
 
     const patientNumbersAvailable = patientMatches.map((patient) => {
       return {
-        id: patient._id,
+        id: patient.id,
         group: patient.group
       }
     });
 
     setGroupNums(patientNumbersAvailable);
-  }, []);
+  }, [groupManualChoices]);
 
   return(
     <div className="card" style={{width: "18rem", height: "300px"}}>
@@ -26,7 +28,7 @@ const PatientModal = ({client, removeFromCal, closeModal, groupManualChoices}) =
         {
           groupNums ? (
             groupNums.map((num, index) => (
-              <div key={index}>{num.group}</div>
+              <button key={index}>{num.group}</button>
             ))
           ): null
         }
