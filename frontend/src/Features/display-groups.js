@@ -3,7 +3,7 @@ import React, {useState, useEffect} from "react";
 import Loading from "../pop-ups/loading";
 import "../css/display-groups.css"
 
-const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, myEvents, start, end, handleEventsUpdate, handleGroupManual }) => {
+const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, myEvents, start, end, handleEventsUpdate }) => {
 
   const [groups, setGroups] = useState([]);
   const [groupingManual, setGroupingManual] = useState([]);
@@ -70,8 +70,8 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
     const patientGrpNums = Array.from(uniqueObjectsMap.values());
 
 
-    handleGroupManual(patientGrpNums);
-    console.log(patientGrpNums);
+    // handleGroupManual(patientGrpNums);
+    // console.log(patientGrpNums);
   }, [groupingManual])
 
 

@@ -49,7 +49,7 @@ function Calendar(props) {
   });
   const [testSelection, setTestSelection] = useState(undefined);
   const [patientGroups, setPatientGroups] = useState(undefined);
-  const [groupManualChoices, setGroupManualChoices] = useState([]);
+  // const [groupManualChoices, setGroupManualChoices] = useState([]);
   const [therapistParameters, setTherapistParameters] = useState({
     workingDays: null,
   });
@@ -167,9 +167,9 @@ function Calendar(props) {
     setMyEvents(events);
   };  
 
-  const handleGroupManual = (patientInfo) => {
-    setGroupManualChoices(patientInfo);
-  };
+  // const handleGroupManual = (patientInfo) => {
+  //   setGroupManualChoices(patientInfo);
+  // };
   
 
   const eventViability = (viabilityData) => {
@@ -242,9 +242,9 @@ function Calendar(props) {
         id: calId,
         address: address,
         coordinates: coordinates,
-        scheduled: undefined,
-        groupNumber: groupNumber,
-        frequency: frequency,
+        // scheduled: undefined,
+        // groupNumber: groupNumber,
+        // frequency: frequency,
         start,
         end,
         isAllDay,
@@ -279,8 +279,10 @@ function Calendar(props) {
   );
 
   const handleDragStart = useCallback(
-    (client, address, coordinates, groupNumber, frequency) => {
-      setDraggedClient({client: client, address: address, coordinates: coordinates, groupNumber: groupNumber, frequency: frequency});
+    // (client, address, coordinates, groupNumber, frequency) => {
+    //   setDraggedClient({client: client, address: address, coordinates: coordinates, groupNumber: groupNumber, frequency: frequency});
+    (client, address, coordinates) => {
+      setDraggedClient({client: client, address: address, coordinates: coordinates});
   },[])
   
   const testSchedule = async () => {
@@ -540,7 +542,7 @@ function Calendar(props) {
               </div>
             ) : viewFocus.showGroups ? (
                 <div>
-                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} handleGroupManual={handleGroupManual} />
+                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} />
                 </div>
             ) : viewFocus.groupParams ? (
                 <div>
@@ -555,7 +557,7 @@ function Calendar(props) {
       
 
         {modal.patient ? <div className="above-overlay" >
-          <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groupManualChoices={groupManualChoices} />
+          <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} />
         </div> : null}
 
         {modal.error ? <div className="above-overlay" >
