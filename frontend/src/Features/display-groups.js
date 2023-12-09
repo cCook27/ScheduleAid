@@ -80,7 +80,6 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
     }
   };
 
-
   return (
     <div className="container">
       <div className="row">

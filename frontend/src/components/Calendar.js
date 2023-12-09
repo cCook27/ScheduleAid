@@ -285,11 +285,35 @@ function Calendar(props) {
       return day === testSelection && (start >= viewStart && start <= viewEnd);
     }).sort((a, b) => a.start - b.start);
 
-    if(selectedDaySchedule.length > 1) {
-      const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
-      eventViability(viabilityData);
-      setTestSelection(undefined);
+    const noGroupAssigned = selectedDaySchedule.filter((ev) => !ev.groupNumber);
+
+    if(viewFocus.view === 'Group') {
+      if(selectedDaySchedule.length > 1 && noGroupAssigned.length === 0) {
+        const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
+        eventViability(viabilityData);
+        setTestSelection(undefined);
+      }; 
+      
+      if(selectedDaySchedule.length <= 1) {
+        window.alert(`Please make sure there are at least 2 patients on ${testSelection}.`);
+      };
+      
+      if(noGroupAssigned.length > 0) {
+        window.alert(`Before proceeding please assign the ${noGroupAssigned.length} patients in red to a group by clicking the patient and choosing a corresponding group number or return to patient view.`);
+      };
     }
+
+    if(viewFocus.view === 'Patient') {
+      if(selectedDaySchedule.length > 1) {
+        const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
+        eventViability(viabilityData);
+        setTestSelection(undefined);
+      } else {
+        window.alert(`Please make sure there are at least 2 patients on ${testSelection}.`);
+      }
+    }
+
+    
   };
 
   const removeAllEvents = () => {
