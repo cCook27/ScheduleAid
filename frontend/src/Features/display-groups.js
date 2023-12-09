@@ -27,7 +27,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
           if(isScheduled.length === 0) {
             patient.scheduled = false;
             return patient;
-          }
+          };
 
           if(isScheduled.length === 1 && frequency === 1) {
             let schedEvent = isScheduled[0];
@@ -35,14 +35,13 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
             if(schedEvent.groupNumber === undefined) {
               schedEvent.groupNumber = index;
               updateEvents(schedEvent);
-              // might need to say patient.scheduled = true;
             };
 
             if(schedEvent.groupNumber) {
               patient.scheduled = true;
               return patient;
             };
-          }
+          };
 
           if(isScheduled.length > 0) {
             const hasGroupNum = isScheduled.filter((ev) => ev.groupNumber === index);
@@ -56,8 +55,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
               patient.scheduled = true;
               return patient;
             }
-          }
-
+          };
 
           return patient;
         });
@@ -168,11 +166,24 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
 
 export default DisplayGroups;
 
-// else if(isScheduled.length === 2 && frequency === 2) {
-//   isScheduled.forEach((event) => {
-//     if(event.groupNumber === null) {
-//       event.groupNumber = index;
-//       updateEvents(event);
-//     }
-//   });
-//   return patient;
+// if(isScheduled.length > 0) {
+//   const hasGroupNum = isScheduled.filter((ev) => ev.groupNumber === index);
+//   const noGroupNum = isScheduled.filter((ev) => ev.groupNumber !== index);
+
+//   if(hasGroupNum.length === frequency - 1 && noGroupNum.length === 1) {
+//     let schedEvent = noGroupNum[0];
+//     schedEvent.groupNumber = index;
+//     updateEvents(schedEvent);
+//     return patient;
+//   };
+
+//   if(hasGroupNum.length === 0) {
+//     patient.scheduled = false;
+//     return patient;
+//   };
+
+//   if(hasGroupNum.length === 1) {
+//     patient.scheduled = true;
+//     return patient;
+//   };
+// };

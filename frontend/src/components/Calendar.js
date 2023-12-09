@@ -158,7 +158,7 @@ function Calendar(props) {
     ...(event.isViableDest === true && event.isViableOrg === true && {
       className: 'bothViable',
     }),
-    ...(event.groupNumber === null && viewFocus.view === 'Group' && {
+    ...(event.groupNumber === undefined && viewFocus.view === 'Group' && {
       className: 'assign-day',
     }),
   });
