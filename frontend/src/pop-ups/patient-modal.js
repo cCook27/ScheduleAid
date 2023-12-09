@@ -28,9 +28,6 @@ const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, hand
  
   }, [client, groups]);
 
-
-  // Now when you select one you need to send the number to the display groups
-
   const handleAssignGroup = (group) => {
     const updatedEvents = [...myEvents];
     const index = updatedEvents.findIndex((ev) => ev.id === client.id);
