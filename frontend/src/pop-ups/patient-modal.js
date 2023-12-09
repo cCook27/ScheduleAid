@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 
-const PatientModal = ({client, removeFromCal, closeModal, groups}) => {
+const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, handleEventsUpdate}) => {
 
   const [groupsAvailable, setGroupsAvailable] = useState([]);
 
@@ -28,6 +28,21 @@ const PatientModal = ({client, removeFromCal, closeModal, groups}) => {
  
   }, [client, groups]);
 
+
+  // Now when you select one you need to send the number to the display groups
+
+  const handleAssignGroup = (group) => {
+    const updatedEvents = [...myEvents];
+    const index = updatedEvents.findIndex((ev) => ev.id === client.id);
+
+    if(index !== -1) {
+      updatedEvents[index].groupNumber = group;
+      handleEventsUpdate(updatedEvents);
+    }
+
+    closeModal();
+  }
+
   return(
     <div className="card" style={{width: "18rem", height: "300px"}}>
     <div className="p-0 card-body text-center">
@@ -36,7 +51,7 @@ const PatientModal = ({client, removeFromCal, closeModal, groups}) => {
         {
           groupsAvailable.length > 0 ? (
             groupsAvailable.map((patient, index) => (
-              <button key={index}>{patient.group}</button>
+              <button key={index} onClick={() => handleAssignGroup(patient.group)} >{patient.group}</button>
             ))
           ): null
         }
