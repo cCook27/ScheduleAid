@@ -3,7 +3,7 @@ import React, {useState, useEffect} from "react";
 import Loading from "../pop-ups/loading";
 import "../css/display-groups.css"
 
-const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, myEvents, start, end, handleEventsUpdate }) => {
+const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups }) => {
 
   const [groups, setGroups] = useState([]);
   // const [groupingManual, setGroupingManual] = useState([]);
@@ -64,24 +64,10 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
       });
   
       setGroups(updatedGroups);
+      handleUpdatedGroups(updatedGroups);
     };
     
   }, [start, myEvents]);
-
-  // useEffect(() => {
-  //   const uniqueObjectsMap = new Map();
-
-  //   groupingManual.forEach(obj => {
-  //     uniqueObjectsMap.set(obj.group, obj);
-  //   });
-
-  //   const patientGrpNums = Array.from(uniqueObjectsMap.values());
-
-
-  //   // handleGroupManual(patientGrpNums);
-  //   // console.log(patientGrpNums);
-  // }, [groupingManual])
-
 
   const updateEvents = (event) => {
     const updatedEvents = [...myEvents];

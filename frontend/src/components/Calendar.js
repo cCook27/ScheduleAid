@@ -49,7 +49,7 @@ function Calendar(props) {
   });
   const [testSelection, setTestSelection] = useState(undefined);
   const [patientGroups, setPatientGroups] = useState(undefined);
-  // const [groupManualChoices, setGroupManualChoices] = useState([]);
+  const [groupsForPatientModal, setGroupsForPatientModal] = useState([]);
   const [therapistParameters, setTherapistParameters] = useState({
     workingDays: null,
   });
@@ -166,11 +166,10 @@ function Calendar(props) {
   const handleEventsUpdate = (events) => {
     setMyEvents(events);
   };  
-
-  // const handleGroupManual = (patientInfo) => {
-  //   setGroupManualChoices(patientInfo);
-  // };
   
+  const handleUpdatedGroups = (groups) => {
+    setGroupsForPatientModal(groups);
+  };
 
   const eventViability = (viabilityData) => {
     if(viabilityData) {
@@ -531,7 +530,7 @@ function Calendar(props) {
               </div>
             ) : viewFocus.showGroups ? (
                 <div>
-                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} />
+                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
                 </div>
             ) : viewFocus.groupParams ? (
                 <div>
@@ -546,7 +545,7 @@ function Calendar(props) {
       
 
         {modal.patient ? <div className="above-overlay" >
-          <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} />
+          <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groups={groupsForPatientModal} />
         </div> : null}
 
         {modal.error ? <div className="above-overlay" >

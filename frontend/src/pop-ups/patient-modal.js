@@ -1,24 +1,32 @@
 import React from "react";
 import { useEffect, useState } from "react";
 
-const PatientModal = ({client, removeFromCal, closeModal}) => {
+const PatientModal = ({client, removeFromCal, closeModal, groups}) => {
 
-  const [groupNums, setGroupNums] = useState([]);
+  const [groupsAvailable, setGroupsAvailable] = useState([]);
 
-  // useEffect(() => {
-  //   const patientMatches = groupManualChoices.filter((patient) => {
-  //     return patient.id === client.id;
-  //   });
+  useEffect(() => {
+    let availableGroups = [];
 
-  //   const patientNumbersAvailable = patientMatches.map((patient) => {
-  //     return {
-  //       id: patient.id,
-  //       group: patient.group
-  //     }
-  //   });
+    groups.forEach((group, index) => {
+      const patientMatches = group.filter((patient) => patient.address === client.address && patient.name && client.title && !patient.scheduled);
 
-  //   setGroupNums(patientNumbersAvailable);
-  // }, [groupManualChoices]);
+      if(patientMatches.length > 0) {
+        const groupsAvail = patientMatches.map((patient) => {
+          patient.group = index;
+          return patient;
+        });
+
+        groupsAvail.forEach((element) => {
+          availableGroups.push(element);
+        });
+      }
+
+    });
+
+    setGroupsAvailable(availableGroups);
+ 
+  }, [client, groups]);
 
   return(
     <div className="card" style={{width: "18rem", height: "300px"}}>
@@ -26,9 +34,9 @@ const PatientModal = ({client, removeFromCal, closeModal}) => {
       <h2>{client.title}</h2>
       <h6 className='text-start ps-2 pt-2'>Choose the Group this Patient Belongs to:</h6>
         {
-          groupNums.length > 0 ? (
-            groupNums.map((num, index) => (
-              <button key={index}>{num.group}</button>
+          groupsAvailable.length > 0 ? (
+            groupsAvailable.map((patient, index) => (
+              <button key={index}>{patient.group}</button>
             ))
           ): null
         }
