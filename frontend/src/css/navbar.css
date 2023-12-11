@@ -1,0 +1,16 @@
+.nav-item {
+  font-weight: 700;
+}
+
+.nav-link {
+  color: rgba(29, 82, 98, 0.672) !important;
+}
+
+.nav-link:hover {
+  transform: translateY(-2px);
+  color: rgba(29, 82, 98, 0.533) !important;
+}
+
+.nav-link:active {
+  transform: translateY(2px);
+}

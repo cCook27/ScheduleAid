@@ -85,7 +85,7 @@ function App() {
   
   if(validUser) {
     return (
-      <div>
+      <div className='overall'>
         <div>
           <UserContext.Provider value={userInfo}>
             <AccessTokenContext.Provider value={accessToken}>

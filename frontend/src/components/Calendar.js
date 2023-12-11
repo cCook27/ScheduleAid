@@ -152,15 +152,24 @@ function Calendar(props) {
     ...(event.isViableDest === true && event.isViableOrg === null && {
       className: 'orgNullDestV',
     }),
+
     ...(event.isViableDest === false && event.isViableOrg === false && {
       className: 'bothNotViable',
     }),
     ...(event.isViableDest === true && event.isViableOrg === true && {
       className: 'bothViable',
     }),
+    
     ...(event.groupNumber === undefined && viewFocus.view === 'Group' && {
       className: 'assign-day',
     }),
+
+    // ...(event.start.toLocaleString('en-US', { weekday: 'long' }) === 'Friday' && {
+    //   className: 'Friday',
+    // }),
+
+
+   
   });
 
   const handleEventsUpdate = (events) => {
@@ -285,35 +294,42 @@ function Calendar(props) {
       return day === testSelection && (start >= viewStart && start <= viewEnd);
     }).sort((a, b) => a.start - b.start);
 
-    const noGroupAssigned = selectedDaySchedule.filter((ev) => !ev.groupNumber);
+    const noGroupAssigned = selectedDaySchedule.filter((ev) => ev.groupNumber === undefined);
+    const needsTesting = selectedDaySchedule.filter((ev) => ev.isViableDest === null && ev.isViableOrg === null);
 
-    if(viewFocus.view === 'Group') {
-      if(selectedDaySchedule.length > 1 && noGroupAssigned.length === 0) {
-        const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
-        eventViability(viabilityData);
-        setTestSelection(undefined);
-      }; 
-      
-      if(selectedDaySchedule.length <= 1) {
-        window.alert(`Please make sure there are at least 2 patients on ${testSelection}.`);
+    if(needsTesting.length > 0) {
+      if(viewFocus.view === 'Group') {
+        if(selectedDaySchedule.length > 1 && noGroupAssigned.length === 0) {
+          const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
+          eventViability(viabilityData);
+          setTestSelection(undefined);
+        }; 
+        
+        if(selectedDaySchedule.length <= 1) {
+          window.alert(`Please make sure there are at least 2 patients on ${testSelection}.`);
+        };
+        
+        if(noGroupAssigned.length > 0) {
+          window.alert(`Before proceeding please assign the patients in red to a group by clicking the patient and choosing a corresponding group number or return to patient view.`);
+        };
       };
-      
-      if(noGroupAssigned.length > 0) {
-        window.alert(`Before proceeding please assign the ${noGroupAssigned.length} patients in red to a group by clicking the patient and choosing a corresponding group number or return to patient view.`);
+  
+      if(viewFocus.view === 'Patient') {
+        if(selectedDaySchedule.length > 1) {
+          const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
+          eventViability(viabilityData);
+          setTestSelection(undefined);
+        } else {
+          window.alert(`Please make sure there are at least 2 patients on ${testSelection}.`);
+        }
       };
+    } else if(selectedDaySchedule.length === 0) {
+      window.alert(`Looks like ${testSelection} doesn't have any patients to test, you're FREE...for now...`);
+    } else {
+      window.alert(`Looks like ${testSelection} has already been tested with no changes`);
     }
 
-    if(viewFocus.view === 'Patient') {
-      if(selectedDaySchedule.length > 1) {
-        const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
-        eventViability(viabilityData);
-        setTestSelection(undefined);
-      } else {
-        window.alert(`Please make sure there are at least 2 patients on ${testSelection}.`);
-      }
-    }
-
-    
+    setTestSelection(null);
   };
 
   const removeAllEvents = () => {
@@ -456,10 +472,10 @@ function Calendar(props) {
  
   return (
     <div className="container-fluid">
-      <div className={`row my-5 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
+      <div className={`row mt-5 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
 
         {/* calendar */}
-        <div className='col-8 d-flex justify-content-start'>
+        <div className='col-8 d-flex justify-content-start calendar-cont'>
           <div style={{height: '90vh', width: '100%'}}>
             <DnDCalendar {...props} 
               localizer={localizer} 
@@ -487,39 +503,39 @@ function Calendar(props) {
                 <input type="radio" className="btn-check" name="Sunday" id="Sunday" onChange={testSelectionCheck} 
                 checked={testSelection === 'Sunday'}
                 />
-                <label className="btn btn-outline-primary" htmlFor="Sunday">Sunday</label>
+                <label className="btn day" htmlFor="Sunday">Sunday</label>
 
                 <input type="radio" className="btn-check" name="Monday" id="Monday" onChange={testSelectionCheck}
                 checked={testSelection === 'Monday'}
                 />
-                <label className="btn btn-outline-primary" htmlFor="Monday">Monday</label>
+                <label className="btn day" htmlFor="Monday">Monday</label>
 
                 <input type="radio" className="btn-check" name="Tuesday" id="Tuesday" onChange={testSelectionCheck}
                 checked={testSelection === 'Tuesday'}
                 />
-                <label className="btn btn-outline-primary" htmlFor="Tuesday">Tuesday</label>
+                <label className="btn day" htmlFor="Tuesday">Tuesday</label>
 
                 <input type="radio" className="btn-check" name="Wednesday" id="Wednesday" onChange={testSelectionCheck}
                 checked={testSelection === 'Wednesday'}
                 />
-                <label className="btn btn-outline-primary" htmlFor="Wednesday">Wednesday</label>
+                <label className="btn day" htmlFor="Wednesday">Wednesday</label>
               </div>
 
               <div className="btn-group d-flex justify-content-center">
                 <input type="radio" className="btn-check" name="Thursday" id="Thursday" onChange={testSelectionCheck}
                 checked={testSelection === 'Thursday'}
                 />
-                <label className="btn btn-outline-primary" htmlFor="Thursday">Thursday</label>
+                <label className="btn day" htmlFor="Thursday">Thursday</label>
 
                 <input type="radio" className="btn-check" name="Friday" id="Friday" onChange={testSelectionCheck}
                 checked={testSelection === 'Friday'}
                 />
-                <label className="btn btn-outline-primary" htmlFor="Friday">Friday</label>
+                <label className="btn day" htmlFor="Friday">Friday</label>
 
                 <input type="radio" className="btn-check" name="Saturday" id="Saturday" onChange={testSelectionCheck}
                 checked={testSelection === 'Saturday'}
                 />
-                <label className="btn btn-outline-primary" htmlFor="Saturday">Saturday</label>
+                <label className="btn day" htmlFor="Saturday">Saturday</label>
               </div>
 
               <div className='d-flex justify-content-center align-items-center mb-3'>
@@ -536,13 +552,13 @@ function Calendar(props) {
                 <input type="radio" className="btn-check view-btn" name="Patient" id="Patient" 
                 checked={viewFocus.view === 'Patient'}  onChange={viewCheck}
                 />
-                <label className="btn btn-outline-primary" htmlFor="Patient">Patient View</label>
+                <label className="btn" htmlFor="Patient">Patient View</label>
 
                 <input type="radio" className="btn-check view-btn" name="Edit" id="Edit" checked={viewFocus.view === 'Edit'}  onChange={viewCheck} />
-                <label className="btn btn-outline-primary" htmlFor="Edit">Edit Group</label>
+                <label className="btn" htmlFor="Edit">Edit Group</label>
 
                 <input type="radio" className="btn-check view-btn" name="Group" id="Group" checked={viewFocus.view === 'Group'}  onChange={viewCheck} />
-                <label className="btn btn-outline-primary" htmlFor="Group">Group View</label>
+                <label className="btn" htmlFor="Group">Group View</label>
               </div>
             </div>
           </div>

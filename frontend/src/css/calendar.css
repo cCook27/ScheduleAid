@@ -1,3 +1,6 @@
+.container-fluid {
+}
+
 .card-title {
   font-size: 12px;
 }
@@ -85,6 +88,10 @@
   border: 2px dotted red !important;
 }
 
+/* .Friday {
+  background: rgb(193, 14, 193) !important;
+} */
+
 button {
   border: 1px solid #003271;
   border-radius: 5px;
@@ -142,6 +149,11 @@ button:hover {
   background: #8c8c8c;
 }
 
+.day {
+  max-width: 100px;
+  /* outline: 2px solid black; */
+}
+
 /* calendar */
 
 .rbc-btn {
@@ -180,6 +192,10 @@ button.rbc-input::-moz-focus-inner {
   -webkit-box-align: stretch;
   -ms-flex-align: stretch;
   align-items: stretch;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #6b9797;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .rbc-calendar *,

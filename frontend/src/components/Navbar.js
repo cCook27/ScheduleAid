@@ -1,6 +1,8 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 
+import '../css/navbar.css'
+
 const Navbar = () => {
 
   const location = useLocation();
@@ -9,14 +11,14 @@ const Navbar = () => {
     return null;
   } 
    return (
-    <nav className="navbar navbar-expand-lg navbar-light" style={{background: '#e3f2fd'}}>
+    <nav className="navbar navbar-expand-lg navbar-light" >
       <div className="collapse navbar-collapse d-flex justify-content-center" id="navbarSupportedContent">
         <ul className="navbar-nav mr-auto">
           <li className="nav-item me-5 ">
             <a className="nav-link" href="/">Dashboard</a>
           </li>
-          <li className="nav-item me-5 dropdown">
-            <a className="nav-link" href="/manage">
+          <li className="nav-item  me-5 dropdown">
+            <a className="nav-link color" href="/manage">
               Add Clients
             </a>
           </li>

@@ -1,3 +1,12 @@
+.overall {
+  background: linear-gradient(
+    180deg,
+    rgba(107, 151, 151, 0.62) 0%,
+    rgba(107, 151, 151, 0.25) 100%
+  );
+  min-height: 100vh;
+}
+
 .loading-page {
   display: flex;
   justify-content: center; /* Center horizontally */
