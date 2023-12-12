@@ -11,19 +11,19 @@ const Navbar = () => {
     return null;
   } 
    return (
-    <div className="container">
-      <div className="row">
-        <div className="col d-flex justify-content-center align-items center">
-          <div><a className="nav-link" href="/">Home</a></div>
+    <div className="cont">
+      <div className="row link-cont">
+        <div className="col-3 d-flex justify-content-center align-items center">
+          <div className="link"><a className="link" href="/">Home</a></div>
         </div>
-        <div className="col d-flex justify-content-center align-items center">
-          <div><a className="nav-link" href="/manage">Patients</a></div>
+        <div className="col-3 d-flex justify-content-center align-items center">
+          <div className="link"><a className="link" href="/manage">Patients</a></div>
         </div>
-        <div className="col d-flex justify-content-center align-items center">
-          <div><a className="nav-link" href="/scheduling">Scheduling</a></div>
+        <div className="col-3 d-flex justify-content-center align-items center">
+          <div className="link"><a className="link" href="/scheduling">Scheduling</a></div>
         </div>
-        <div className="col d-flex justify-content-center align-items center">
-          <div><a className="nav-link" href="/profile">Profile</a></div>
+        <div className="col-3 d-flex justify-content-center align-items center">
+          <div className="link"><a className="link" href="/profile">Profile</a></div>
         </div>
       </div>
     </div>

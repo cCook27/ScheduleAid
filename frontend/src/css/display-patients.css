@@ -1,20 +1,3 @@
-.patient-card {
-  background: transparent;
-  border: none;
-}
-
-.card {
-  width: 100%;
-  height: 50px;
-  margin-bottom: 10px;
-  border: 2px solid #57859e;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.card-body {
-  padding: 5px;
-}
-
 .ellipsis-overflow {
   white-space: nowrap;
   overflow: hidden;
@@ -22,28 +5,27 @@
   max-width: 100%;
 }
 
-.title-cont {
-  width: 100%;
+.person-cont {
+  width: 9rem;
+  padding: 3px;
+  height: 45px;
+  background: rgb(248, 247, 247);
+  margin-bottom: 5px;
+  border: 1px solid #57859e;
+  border-radius: 3px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-.card-title {
-  text-align: center;
+.name {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 18px;
+  color: #0c6798;
 }
 
-.address-cont {
-  width: 100%;
-  text-align: center;
-  font-weight: 500;
-  font-size: 12px;
-}
-
-.frequency {
-  height: 12px !important;
-  font-size: 8px !important;
-  display: flex;
-  align-items: center;
+.address {
+  font-size: 10px;
+  font-weight: 600;
+  color: #4e4e4e;
 }
 
 .used {

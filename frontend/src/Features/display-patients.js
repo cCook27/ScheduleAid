@@ -52,32 +52,19 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
                 onDragStart={() =>
                     handleDragStart(patient.name, patient.address, patient.coordinates)
                   }>
-                    <div class="position-relative card">
-                      <div className="card-body">
-                        <div className="title-cont">
-                          <div className="card-title ellipsis-overflow">
-                            {patient.name}
-                          </div>
-                        </div>
-                        
-                        <div className="address-cont">
-                          <div className="card-text ellipsis-overflow">{patient.address}</div>
-                        </div>
-                      </div>
+                    
+                    <div className="person-cont d-flex flex-column justify-content-center align-items-center">
+                      <div className="name ellipsis-overflow">{patient.name}</div>
+                      <div className="address ellipsis-overflow">{patient.address}</div>
                     </div>
+
                 </div>
               ) : 
               (
                 <div key={homes[index]._id} className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" >
-                  <div class="position-relative card used">
-                    <div className="card-body">
-                      <div className="title-cont">
-                        <div className="card-title ellipsis-overflow">{homes[index].name}</div>
-                      </div>
-                      <div className="address-cont">
-                        <div className="card-text ellipsis-overflow">{homes[index].address}</div>
-                      </div>
-                    </div>
+                  <div className="person-cont used d-flex flex-column justify-content-center align-items-center">
+                    <div className="name ellipsis-overflow">{homes[index].name}</div>
+                    <div className="address ellipsis-overflow">{homes[index].address}</div>
                   </div>
                 </div>
               )
@@ -94,6 +81,23 @@ export default DisplayPatients
 
 
 
-
+{/* <div key={patient._id} draggable className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" 
+onDragStart={() =>
+    handleDragStart(patient.name, patient.address, patient.coordinates)
+  }>
+    <div class="position-relative card">
+      <div className="card-body">
+        <div className="title-cont">
+          <div className="card-title ellipsis-overflow">
+            {patient.name}
+          </div>
+        </div>
+        
+        <div className="address-cont">
+          <div className="card-text ellipsis-overflow">{patient.address}</div>
+        </div>
+      </div>
+    </div>
+</div> */}
 
 
