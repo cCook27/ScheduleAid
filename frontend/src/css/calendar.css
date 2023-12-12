@@ -1,6 +1,3 @@
-.container-fluid {
-}
-
 .card-title {
   font-size: 12px;
 }
@@ -88,23 +85,6 @@
   border: 2px dotted red !important;
 }
 
-/* .Friday {
-  background: rgb(193, 14, 193) !important;
-} */
-
-button {
-  border: 1px solid #003271;
-  border-radius: 5px;
-  background: #003271;
-  color: white;
-  height: 34px;
-  width: 125px;
-}
-
-button:hover {
-  background: #003f8c;
-}
-
 .remove {
   background: rgb(205, 13, 13);
   border: 1px solid red;
@@ -114,44 +94,49 @@ button:hover {
   background: red;
 }
 
-.repeat {
-  border-radius: 5px;
-  background: transparent;
-  height: 30px;
-  width: 65px;
-  font-size: 12px;
+.test {
+  background: #0c6798;
+  border: 1px solid #57859e;
+  color: #fff;
+  width: 100px;
   font-weight: 600;
-  border: 1px solid gray;
-  color: rgb(28, 26, 26);
 }
 
-.repeat:hover {
-  background-color: green;
-  color: white;
-}
-
-.repeat-selected {
-  background-color: green;
-  border: 1px solid green;
-  color: white;
-}
-
-.grouping-btn {
-  background: transparent;
-  border: none;
-}
-
-.seperator {
-  border: 2px solid black;
+.test:hover {
+  background: #044263;
+  border: 1px solid #57859e;
+  color: #fff;
 }
 
 .test:disabled {
-  background: #8c8c8c;
+  background: #afb9be;
+  border: 1px solid #8e969b;
 }
 
-.day {
-  max-width: 100px;
-  /* outline: 2px solid black; */
+.view {
+  border: 1px solid #57859e;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 7px;
+}
+
+.left-rad {
+  border-radius: 8px 0 0 8px;
+}
+
+.right-rad {
+  border-radius: 0 8px 8px 0;
+}
+
+.view:hover {
+  background: #0c6798;
+  border: 1px solid #57859e;
+  color: #fff;
+}
+
+.view-btn:checked + .view {
+  background-color: #0c6798;
+  color: #fff;
 }
 
 /* calendar */
@@ -192,7 +177,7 @@ button.rbc-input::-moz-focus-inner {
   -webkit-box-align: stretch;
   -ms-flex-align: stretch;
   align-items: stretch;
-  background: white;
+  background: rgb(248, 247, 247);
   border-radius: 10px;
   border: 1px solid #6b9797;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
