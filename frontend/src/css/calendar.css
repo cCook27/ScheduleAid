@@ -94,17 +94,21 @@
   background: red;
 }
 
+select {
+  border: 1px solid #9c7d9c;
+}
+
 .test {
-  background: #0c6798;
-  border: 1px solid #57859e;
+  background: #c895c8;
+  border: 1px solid #9c7d9c;
   color: #fff;
   width: 100px;
   font-weight: 600;
 }
 
 .test:hover {
-  background: #044263;
-  border: 1px solid #57859e;
+  background: #c788c7;
+  border: 1px solid #9c7d9c;
   color: #fff;
 }
 
@@ -114,7 +118,7 @@
 }
 
 .view {
-  border: 1px solid #57859e;
+  border: 1px solid #9c7d9c;
   font-weight: 600;
   cursor: pointer;
   padding: 7px;
@@ -129,13 +133,13 @@
 }
 
 .view:hover {
-  background: #0c6798;
-  border: 1px solid #57859e;
+  background: #c788c7;
+  border: 1px solid #9c7d9c;
   color: #fff;
 }
 
 .view-btn:checked + .view {
-  background-color: #0c6798;
+  background: #c788c7;
   color: #fff;
 }
 

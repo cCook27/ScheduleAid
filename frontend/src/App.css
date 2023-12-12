@@ -1,8 +1,8 @@
 .overall {
   background: linear-gradient(
     180deg,
-    rgba(107, 151, 151, 0.62) 0%,
-    rgba(107, 151, 151, 0.25) 100%
+    rgba(200, 162, 200, 0.82) 0%,
+    rgba(200, 162, 200, 0.58) 71.85%
   );
   min-height: 100vh;
   max-width: 100vw;
