@@ -1,19 +1,10 @@
-.card-title {
-  font-size: 12px;
-}
+.dndCal-container {
+  height: 85vh;
+  width: 100%;
 
-.card-text {
-  font-size: 10px;
-}
-
-.card {
-  height: 45px;
-  width: 100px;
-}
-
-.card-body {
-  padding: 0;
-  padding-left: 10px;
+  @media screen and (max-width: 987px) {
+    height: 60vh;
+  }
 }
 
 .overlay {
@@ -92,51 +83,6 @@
 
 .remove:hover {
   background: red;
-}
-
-.test {
-  background: #0c6798;
-  border: 1px solid #57859e;
-  color: #fff;
-  width: 100px;
-  font-weight: 600;
-}
-
-.test:hover {
-  background: #044263;
-  border: 1px solid #57859e;
-  color: #fff;
-}
-
-.test:disabled {
-  background: #afb9be;
-  border: 1px solid #8e969b;
-}
-
-.view {
-  border: 1px solid #57859e;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 7px;
-}
-
-.left-rad {
-  border-radius: 8px 0 0 8px;
-}
-
-.right-rad {
-  border-radius: 0 8px 8px 0;
-}
-
-.view:hover {
-  background: #0c6798;
-  border: 1px solid #57859e;
-  color: #fff;
-}
-
-.view-btn:checked + .view {
-  background-color: #0c6798;
-  color: #fff;
 }
 
 /* calendar */

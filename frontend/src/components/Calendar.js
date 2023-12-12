@@ -1,5 +1,6 @@
 import React, {useEffect, useContext, useState, useCallback} from 'react';
 import '../css/calendar.css';
+import '../css/calendar-extra.css'
 import { v4 as uuidv4 } from 'uuid';
 import { useQuery, useQueryClient } from 'react-query';
 
@@ -473,8 +474,28 @@ function Calendar(props) {
       <div className={`row mt-5 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
 
         {/* calendar */}
-        <div className='col-8 d-flex justify-content-start align-items-start calendar-cont'>
-          <div style={{height: '90vh', width: '100%'}}>
+        <div className='col-12 col-lg-8 d-flex flex-column justify-content-start align-items-start calendar-cont'>
+          <div className="d-flex d-lg-none justify-content-center align-items-center">
+            <select className="form-select daySelect" name="testDay" id="testDay" 
+            onChange={(event) => daySelection(event.target.value)}
+            value={testDay || ''}
+            >
+              <option disabled selected value="">Select a Day to Test</option>
+              <option value="Sunday">Sunday</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+            </select>
+
+            <button onClick={testSchedule} className="test btn m-2" 
+            disabled={!testDay}>
+              Test
+            </button>
+          </div>
+          <div className='dndCal-container'>
             <DnDCalendar {...props} 
               localizer={localizer} 
               events={myEvents} 
@@ -498,7 +519,7 @@ function Calendar(props) {
           <div className="row testing mb-2">
             <div className="col">
 
-              <div className="d-flex justify-content-center align-items-center">
+              <div className="d-none d-lg-flex justify-content-center align-items-center">
                 <select className="form-select daySelect" name="testDay" id="testDay" 
                 onChange={(event) => daySelection(event.target.value)}
                 value={testDay || ''}
@@ -523,7 +544,7 @@ function Calendar(props) {
           </div>
 
           <div className="row views mb-3">
-            <div className="col d-flex flex-column justify-content-center">
+            <div className="col">
               <div className="btn-group" role="group" aria-label="Basic radio  toggle button group">
                 
                 <input type="radio" className="btn-check view-btn" name="Patient" id="Patient" 
@@ -536,7 +557,6 @@ function Calendar(props) {
 
                 <input type="radio" className="btn-check view-btn" name="Group" id="Group" checked={viewFocus.view === 'Group'}  onChange={viewCheck} />
                 <label className="view right-rad" htmlFor="Group">Group View</label>
-
               </div>
             </div>
           </div>

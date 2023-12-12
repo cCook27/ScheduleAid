@@ -4,9 +4,15 @@
 }
 
 .card {
-  width: 9.5rem;
+  width: 100%;
+  height: 50px;
   margin-bottom: 10px;
-  border: 1px solid #57859e;
+  border: 2px solid #57859e;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  padding: 5px;
 }
 
 .ellipsis-overflow {
@@ -17,7 +23,7 @@
 }
 
 .title-cont {
-  width: 9rem;
+  width: 100%;
 }
 
 .card-title {
@@ -27,9 +33,10 @@
 }
 
 .address-cont {
-  width: 7rem;
+  width: 100%;
   text-align: center;
   font-weight: 500;
+  font-size: 12px;
 }
 
 .frequency {

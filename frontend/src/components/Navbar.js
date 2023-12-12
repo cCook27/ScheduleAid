@@ -11,32 +11,28 @@ const Navbar = () => {
     return null;
   } 
    return (
-    <nav className="navbar navbar-expand-lg navbar-light" >
-      <div className="collapse navbar-collapse d-flex justify-content-center" id="navbarSupportedContent">
-        <ul className="navbar-nav mr-auto">
-          <li className="nav-item me-5 ">
-            <a className="nav-link" href="/">Dashboard</a>
-          </li>
-          <li className="nav-item  me-5 dropdown">
-            <a className="nav-link color" href="/manage">
-              Add Clients
-            </a>
-          </li>
-          <li className="nav-item me-5 dropdown">
-            <a className="nav-link" href="/scheduling">
-              Scheduling
-            </a>
-          </li>
-          <li className="nav-item me-5 dropdown">
-            <a className="nav-link" href="/profile">
-              Profile
-            </a>
-          </li>
-         
-        </ul>
+    <div className="container">
+      <div className="row">
+        <div className="col d-flex justify-content-center align-items center">
+          <div><a className="nav-link" href="/">Home</a></div>
+        </div>
+        <div className="col d-flex justify-content-center align-items center">
+          <div><a className="nav-link" href="/manage">Patients</a></div>
+        </div>
+        <div className="col d-flex justify-content-center align-items center">
+          <div><a className="nav-link" href="/scheduling">Scheduling</a></div>
+        </div>
+        <div className="col d-flex justify-content-center align-items center">
+          <div><a className="nav-link" href="/profile">Profile</a></div>
+        </div>
       </div>
-    </nav>
+    </div>
   );
 };
 
 export default Navbar;
+
+
+
+          
+          
