@@ -473,7 +473,7 @@ function Calendar(props) {
       <div className={`row mt-5 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
 
         {/* calendar */}
-        <div className='col-8 d-flex justify-content-start align-items-center calendar-cont'>
+        <div className='col-8 d-flex justify-content-start align-items-start calendar-cont'>
           <div style={{height: '90vh', width: '100%'}}>
             <DnDCalendar {...props} 
               localizer={localizer} 
@@ -543,7 +543,7 @@ function Calendar(props) {
             
           <div className="row displays">
             {!viewFocus.showGroups && !viewFocus.groupParams ? (
-              <div>
+              <div className="mb-3">
                 <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} />
               </div>
             ) : viewFocus.showGroups ? (

@@ -35,7 +35,7 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
   },[myEvents, start])
 
   return (
-    <div className="row">
+    <div className="row patient-display">
       {homeStatus === 'loading' ? (
         <div><Loading /></div>
       ) : homeStatus === 'error' ? (
@@ -48,24 +48,37 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
         remainingPatients.map((patient, index) => (
           patient ? 
               (
-                <div key={patient._id} draggable className="col d-flex justify-content-end align-items-center" 
+                <div key={patient._id} draggable className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" 
                 onDragStart={() =>
                     handleDragStart(patient.name, patient.address, patient.coordinates)
                   }>
-                <div  className="card my-3">
-                  <div className="card-body">
-                    <div className="card-title">{patient.name}</div>
-                  </div>
-                </div>
-              </div>
-              ) : 
-              (
-                <div key={homes[index]._id} className="col d-flex justify-content-end align-items-center" >
-                    <div  className="card my-3 used">
+                    <div class="position-relative card">
                       <div className="card-body">
-                        <div className="card-title">{homes[index].name}</div>
+                        <div className="title-cont">
+                          <div className="card-title ellipsis-overflow">
+                            {patient.name}
+                          </div>
+                        </div>
+                        
+                        <div className="address-cont">
+                          <div className="card-text ellipsis-overflow">{patient.address}</div>
+                        </div>
                       </div>
                     </div>
+                </div>
+              ) : 
+              (
+                <div key={homes[index]._id} className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" >
+                  <div class="position-relative card used">
+                    <div className="card-body">
+                      <div className="title-cont">
+                        <div className="card-title ellipsis-overflow">{homes[index].name}</div>
+                      </div>
+                      <div className="address-cont">
+                        <div className="card-text ellipsis-overflow">{homes[index].address}</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )
               

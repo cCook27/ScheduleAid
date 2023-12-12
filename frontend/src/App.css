@@ -5,6 +5,7 @@
     rgba(107, 151, 151, 0.25) 100%
   );
   min-height: 100vh;
+  max-width: 100vw;
 }
 
 .loading-page {

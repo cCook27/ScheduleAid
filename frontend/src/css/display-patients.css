@@ -1,5 +1,42 @@
+.patient-card {
+  background: transparent;
+  border: none;
+}
+
 .card {
-  background: rgb(248, 247, 247);
+  width: 9.5rem;
+  margin-bottom: 10px;
+  border: 1px solid #57859e;
+}
+
+.ellipsis-overflow {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.title-cont {
+  width: 9rem;
+}
+
+.card-title {
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.address-cont {
+  width: 7rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.frequency {
+  height: 12px !important;
+  font-size: 8px !important;
+  display: flex;
+  align-items: center;
 }
 
 .used {
