@@ -1,3 +1,11 @@
+:root {
+  --borderColor: #57859e;
+  --name: #0c6798;
+  --personBg: rgb(248, 247, 247);
+  --usedBg: rgba(128, 128, 128, 0.267);
+  --address: #4e4e4e;
+}
+
 .ellipsis-overflow {
   white-space: nowrap;
   overflow: hidden;
@@ -9,9 +17,9 @@
   width: 9rem;
   padding: 3px;
   height: 45px;
-  background: rgb(248, 247, 247);
+  background: var(--personBg);
   margin-bottom: 5px;
-  border: 1px solid #57859e;
+  border: 1px solid var(--borderColor);
   border-radius: 3px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
 }
@@ -19,15 +27,15 @@
 .name {
   font-weight: 600;
   font-size: 18px;
-  color: #0c6798;
+  color: var(--name);
 }
 
 .address {
   font-size: 10px;
   font-weight: 600;
-  color: #4e4e4e;
+  color: var(--address);
 }
 
 .used {
-  background: rgba(128, 128, 128, 0.267);
+  background: var(--usedBg);
 }

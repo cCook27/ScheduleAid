@@ -1,11 +1,18 @@
+:root {
+  --borderColor: #57859e;
+  --viewLetters: #4e4e4e;
+  --fulfilled: #0c6798;
+  --hoverLetters: #fff;
+}
+
 select {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .test {
-  background: #0c6798;
-  border: 1px solid #57859e;
-  color: #fff;
+  background: var(--fulfilled);
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
   width: 100px;
   font-weight: 600;
   border-radius: 5px;
@@ -14,23 +21,23 @@ select {
 
 .test:hover {
   background: #044263;
-  border: 1px solid #57859e;
-  color: #fff;
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
 }
 
 .test:disabled {
   background: transparent;
-  border: 2px solid #57859e;
-  color: #4e4e4e;
+  border: 2px solid var(--borderColor);
+  color: var(--viewLetters);
 }
 
 .view {
-  border: 1px solid #57859e;
+  border: 1px solid var(--borderColor);
   font-weight: 600;
   cursor: pointer;
   padding: 7px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
-  color: #4e4e4e;
+  color: var(--viewLetters);
 }
 
 .left-rad {
@@ -42,12 +49,12 @@ select {
 }
 
 .view:hover {
-  background: #0c6798;
-  border: 1px solid #57859e;
-  color: #fff;
+  background: var(--fulfilled);
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
 }
 
 .view-btn:checked + .view {
-  background-color: #0c6798;
-  color: #fff;
+  background-color: var(--fulfilled);
+  color: var(--hoverLetters);
 }

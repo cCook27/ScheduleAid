@@ -12,7 +12,7 @@
 
 .loading-page {
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  height: 100vh; /* Ensure the container takes up the full viewport height */
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }

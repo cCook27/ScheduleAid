@@ -1,3 +1,11 @@
+:root {
+  --borderColor: #57859e;
+  --viewLetters: #4e4e4e;
+  --fulfilled: #0c6798;
+  --hoverLetters: #fff;
+  --eventBg: #3b9ace;
+}
+
 .dndCal-container {
   height: 84vh;
   width: 100%;
@@ -194,7 +202,7 @@ button.rbc-input::-moz-focus-inner {
   text-align: center;
   font-weight: 700;
   font-size: 22px;
-  color: #0c6798;
+  color: var(--fulfilled);
 }
 .rbc-toolbar button {
   color: #373a3c;
@@ -204,7 +212,7 @@ button.rbc-input::-moz-focus-inner {
   vertical-align: middle;
   background: none;
   background-image: none;
-  border: 1px solid #57859e;
+  border: 1px solid var(--borderColor);
   padding: 0.375rem 1rem;
   font-weight: 600;
   border-radius: 4px;
@@ -225,7 +233,7 @@ button.rbc-input::-moz-focus-inner {
 .rbc-toolbar button.rbc-active:focus {
   color: #373a3c;
   background-color: #d4d4d4;
-  border-color: #57859e;
+  border-color: var(--borderColor);
 }
 .rbc-toolbar button:focus {
   color: #373a3c;
@@ -284,7 +292,7 @@ button.rbc-input::-moz-focus-inner {
   box-shadow: none;
   margin: 0;
   padding: 2px 5px;
-  background-color: #3b9ace !important;
+  background-color: var(--eventBg) !important;
   border-radius: 5px;
   color: #fff;
   cursor: pointer;

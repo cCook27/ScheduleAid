@@ -32,7 +32,9 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
       setRemainingPatients(patientsRemaining);
     }
   
-  },[myEvents, start])
+  },[myEvents, start]);
+
+ 
 
   return (
     <div className="row patient-display">

@@ -1,5 +1,12 @@
+:root {
+  /* --borderColor: #57859e; */
+  --contBg: rgba(55, 48, 48, 0.144);
+  --link: #0c6798;
+  --linkHover: #044263;
+}
+
 .cont {
-  background: rgba(55, 48, 48, 0.144);
+  background: var(--contBg);
   width: 100%;
   height: 60px;
   display: flex;
@@ -12,14 +19,14 @@
 }
 
 .link {
-  color: #0c6798;
+  color: var(--link);
   font-weight: 700;
   text-decoration: none;
 }
 
 .link:hover {
   transform: translateY(-2px);
-  color: #044263;
+  color: var(--linkHover);
 }
 
 .link:active {
