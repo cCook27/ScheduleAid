@@ -1,0 +1,40 @@
+.title {
+  color: var(--patientLetters);
+  font-weight: 700;
+  padding: 5px;
+}
+
+.form-control {
+  width: 130px;
+  padding: 0;
+  height: 30px;
+}
+
+.info-place {
+  width: 100px;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  border: none;
+  background-color: transparent;
+  position: relative;
+  left: 4px;
+}
+
+.counter {
+  width: 30px;
+  background: transparent;
+  border: none;
+  height: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.counter:active {
+  transform: translateY(2px);
+}
+
+.upside-down {
+  transform: rotate(180deg);
+}

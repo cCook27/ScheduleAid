@@ -16,7 +16,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import DisplayGroups from '../Features/display-groups';
 import DisplayPatients from '../Features/display-patients';
-import GroupModal from '../pop-ups/group-modal';
+import EditParameters from '../Features/edit-parameters.js';
 import ErrorModal from '../pop-ups/error-modal';
 import PatientModal from '../pop-ups/patient-modal';
 
@@ -572,9 +572,7 @@ function Calendar(props) {
                 </div>
             ) : viewFocus.groupParams ? (
                 <div>
-                  <GroupModal therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
-                  handleGrouping={handleGrouping}
-                  closeModal={closeModal} />
+                  <EditParameters therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters} />
                 </div>
             ) : null
             }

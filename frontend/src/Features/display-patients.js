@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import Loading from "../pop-ups/loading";
 
-import "../css/display-patients.css"
+
 
 const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, end }) => {
 
@@ -37,7 +37,13 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
  
 
   return (
-    <div className="row patient-display">
+    <div className="container">
+      <div className="row py-2">
+        <div className="col d-flex justify-content-center">
+          <h4 className="title">Active Patients</h4>
+        </div>
+      </div>
+      <div className="row patient-display">
       {homeStatus === 'loading' ? (
         <div><Loading /></div>
       ) : homeStatus === 'error' ? (
@@ -74,8 +80,10 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
               )
             )
           )
-      }
+        }
+      </div>
     </div>
+    
   )
 }
 
