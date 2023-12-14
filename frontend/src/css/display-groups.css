@@ -1,8 +1,8 @@
 .group {
   border: 2px solid var(--borderColor);
   border-radius: 3px;
-  width: 100%;
-  margin: 5px;
+  min-width: 170px;
+  max-width: 180px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -23,7 +23,7 @@
 .patient-cont {
   border: 1px solid var(--borderColor);
   width: 9rem;
-  padding: 3px;
+  padding: 5px;
   margin: 3px;
   display: flex;
   justify-content: center;
@@ -32,4 +32,8 @@
   font-weight: 700;
   border-radius: 3px;
   background: var(--personBg);
+}
+
+.used {
+  background: var(--disabledBg);
 }

@@ -98,7 +98,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
           
             (
               groups.map((group, index) => (
-                <div className="col-6 d-flex flex-column group">
+                <div className="col d-flex flex-column group mx-3 my-2">
                   <div className="group-number">Group {index + 1}</div>
                   <div className="d-flex justify-content-center align-items-center row">
 

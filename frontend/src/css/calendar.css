@@ -194,7 +194,7 @@ button.rbc-input::-moz-focus-inner {
   text-align: center;
   font-weight: 700;
   font-size: 22px;
-  color: var(--fulfilled);
+  color: var(--patientLetters);
 }
 .rbc-toolbar button {
   color: #373a3c;
