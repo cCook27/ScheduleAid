@@ -5,6 +5,12 @@
   max-width: 100%;
 }
 
+.title {
+  color: var(--patientLetters);
+  font-weight: 700;
+  padding: 5px;
+}
+
 .person-cont {
   width: 9rem;
   padding: 3px;

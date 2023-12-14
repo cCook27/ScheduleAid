@@ -37,7 +37,13 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
  
 
   return (
-    <div className="row patient-display">
+    <div className="container">
+      <div classparam="row py-2">
+        <div classparam="col d-flex justify-content-center">
+          <h4 classparam="title">Patients</h4>
+        </div>
+      </div>
+      <div className="row patient-display">
       {homeStatus === 'loading' ? (
         <div><Loading /></div>
       ) : homeStatus === 'error' ? (
@@ -74,8 +80,10 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
               )
             )
           )
-      }
+        }
+      </div>
     </div>
+    
   )
 }
 
