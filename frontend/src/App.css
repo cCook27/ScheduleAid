@@ -1,27 +1,25 @@
 :root {
-  --borderColor: #57859e;
+  --borderColor: #6a9f6d;
   --viewLetters: #4e4e4e;
-  --fulfilled: #9587c7;
+  --fulfilled: #93d9ae;
+  --testHover: #7bcd9a;
+  --patientLetters: #6ca281;
   --hoverLetters: #fff;
-  --eventBg: #9587c7;
+  --eventBg: #30afb4;
   --personBg: rgb(248, 247, 247);
   --usedBg: rgba(128, 128, 128, 0.267);
+  --disabledBg: #93d9ae50;
 
   /* nav */
-  --link: #6b638c;
-  --linkHover: #52457d;
-  --contBg: radial-gradient(
-    5630.99% 50% at 50% 51.02%,
-    rgba(135, 199, 196, 0.78) 0%,
-    rgba(135, 199, 196, 0.62) 100%
-  );
+  --link: #141414;
+  --contBg: linear-gradient(180deg, #93d5d9 0%, rgba(147, 213, 217, 0) 100%);
 }
 
 .overall {
   background: linear-gradient(
     109deg,
-    rgba(135, 162, 200, 0.52) 4.09%,
-    rgba(217, 217, 217, 0.82) 100%
+    rgba(149, 218, 199, 0.77) 4.09%,
+    rgba(149, 218, 199, 0.13) 100%
   );
 
   min-height: 100vh;
