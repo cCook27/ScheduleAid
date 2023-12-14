@@ -38,9 +38,9 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
 
   return (
     <div className="container">
-      <div classparam="row py-2">
-        <div classparam="col d-flex justify-content-center">
-          <h4 classparam="title">Patients</h4>
+      <div className="row py-2">
+        <div className="col d-flex justify-content-center">
+          <h4 className="title">Patients</h4>
         </div>
       </div>
       <div className="row patient-display">

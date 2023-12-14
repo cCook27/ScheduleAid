@@ -2,7 +2,7 @@ import React, {useEffect, useContext, useState, useCallback} from 'react';
 import '../css/calendar.css';
 import '../css/calendar-extra.css'
 import { v4 as uuidv4 } from 'uuid';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 
 import { UserContext, AccessTokenContext } from '../context/context';
 import useDistanceRequests from '../hooks/distance-request';
@@ -26,8 +26,6 @@ const localizer = momentLocalizer(moment);
 
 
 function Calendar(props) {
-  const queryClient = useQueryClient();
-
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
@@ -53,7 +51,9 @@ function Calendar(props) {
   const [patientGroups, setPatientGroups] = useState(undefined);
   const [groupsForPatientModal, setGroupsForPatientModal] = useState([]);
   const [therapistParameters, setTherapistParameters] = useState({
-    workingDays: null,
+    workingDays: 5,
+    sessionLength: 60,
+    bufferTime: 5
   });
   const [viewStartDate, setViewStartDate] = useState(null);
   const [viewEndDate, setViewEndDate] = useState(null);
@@ -87,6 +87,10 @@ function Calendar(props) {
     setViewStartDate(newStart);
     setViewEndDate(newEnd);
   };
+
+  useEffect(() => {
+    console.log(therapistParameters);
+  }, [therapistParameters]);
 
   useEffect(() => {
     const currentDay = new Date(moment().toLocaleString('en-US', { weekday: 'short' })).getDay();
@@ -165,13 +169,6 @@ function Calendar(props) {
     ...(event.groupNumber === undefined && viewFocus.view === 'Group' && {
       className: 'assign-day',
     }),
-
-    // ...(event.start.toLocaleString('en-US', { weekday: 'long' }) === 'Friday' && {
-    //   className: 'Friday',
-    // }),
-
-
-   
   });
 
   const handleEventsUpdate = (events) => {
@@ -420,12 +417,8 @@ function Calendar(props) {
     }
   };
 
-  const handleTherapistParameters = (event) => {
-    const {name, value} = event.target;
-    setTherapistParameters((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+  const handleTherapistParameters = (params) => {
+    setTherapistParameters(params);
   };
 
   const handleGrouping = async () => {
