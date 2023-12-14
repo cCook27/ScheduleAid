@@ -464,8 +464,9 @@ function Calendar(props) {
   };
  
   return (
-    <div className="container-fluid">
-      <div className={`row mt-5 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
+    <div className="container-fluid d-flex flex-column">
+      <h2 className='sched-title'>Scheduling Your Patients</h2>
+      <div className={`row mt-3 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
 
         {/* calendar */}
         <div className='col-12 col-lg-8 d-flex flex-column justify-content-start align-items-start calendar-cont'>
