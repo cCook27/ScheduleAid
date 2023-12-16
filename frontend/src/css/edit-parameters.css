@@ -1,0 +1,49 @@
+.title {
+  color: var(--patientLetters);
+  font-weight: 700;
+  padding: 5px;
+}
+
+.input-group {
+  width: 120px;
+  margin: auto;
+  border: var(--borderColor);
+}
+
+.input-group-text {
+  width: 25%;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  background: var(--fulfilled);
+}
+
+.label-edit {
+  width: 120px;
+  display: flex;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--viewLetters);
+}
+
+.save-btn {
+  background: var(--fulfilled);
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
+  width: 100px;
+  font-weight: 600;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  width: 200px;
+}
+
+.save-btn:hover {
+  background: var(--testHover);
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
+}
+
+.save-btn:active {
+  transform: translateY(2px);
+}

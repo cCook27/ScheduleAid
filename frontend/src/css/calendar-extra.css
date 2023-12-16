@@ -1,0 +1,64 @@
+.sched-title {
+  font-weight: 700;
+  padding: 10px;
+  color: var(--patientLetters);
+}
+
+select {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.test {
+  background: var(--fulfilled);
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
+  width: 100px;
+  font-weight: 600;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.test:hover {
+  background: var(--testHover);
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
+}
+
+.test:disabled {
+  background: var(--disabledBg);
+  border: 2px solid var(--borderColor);
+  color: var(--viewLetters);
+}
+
+.test:active {
+  transform: translateY(2px);
+}
+
+.view {
+  border: 1px solid var(--borderColor);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 7px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  color: var(--viewLetters);
+  background: var(--disabledBg);
+}
+
+.left-rad {
+  border-radius: 5px 0 0 5px;
+}
+
+.right-rad {
+  border-radius: 0 5px 5px 0;
+}
+
+.view:hover {
+  background: var(--testHover);
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
+}
+
+.view-btn:checked + .view {
+  background-color: var(--fulfilled);
+  color: var(--hoverLetters);
+}

@@ -32,10 +32,18 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
       setRemainingPatients(patientsRemaining);
     }
   
-  },[myEvents, start])
+  },[myEvents, start]);
+
+ 
 
   return (
-    <div className="row">
+    <div className="container">
+      <div className="row py-2">
+        <div className="col d-flex justify-content-center">
+          <h4 className="title">Patients</h4>
+        </div>
+      </div>
+      <div className="row patient-display">
       {homeStatus === 'loading' ? (
         <div><Loading /></div>
       ) : homeStatus === 'error' ? (
@@ -48,37 +56,54 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
         remainingPatients.map((patient, index) => (
           patient ? 
               (
-                <div key={patient._id} draggable className="col d-flex justify-content-end align-items-center" 
-                onDragStart={() =>
-                    handleDragStart(patient.name, patient.address, patient.coordinates)
-                  }>
-                <div  className="card my-3">
-                  <div className="card-body">
-                    <div className="card-title">{patient.name}</div>
+                <div key={patient._id} className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" >
+                  <div draggable onDragStart={() =>
+                    handleDragStart(patient.name, patient.address, patient.coordinates)} className="person-cont d-flex flex-column justify-content-center align-items-center">
+                    <div className="name ellipsis-overflow">{patient.name}</div>
+                    <div className="address ellipsis-overflow">{patient.address}</div>
                   </div>
                 </div>
-              </div>
               ) : 
               (
-                <div key={homes[index]._id} className="col d-flex justify-content-end align-items-center" >
-                    <div  className="card my-3 used">
-                      <div className="card-body">
-                        <div className="card-title">{homes[index].name}</div>
-                      </div>
-                    </div>
+                <div key={homes[index]._id} className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" >
+                  <div className="person-cont used d-flex flex-column justify-content-center align-items-center">
+                    <div className="name ellipsis-overflow">{homes[index].name}</div>
+                    <div className="address ellipsis-overflow">{homes[index].address}</div>
+                  </div>
                 </div>
               )
               
               )
             )
           )
-      }
+        }
+      </div>
     </div>
+    
   )
 }
 
 export default DisplayPatients
 
 
+
+{/* <div key={patient._id} draggable className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" 
+onDragStart={() =>
+    handleDragStart(patient.name, patient.address, patient.coordinates)
+  }>
+    <div class="position-relative card">
+      <div className="card-body">
+        <div className="title-cont">
+          <div className="card-title ellipsis-overflow">
+            {patient.name}
+          </div>
+        </div>
+        
+        <div className="address-cont">
+          <div className="card-text ellipsis-overflow">{patient.address}</div>
+        </div>
+      </div>
+    </div>
+</div> */}
 
 

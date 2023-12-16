@@ -1,7 +1,8 @@
 import React, {useEffect, useContext, useState, useCallback} from 'react';
 import '../css/calendar.css';
+import '../css/calendar-extra.css'
 import { v4 as uuidv4 } from 'uuid';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 
 import { UserContext, AccessTokenContext } from '../context/context';
 import useDistanceRequests from '../hooks/distance-request';
@@ -15,17 +16,16 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import DisplayGroups from '../Features/display-groups';
 import DisplayPatients from '../Features/display-patients';
-import GroupModal from '../pop-ups/group-modal';
+import EditParameters from '../Features/edit-parameters.js';
 import ErrorModal from '../pop-ups/error-modal';
 import PatientModal from '../pop-ups/patient-modal';
+
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
 const localizer = momentLocalizer(moment);
 
 
 function Calendar(props) {
-  const queryClient = useQueryClient();
-
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
@@ -47,11 +47,13 @@ function Calendar(props) {
     groupParams: false,
     view: 'Patient'
   });
-  const [testSelection, setTestSelection] = useState(undefined);
+  const [testDay, setTestDay] = useState(undefined);
   const [patientGroups, setPatientGroups] = useState(undefined);
   const [groupsForPatientModal, setGroupsForPatientModal] = useState([]);
   const [therapistParameters, setTherapistParameters] = useState({
-    workingDays: null,
+    workingDays: 5,
+    sessionLength: 60,
+    bufferTime: 5
   });
   const [viewStartDate, setViewStartDate] = useState(null);
   const [viewEndDate, setViewEndDate] = useState(null);
@@ -85,6 +87,10 @@ function Calendar(props) {
     setViewStartDate(newStart);
     setViewEndDate(newEnd);
   };
+
+  useEffect(() => {
+    console.log(therapistParameters);
+  }, [therapistParameters]);
 
   useEffect(() => {
     const currentDay = new Date(moment().toLocaleString('en-US', { weekday: 'short' })).getDay();
@@ -163,13 +169,6 @@ function Calendar(props) {
     ...(event.groupNumber === undefined && viewFocus.view === 'Group' && {
       className: 'assign-day',
     }),
-
-    // ...(event.start.toLocaleString('en-US', { weekday: 'long' }) === 'Friday' && {
-    //   className: 'Friday',
-    // }),
-
-
-   
   });
 
   const handleEventsUpdate = (events) => {
@@ -291,7 +290,7 @@ function Calendar(props) {
 
       const start = new Date(event.start).getTime();
 
-      return day === testSelection && (start >= viewStart && start <= viewEnd);
+      return day === testDay && (start >= viewStart && start <= viewEnd);
     }).sort((a, b) => a.start - b.start);
 
     const noGroupAssigned = selectedDaySchedule.filter((ev) => ev.groupNumber === undefined);
@@ -302,11 +301,11 @@ function Calendar(props) {
         if(selectedDaySchedule.length > 1 && noGroupAssigned.length === 0) {
           const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
           eventViability(viabilityData);
-          setTestSelection(undefined);
+          setTestDay(null);
         }; 
         
         if(selectedDaySchedule.length <= 1) {
-          window.alert(`Please make sure there are at least 2 patients on ${testSelection}.`);
+          window.alert(`Please make sure there are at least 2 patients on ${testDay}.`);
         };
         
         if(noGroupAssigned.length > 0) {
@@ -318,18 +317,16 @@ function Calendar(props) {
         if(selectedDaySchedule.length > 1) {
           const viabilityData = await getTimeDistances(selectedDaySchedule, accessToken);
           eventViability(viabilityData);
-          setTestSelection(undefined);
+          setTestDay(null);
         } else {
-          window.alert(`Please make sure there are at least 2 patients on ${testSelection}.`);
+          window.alert(`Please make sure there are at least 2 patients on ${testDay}.`);
         }
       };
     } else if(selectedDaySchedule.length === 0) {
-      window.alert(`Looks like ${testSelection} doesn't have any patients to test, you're FREE...for now...`);
+      window.alert(`Looks like ${testDay} doesn't have any patients to test, you're FREE...for now...`);
     } else {
-      window.alert(`Looks like ${testSelection} has already been tested with no changes`);
+      window.alert(`Looks like ${testDay} has already been tested with no changes`);
     }
-
-    setTestSelection(null);
   };
 
   const removeAllEvents = () => {
@@ -391,41 +388,37 @@ function Calendar(props) {
     } 
   };
 
-  const testSelectionCheck = (event) => {
-    switch (event.target.id) {
+  const daySelection = (event) => {
+    switch (event) {
       case 'Sunday':
-        setTestSelection('Sunday');
+        setTestDay('Sunday');
         break;
       case 'Monday':
-        setTestSelection('Monday');
+        setTestDay('Monday');
         break;
       case 'Tuesday':
-        setTestSelection('Tuesday');
+        setTestDay('Tuesday');
         break;
       case 'Wednesday':
-        setTestSelection('Wednesday');
+        setTestDay('Wednesday');
         break;
       case 'Thursday':
-        setTestSelection('Thursday');
+        setTestDay('Thursday');
         break;
       case 'Friday':
-        setTestSelection('Friday');
+        setTestDay('Friday');
         break;
       case 'Saturday':
-        setTestSelection('Saturday');
+        setTestDay('Saturday');
         break;
       default:
-        setTestSelection(undefined);
+        setTestDay(undefined);
         break;
     }
-  }
+  };
 
-  const handleTherapistParameters = (event) => {
-    const {name, value} = event.target;
-    setTherapistParameters((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+  const handleTherapistParameters = (params) => {
+    setTherapistParameters(params);
   };
 
   const handleGrouping = async () => {
@@ -471,12 +464,33 @@ function Calendar(props) {
   };
  
   return (
-    <div className="container-fluid">
-      <div className={`row mt-5 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
+    <div className="container-fluid d-flex flex-column">
+      <h2 className='sched-title'>Schedule Your Patients</h2>
+      <div className={`row mt-3 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
 
         {/* calendar */}
-        <div className='col-8 d-flex justify-content-start calendar-cont'>
-          <div style={{height: '90vh', width: '100%'}}>
+        <div className='col-12 col-lg-8 d-flex flex-column justify-content-start align-items-start calendar-cont'>
+          <div className="d-flex d-lg-none justify-content-center align-items-center">
+            <select className="form-select daySelect" name="testDay" id="testDay" 
+            onChange={(event) => daySelection(event.target.value)}
+            value={testDay || ''}
+            >
+              <option disabled selected value="">Select a Day to Test</option>
+              <option value="Sunday">Sunday</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+            </select>
+
+            <button onClick={testSchedule} className="test btn m-2" 
+            disabled={!testDay}>
+              Test
+            </button>
+          </div>
+          <div className='dndCal-container'>
             <DnDCalendar {...props} 
               localizer={localizer} 
               events={myEvents} 
@@ -496,76 +510,55 @@ function Calendar(props) {
         </div>
 
         {/* Homes */}
-        <div className="col d-flex flex-column justify-content-center align-items-center ms-3">
-          <div className="row d-flex">
+        <div className="col d-flex flex-column align-items-center">
+          <div className="row testing mb-2">
             <div className="col">
-              <div className="btn-group d-flex justify-content-center">   
-                <input type="radio" className="btn-check" name="Sunday" id="Sunday" onChange={testSelectionCheck} 
-                checked={testSelection === 'Sunday'}
-                />
-                <label className="btn day" htmlFor="Sunday">Sunday</label>
 
-                <input type="radio" className="btn-check" name="Monday" id="Monday" onChange={testSelectionCheck}
-                checked={testSelection === 'Monday'}
-                />
-                <label className="btn day" htmlFor="Monday">Monday</label>
+              <div className="d-none d-lg-flex justify-content-center align-items-center">
+                <select className="form-select daySelect" name="testDay" id="testDay" 
+                onChange={(event) => daySelection(event.target.value)}
+                value={testDay || ''}
+                >
+                  <option disabled selected value="">Select a Day to Test</option>
+                  <option value="Sunday">Sunday</option>
+                  <option value="Monday">Monday</option>
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                  <option value="Saturday">Saturday</option>
+                </select>
 
-                <input type="radio" className="btn-check" name="Tuesday" id="Tuesday" onChange={testSelectionCheck}
-                checked={testSelection === 'Tuesday'}
-                />
-                <label className="btn day" htmlFor="Tuesday">Tuesday</label>
-
-                <input type="radio" className="btn-check" name="Wednesday" id="Wednesday" onChange={testSelectionCheck}
-                checked={testSelection === 'Wednesday'}
-                />
-                <label className="btn day" htmlFor="Wednesday">Wednesday</label>
+                <button onClick={testSchedule} className="test btn m-2" 
+                disabled={!testDay}>
+                  Test
+                </button>
               </div>
-
-              <div className="btn-group d-flex justify-content-center">
-                <input type="radio" className="btn-check" name="Thursday" id="Thursday" onChange={testSelectionCheck}
-                checked={testSelection === 'Thursday'}
-                />
-                <label className="btn day" htmlFor="Thursday">Thursday</label>
-
-                <input type="radio" className="btn-check" name="Friday" id="Friday" onChange={testSelectionCheck}
-                checked={testSelection === 'Friday'}
-                />
-                <label className="btn day" htmlFor="Friday">Friday</label>
-
-                <input type="radio" className="btn-check" name="Saturday" id="Saturday" onChange={testSelectionCheck}
-                checked={testSelection === 'Saturday'}
-                />
-                <label className="btn day" htmlFor="Saturday">Saturday</label>
-              </div>
-
-              <div className='d-flex justify-content-center align-items-center mb-3'>
-                <button onClick={testSchedule} className="test m-2" disabled={!testSelection}>Test</button>
-                <button onClick={removeAllEvents} className="test m-2">Delete All</button>
-              </div>
+        
             </div>
           </div>
 
-          <div className="row">
-            <div className="col d-flex flex-column justify-content-center">
+          <div className="row views mb-3">
+            <div className="col">
               <div className="btn-group" role="group" aria-label="Basic radio  toggle button group">
                 
                 <input type="radio" className="btn-check view-btn" name="Patient" id="Patient" 
                 checked={viewFocus.view === 'Patient'}  onChange={viewCheck}
                 />
-                <label className="btn" htmlFor="Patient">Patient View</label>
+                <label className="view left-rad" htmlFor="Patient">Patient View</label>
 
                 <input type="radio" className="btn-check view-btn" name="Edit" id="Edit" checked={viewFocus.view === 'Edit'}  onChange={viewCheck} />
-                <label className="btn" htmlFor="Edit">Edit Group</label>
+                <label className="view" htmlFor="Edit">Edit Parameters</label>
 
                 <input type="radio" className="btn-check view-btn" name="Group" id="Group" checked={viewFocus.view === 'Group'}  onChange={viewCheck} />
-                <label className="btn" htmlFor="Group">Group View</label>
+                <label className="view right-rad" htmlFor="Group">Group View</label>
               </div>
             </div>
           </div>
             
-          <div className="row">
+          <div className="row displays">
             {!viewFocus.showGroups && !viewFocus.groupParams ? (
-              <div>
+              <div className="mb-3">
                 <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} />
               </div>
             ) : viewFocus.showGroups ? (
@@ -574,7 +567,7 @@ function Calendar(props) {
                 </div>
             ) : viewFocus.groupParams ? (
                 <div>
-                  <GroupModal therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
+                  <EditParameters therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
                   handleGrouping={handleGrouping}
                   closeModal={closeModal} />
                 </div>

@@ -1,3 +1,39 @@
+.ellipsis-overflow {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.title {
+  color: var(--patientLetters);
+  font-weight: 700;
+  padding: 5px;
+}
+
+.person-cont {
+  width: 9rem;
+  padding: 3px;
+  height: 45px;
+  background: var(--personBg);
+  margin-bottom: 5px;
+  border: 1px solid var(--borderColor);
+  border-radius: 3px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.name {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--patientLetters);
+}
+
+.address {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--viewLetters);
+}
+
 .used {
-  background: rgba(128, 128, 128, 0.267);
+  background: var(--usedBg);
 }
