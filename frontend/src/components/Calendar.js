@@ -465,7 +465,7 @@ function Calendar(props) {
  
   return (
     <div className="container-fluid d-flex flex-column">
-      <h2 className='sched-title'>Scheduling Your Patients</h2>
+      <h2 className='sched-title'>Schedule Your Patients</h2>
       <div className={`row mt-3 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
 
         {/* calendar */}
