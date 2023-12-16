@@ -56,16 +56,12 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
         remainingPatients.map((patient, index) => (
           patient ? 
               (
-                <div key={patient._id} draggable className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" 
-                onDragStart={() =>
-                    handleDragStart(patient.name, patient.address, patient.coordinates)
-                  }>
-                    
-                    <div className="person-cont d-flex flex-column justify-content-center align-items-center">
-                      <div className="name ellipsis-overflow">{patient.name}</div>
-                      <div className="address ellipsis-overflow">{patient.address}</div>
-                    </div>
-
+                <div key={patient._id} className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" >
+                  <div draggable onDragStart={() =>
+                    handleDragStart(patient.name, patient.address, patient.coordinates)} className="person-cont d-flex flex-column justify-content-center align-items-center">
+                    <div className="name ellipsis-overflow">{patient.name}</div>
+                    <div className="address ellipsis-overflow">{patient.address}</div>
+                  </div>
                 </div>
               ) : 
               (
