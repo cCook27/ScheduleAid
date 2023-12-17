@@ -17,7 +17,7 @@ const Navbar = () => {
           <div className="link"><a className="link" href="/">Home</a></div>
         </div>
         <div className="col-3 d-flex justify-content-center align-items center">
-          <div className="link"><a className="link" href="/manage">Patients</a></div>
+          <div className="link"><a className="link" href="/manage">Create & Manage Patients</a></div>
         </div>
         <div className="col-3 d-flex justify-content-center align-items center">
           <div className="link"><a className="link" href="/scheduling">Scheduling</a></div>
