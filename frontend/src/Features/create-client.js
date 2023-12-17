@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
-import '../css/create-client.css'
+import '../css/create-patient.css'
 import { useState, useContext } from 'react';
 import PlacesAutocomplete from 'react-places-autocomplete';
 import { v4 as uuidv4 } from 'uuid';

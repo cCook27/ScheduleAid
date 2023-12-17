@@ -1,21 +1,92 @@
-/* .card {
-  height: auto;
-  border: 1px solid #003271;
+.pat-select {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  height: 37.6px;
 }
 
-.btn-container {
+.pat-search {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  height: 37.6px;
+}
+
+.add-btn {
+  width: 100px;
+  height: 37.6px;
+  background: var(--fulfilled);
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
+  font-weight: 600;
+  font-size: 12px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  height: 100%;
+  align-items: center;
 }
 
-.page-container {
-  background: #eaeaea;
-  height: 100vh;
+.pat-cont {
+  border: 2px solid var(--borderColor);
+  border-radius: 3px;
+  width: 100%;
+  height: 60px;
+  padding: 3px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-.title {
-  color: #003271;
-} */
+.ellipsis-overflow {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.info-cont {
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.larger-cont {
+  width: 200px;
+}
+
+.pat-name {
+  font-weight: 700;
+  color: var(--patientLetters);
+}
+
+.pat-active,
+.pat-address,
+.pat-frequency,
+.pat-number {
+  color: var(--viewLetters);
+  font-weight: 600;
+}
+
+.view-btn {
+  background: var(--fulfilled);
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
+  width: 80px;
+  height: 30px;
+  font-weight: 600;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.view-btn,
+.add-btn:hover {
+  background: var(--testHover);
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
+}
+
+.view-btn,
+.add-btn:active {
+  transform: translateY(2px);
+}
