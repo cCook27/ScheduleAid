@@ -18,12 +18,6 @@ select {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-.test:hover {
-  background: var(--testHover);
-  border: 1px solid var(--borderColor);
-  color: var(--hoverLetters);
-}
-
 .test:disabled {
   background: var(--disabledBg);
   border: 2px solid var(--borderColor);
@@ -53,7 +47,7 @@ select {
 }
 
 .view:hover {
-  background: var(--testHover);
+  background: var(--fulfilled);
   border: 1px solid var(--borderColor);
   color: var(--hoverLetters);
 }

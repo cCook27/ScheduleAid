@@ -80,13 +80,6 @@
 }
 
 .view-btn,
-.add-btn:hover {
-  background: var(--testHover);
-  border: 1px solid var(--borderColor);
-  color: var(--hoverLetters);
-}
-
-.view-btn,
 .add-btn:active {
   transform: translateY(2px);
 }
