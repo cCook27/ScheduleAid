@@ -1,0 +1,4 @@
+.container-fluid {
+  background: var(--personBg);
+  border-radius: 3px;
+}
