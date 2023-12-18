@@ -5,9 +5,22 @@
 }
 
 .pat-search {
+}
+
+.search-group {
+  margin: 0 !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
-  width: 300px;
+  width: 300px !important;
   height: 37.6px;
+}
+
+.search-btn {
+  background: var(--fulfilled);
+  border: 1px solid var(--borderColor);
+  color: var(--hoverLetters);
+  font-weight: 600;
+  font-size: 12px;
+  border-radius: 5px;
 }
 
 .add-btn {
@@ -28,6 +41,7 @@
 .pat-cont {
   border: 2px solid var(--borderColor);
   border-radius: 3px;
+  background: var(--personBg);
   width: 100%;
   height: 60px;
   padding: 3px;

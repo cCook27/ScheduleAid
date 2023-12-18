@@ -14,12 +14,47 @@ function DisplayClients() {
   const { isLoading } = useAuth0();
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
-  const { getHomes, removeHome } = useHomeRequests();
-  const [editClient, setEditClient] = useState(null)
 
+  const { getHomes, removeHome } = useHomeRequests();
   const { data: homes, status } = useQuery('homes', 
     () => getHomes(user._id, accessToken)
   );
+
+  const [filteredHomes, setFilteredHomes] = useState([]);
+  const [filter, setFilter] = useState(null);
+  const [searchFilter, setSearchFilter] = useState(null);
+
+  const filterSelection = (filterEvent) => {
+    setFilter(filterEvent);
+
+    if(filterEvent === 'A-Z') {
+      const sortAZ = homes.sort((a, b) => a.name.localeCompare(b.name));
+      sortAZ.length > 0 ? setFilteredHomes(sortAZ) : window.alert('Add Patients!');
+    } else if(filterEvent === 'Z-A')  {
+      const sortZA = homes.sort((a, b) => b.name.localeCompare(a.name));
+      sortZA.length > 0 ? setFilteredHomes(sortZA) : window.alert('Add Patients!');
+    } else if(filterEvent === 'Active') {
+      const filterActive = homes.filter((home) => home.active);
+      filterActive.length > 0 ? setFilteredHomes(filterActive) : window.alert('You have no Active patients');
+    } else if(filterEvent === 'Inactive') {
+      const filterInactive = homes.filter((home) => !home.active);
+      filterInactive.length > 0 ? setFilteredHomes(filterInactive) : window.alert('You have no Inactive patients');
+    } else if(filterEvent === 'All') {
+      setFilteredHomes(homes);
+    }
+  };
+
+  const handleSearchName = (event) => { 
+    setSearchFilter(event);
+  };
+
+  const searchName = () => {
+    const isName = homes.filter((home) => home.name.toUpperCase() === searchFilter.toUpperCase());
+
+    isName.length > 0 ? setFilteredHomes(isName) : window.alert(`Sorry, it looks like there is no one by the name of ${searchFilter} in your patient list.`);
+
+    setFilter(null);
+  };
 
   const deleteHome = useMutation({
     mutationFn: (id) => 
@@ -30,26 +65,20 @@ function DisplayClients() {
     },
   });
 
-  const handleEdit = (home) => {
-    setEditClient(home)
-  }
-
-  useEffect(() => {
-    console.log(homes)
-    console.log(editClient)
-  }, [homes, editClient])
-
   return (
     <div className="page-container">
       <div className='container-fluid'>
-        <div className="row d-flex justify-content-center align-items-center">
+        <div className="row p-3 d-flex justify-content-center align-items-center">
           <div className="col-10">
             <h2 className='sched-title'>Manage Your Patients</h2>
           </div>
           <div className="row d-flex justify-content-center align-items-center">
             <div className="col-5 d-flex">
-              <select name="filter" id="filter" className="form-select pat-select">
+              <select name="filter" id="filter" className="form-select pat-select"
+              onChange={(event) => filterSelection(event.target.value)}
+              value={filter || ''}>
                 <option disabled selected value="">Filter</option>
+                <option value="All">All</option>
                 <option value="A-Z">A-Z</option>
                 <option value="Z-A">Z-A</option>
                 <option value="Active">Active</option>
@@ -62,7 +91,10 @@ function DisplayClients() {
             </div>
 
             <div className="col-5 d-flex justify-content-end">
-              <input type="text" className="form-control pat-search" id="search" placeholder="Search By Name" />
+            <div className="input-group search-group">
+              <input type="text" className="form-control search pat-search" placeholder="Search By Name" value={searchFilter} onChange={(e) => handleSearchName(e.target.value)} />
+              <button onClick={searchName} className="btn search-btn" type="button">Search</button>
+            </div>
             </div>
           </div>
         </div>
@@ -107,31 +139,54 @@ function DisplayClients() {
                 </div>
               </div>
               
-            ): 
+            ): filteredHomes.length > 0 ?
+            (
+              filteredHomes.map((home) => (
+                <div key={home._id} className="row pat-cont my-2 d-flex justify-content-center align-items-center">
+                  <div className="col info-cont">
+                    <div className="pat-name">{home.name}</div>
+                  </div>
+                  <div className="col info-cont">
+                    <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
+                  </div>
+                  <div className="col info-cont larger-cont">
+                    <div className="pat-address ellipsis-overflow">{home.address}</div>
+                  </div>
+                  <div className="col info-cont">
+                    <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
+                  </div>
+                  <div className="col info-cont">
+                    <div className="pat-number ellipsis-overflow">{home.number}number</div>
+                  </div>
+                  <div className="col info-cont">
+                    <button className='btn view-btn'>View</button>
+                  </div>
+                </div>
+              ))
+            ) :
             (
               homes.map((home) => (
-              <div key={home._id} className="row pat-cont my-2 d-flex justify-content-center align-items-center">
-                <div className="col info-cont">
-                  <div className="pat-name">{home.name}</div>
+                <div key={home._id} className="row pat-cont my-2 d-flex justify-content-center align-items-center">
+                  <div className="col info-cont">
+                    <div className="pat-name">{home.name}</div>
+                  </div>
+                  <div className="col info-cont">
+                    <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
+                  </div>
+                  <div className="col info-cont larger-cont">
+                    <div className="pat-address ellipsis-overflow">{home.address}</div>
+                  </div>
+                  <div className="col info-cont">
+                    <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
+                  </div>
+                  <div className="col info-cont">
+                    <div className="pat-number ellipsis-overflow">{home.number}number</div>
+                  </div>
+                  <div className="col info-cont">
+                    <button className='btn view-btn'>View</button>
+                  </div>
                 </div>
-                <div className="col info-cont">
-                  <div className="pat-active ellipsis-overflow">{home.active}Active</div>
-                </div>
-                <div className="col info-cont larger-cont">
-                  <div className="pat-address ellipsis-overflow">{home.address}</div>
-                </div>
-                <div className="col info-cont">
-                  <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
-                </div>
-                <div className="col info-cont">
-                  <div className="pat-number ellipsis-overflow">{home.number}number</div>
-                </div>
-                <div className="col info-cont">
-                  <button className='btn view-btn'>View</button>
-                </div>
-              </div>
               ))
-
             )
           }
           </div>
