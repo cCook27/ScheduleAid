@@ -29,6 +29,13 @@ function CreatePatient() {
       frequency: null
     }
   );
+  // const [noSeeDaysArr, setNoSeeDaysArr] = ([]);
+
+  // useEffect(() => {
+  //   const createNSDArr = Object.entries(formData.noSeeDays).map(([key, value]) => ({[key]: value}));
+
+  //   setNoSeeDaysArr(createNSDArr);
+  // }, [formData.noSeeDays]);
 
   const handleInputChange = (event) => {
     const {name, value} = event.target;
@@ -41,6 +48,16 @@ function CreatePatient() {
 
   const handleAddMore = () => {
     setAddMore(!addMore);
+  };
+
+  const handleNoSeeDays = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      noSeeDays: {
+        ...prev.noSeeDays,
+        [value]: !prev.noSeeDays[value]
+      }
+    }));
   };
 
 
@@ -137,9 +154,46 @@ function CreatePatient() {
       <div className={`${addMore ? 'row' : 'd-none'}`}>
         <div className="col-6">
           <div className="npat-cont">
-            <div>More Stuff</div>
+            <select className="form-select pat-select" name="noseeDays" id="noSeeDays" 
+            onChange={(event) => handleNoSeeDays(event.target.value)}
+            >
+              <option disabled selected value="">Select Days</option>
+              <option className={`${formData.noSeeDays.sunday ? 'd-none' : null}`} value="sunday">
+                Sunday
+              </option>
+              <option className={`${formData.noSeeDays.monday ? 'd-none' : null}`} value="monday">
+                Monday
+              </option>
+              <option className={`${formData.noSeeDays.tuesday ? 'd-none' : null}`} value="tuesday">
+                Tuesday
+              </option>
+              <option className={`${formData.noSeeDays.wednesday ? 'd-none' : null}`} value="wednesday">
+                Wednesday
+              </option>
+              <option className={`${formData.noSeeDays.thursday ? 'd-none' : null}`} value="thursday">
+                Thursday
+              </option>
+              <option className={`${formData.noSeeDays.friday ? 'd-none' : null}`} value="friday">
+                Friday
+              </option>
+              <option className={`${formData.noSeeDays.saturday ? 'd-none' : null}`} value="saturday">
+                Saturday
+              </option>
+            </select>
+            <div className="d-flex">
+              {Object.entries(formData.noSeeDays).map(([propertyName, propertyValue]) => (
+                propertyValue && (
+                  <div className="nsd-cont" key={propertyName}>
+                    <span class="badge">{propertyName}
+                      <button className='btn-close' onClick={(propertyName) => handleNoSeeDays(propertyName)}></button>
+                    </span>
+                  </div>
+                )
+              ))}
+            </div>
           </div>
         </div>
+        <div className="col-6"></div>
       </div>
     
     </div>
@@ -421,8 +475,8 @@ export default CreatePatient;
 //                 onChange={handleState} 
 //                 name="active" 
 //                 id="active">
-//                 <option value="yes">Yes</option>
-//                 <option value="no">No</option>
+//                 <option className={`${formData.noSeeDays.sunday ? 'd-none' : null}`} value="yes">Yes</option>
+//                 <option className={`${formData.noSeeDays.sunday ? 'd-none' : null}`} value="no">No</option>
 //               </select>
 //             </div>
 

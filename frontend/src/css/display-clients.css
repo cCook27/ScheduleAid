@@ -117,3 +117,19 @@
   top: 5%;
   left: 25%;
 }
+
+.badge {
+  background: var(--fulfilled);
+  color: var(--hoverLetters);
+}
+
+.nsd-cont {
+  padding: 5px;
+}
+
+.btn-close {
+  font-size: 8px;
+  color: red !important;
+  margin-left: 2px;
+  align-items: top;
+}
