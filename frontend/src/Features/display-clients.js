@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
-import '../css/display-homes.css';
+import '../css/display-clients.css';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
@@ -185,7 +185,7 @@ function DisplayClients() {
         </div>
 
         {addPatinet ?
-          <div className="above-overlay">
+          <div className="above-overlay-n">
               <CreatePatient close={handleAddPatModal} />
           </div> : null 
         }

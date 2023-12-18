@@ -14,12 +14,14 @@ function CreatePatient() {
   const accessToken = useContext(AccessTokenContext);
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
+  const [addMore, setAddMore] = useState(false);
   const [formData, setFormData] = useState(
     {
       firstName: '',
       lastName: '',
       address: '',
-      number: '',
+      primaryNumber: '',
+      secondaryNumber: '',
       email: '',
       _id: '',
       noSeeDays: {sunday: false, monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: false},
@@ -27,21 +29,119 @@ function CreatePatient() {
       frequency: null
     }
   );
+
+  const handleInputChange = (event) => {
+    const {name, value} = event.target;
+
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleAddMore = () => {
+    setAddMore(!addMore);
+  };
+
+
   
 
   return (
-    <div className="container-fluid">
-      <form>
-        <label>
-          First Name
-        </label>
-        <input
-            type="text"
-            className="form-control"
-            id="firstName"
-            name="firstName"
-          />
-      </form>
+    <div className="page-cont">
+      <div className="row">
+        <div className="col d-flex justify-content-center flex-column">
+          <h4 className='sched-title'>Create a New Patient</h4>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col d-flex justify-content-center flex-column">
+          <form className='form-cont'>
+            <div className="row">
+              <div className="col-6 d-flex justify-content-center flex-column">
+                <div className="npat-cont">
+                  <label className='nPat-label my-2'>First Name</label>
+                  <input
+                    type="text"
+                    className="form-control npat-input"
+                    id="firstName"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={(event) => handleInputChange(event)}
+                  />
+                </div>
+                <div className="npat-cont">
+                  <label className='nPat-label my-2'>Last Name</label>
+                  <input
+                    type="text"
+                    className="form-control npat-input"
+                    id="lastName"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={(event) => handleInputChange(event)}
+                  />
+                </div>
+                <div className="npat-cont">
+                  <label className='nPat-label my-2'>Address</label>
+                  <input
+                    className="form-control npat-input"
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={(event) => handleInputChange(event)}
+                  />
+                </div>
+              </div>
+              <div className="col-6 d-flex justify-content-center flex-column">
+                <div className="npat-cont">
+                  <label className='nPat-label my-2'>Primary Number</label>
+                  <input
+                    type="number"
+                    className="form-control npat-input"
+                    id="primaryNumber"
+                    name="primaryNumber"
+                    value={formData.primaryNumber}
+                    onChange={(event) => handleInputChange(event)}
+                  />
+                </div>
+                <div className="npat-cont">
+                  <label className='nPat-label my-2'>Secondary Number</label>
+                  <input
+                    type="number"
+                    className="form-control npat-input"
+                    id="secondaryNumber"
+                    name="secondaryNumber"
+                    value={formData.secondaryNumber}
+                    onChange={(event) => handleInputChange(event)}
+                  />
+                </div>
+                <div className="npat-cont">
+                  <label className='nPat-label my-2'>Email</label>
+                  <input
+                    className="form-control npat-input"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={(event) => handleInputChange(event)}
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div className="row py-2">
+        <div className="col d-flex justify-content-end">
+          <button className="add-more" onClick={handleAddMore}>Add More Patient Info...</button>
+        </div>
+      </div>
+      <div className={`${addMore ? 'row' : 'd-none'}`}>
+        <div className="col-6">
+          <div className="npat-cont">
+            <div>More Stuff</div>
+          </div>
+        </div>
+      </div>
+    
     </div>
   );
 }
