@@ -577,13 +577,17 @@ function Calendar(props) {
          </div>
       
 
-        {modal.patient ? <div className="above-overlay" >
-          <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groups={groupsForPatientModal} myEvents={myEvents} handleEventsUpdate={handleEventsUpdate} />
-        </div> : null}
+        {modal.patient ? 
+          <div className="above-overlay" >
+            <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groups={groupsForPatientModal} myEvents={myEvents} handleEventsUpdate={handleEventsUpdate} />
+          </div> : null
+        }
 
-        {modal.error ? <div className="above-overlay" >
-          <ErrorModal closeModal={closeModal} />
-        </div> : null}
+        {modal.error ? 
+          <div className="above-overlay" >
+            <ErrorModal closeModal={closeModal} />
+          </div> : null
+        }
       </div>
     </div>
   )

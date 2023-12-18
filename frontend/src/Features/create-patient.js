@@ -9,7 +9,7 @@ import useHomeRequests from '../hooks/home-requests';
 import {UserContext, AccessTokenContext} from '../context/context';
 import { geocodeByAddress } from 'react-places-autocomplete';
 
-function CreateClient() {
+function CreatePatient() {
   const {addNewHome} = useHomeRequests();
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
@@ -87,7 +87,7 @@ function CreateClient() {
   
 
   return (
-    <div>
+    <div className='Container'>
       <Form onSubmit={handleSubmit} className="form">
         <div className="row ps-2 mb-3">
           <div className="col-12">
@@ -323,7 +323,7 @@ function CreateClient() {
   );
 }
 
-export default CreateClient;
+export default CreatePatient;
 
 
  

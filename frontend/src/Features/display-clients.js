@@ -4,7 +4,7 @@ import '../css/display-homes.css';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-import CreateClient from './create-client';
+import CreatePatient from './create-patient';
 import useHomeRequests from '../hooks/home-requests';
 import {UserContext, AccessTokenContext} from '../context/context';
 
@@ -23,6 +23,7 @@ function DisplayClients() {
   const [filteredHomes, setFilteredHomes] = useState([]);
   const [filter, setFilter] = useState(null);
   const [searchFilter, setSearchFilter] = useState(null);
+  const [addPatinet, setAddPatient] = useState(false);
 
   const filterSelection = (filterEvent) => {
     setFilter(filterEvent);
@@ -56,6 +57,10 @@ function DisplayClients() {
     setFilter(null);
   };
 
+  const handleAddPatModal = () => {
+    setAddPatient(!addPatinet);
+  };
+
   const deleteHome = useMutation({
     mutationFn: (id) => 
       removeHome(id, user._id, accessToken),
@@ -67,7 +72,7 @@ function DisplayClients() {
 
   return (
     <div className="page-container">
-      <div className='container-fluid'>
+      <div className={`container-fluid ${addPatinet ? 'overlay' : ''}`}>
         <div className="row p-3 d-flex justify-content-center align-items-center">
           <div className="col-10">
             <h2 className='sched-title'>Manage Your Patients</h2>
@@ -86,7 +91,7 @@ function DisplayClients() {
               </select>
 
               <div className="add mx-2">
-                <button className="btn add-btn">Add Patient</button>
+                <button onClick={handleAddPatModal} className="btn add-btn">Add Patient</button>
               </div>
             </div>
 
@@ -99,19 +104,6 @@ function DisplayClients() {
           </div>
         </div>
         <div className="row d-flex justify-content-center align-items-center">
-
-          {/* <div className="col" style={{height: '100vh'}}>
-            <div className="row">
-              <div className="title d-flex justify-content-center">
-                <h4>Create & Manage Your Clients</h4>
-              </div>
-              <div className="col">
-                <CreateClient editClient={editClient} />
-              </div>
-            </div>
-          </div> */}
-
-
           <div className="col-10 ps-5 pt-4">
           {
             isLoading ? 
@@ -191,6 +183,12 @@ function DisplayClients() {
           }
           </div>
         </div>
+
+        {addPatinet ?
+          <div className="above-overlay">
+              <CreatePatient close={handleAddPatModal} />
+          </div> : null 
+        }
       </div>
     </div>
   );
@@ -201,23 +199,3 @@ export default DisplayClients;
 
 
 
-// homes.map(home => (
-//   <div  key={home._id} className="col-3">
-//     <div className="card m-2 shadow-lg" style={{width: '10rem', height: 'auto'}}>
-//       <div className="card-body p-2">
-//         <h5 className='text-center'>{home.name}</h5>
-//         <div className='text-center'>
-//           <p>{home.address}</p>
-//           <p>{home.number}</p>
-//           {home.active ? <p>{home.active}</p> : null}
-//         </div>
-//         <div className="btn-container">
-//           <button onClick={() => handleEdit(home)} className="btn btn-primary my-2">
-//             Edit
-//           </button>
-//           <button onClick={() => deleteHome.mutate(home._id)} className="btn btn-danger mb-2">Delete</button>
-//         </div>
-//       </div>
-//     </div>
-//   </div>
-// ))
