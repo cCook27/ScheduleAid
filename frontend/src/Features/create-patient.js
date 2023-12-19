@@ -8,7 +8,7 @@ import useHomeRequests from '../hooks/home-requests';
 import {UserContext, AccessTokenContext} from '../context/context';
 import { geocodeByAddress } from 'react-places-autocomplete';
 
-function CreatePatient() {
+function CreatePatient({close}) {
   const {addNewHome} = useHomeRequests();
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
@@ -29,13 +29,6 @@ function CreatePatient() {
       frequency: null
     }
   );
-  // const [noSeeDaysArr, setNoSeeDaysArr] = ([]);
-
-  // useEffect(() => {
-  //   const createNSDArr = Object.entries(formData.noSeeDays).map(([key, value]) => ({[key]: value}));
-
-  //   setNoSeeDaysArr(createNSDArr);
-  // }, [formData.noSeeDays]);
 
   const handleInputChange = (event) => {
     const {name, value} = event.target;
@@ -60,142 +53,184 @@ function CreatePatient() {
     }));
   };
 
+  const handleActive = () => {
+    setFormData((prev) => ({
+      ...prev,
+      active: !prev.active
+    }));
+  };
 
-  
+  const handleClose = () => {
+    close();
+  };
 
   return (
     <div className="page-cont">
-      <div className="row">
+      <div className="row my-2">
         <div className="col d-flex justify-content-center flex-column">
           <h4 className='sched-title'>Create a New Patient</h4>
         </div>
-      </div>
-      <div className="row">
-        <div className="col d-flex justify-content-center flex-column">
-          <form className='form-cont'>
-            <div className="row">
-              <div className="col-6 d-flex justify-content-center flex-column">
-                <div className="npat-cont">
-                  <label className='nPat-label my-2'>First Name</label>
-                  <input
-                    type="text"
-                    className="form-control npat-input"
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={(event) => handleInputChange(event)}
-                  />
-                </div>
-                <div className="npat-cont">
-                  <label className='nPat-label my-2'>Last Name</label>
-                  <input
-                    type="text"
-                    className="form-control npat-input"
-                    id="lastName"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={(event) => handleInputChange(event)}
-                  />
-                </div>
-                <div className="npat-cont">
-                  <label className='nPat-label my-2'>Address</label>
-                  <input
-                    className="form-control npat-input"
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={(event) => handleInputChange(event)}
-                  />
-                </div>
-              </div>
-              <div className="col-6 d-flex justify-content-center flex-column">
-                <div className="npat-cont">
-                  <label className='nPat-label my-2'>Primary Number</label>
-                  <input
-                    type="number"
-                    className="form-control npat-input"
-                    id="primaryNumber"
-                    name="primaryNumber"
-                    value={formData.primaryNumber}
-                    onChange={(event) => handleInputChange(event)}
-                  />
-                </div>
-                <div className="npat-cont">
-                  <label className='nPat-label my-2'>Secondary Number</label>
-                  <input
-                    type="number"
-                    className="form-control npat-input"
-                    id="secondaryNumber"
-                    name="secondaryNumber"
-                    value={formData.secondaryNumber}
-                    onChange={(event) => handleInputChange(event)}
-                  />
-                </div>
-                <div className="npat-cont">
-                  <label className='nPat-label my-2'>Email</label>
-                  <input
-                    className="form-control npat-input"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={(event) => handleInputChange(event)}
-                  />
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-      <div className="row py-2">
-        <div className="col d-flex justify-content-end">
-          <button className="add-more" onClick={handleAddMore}>Add More Patient Info...</button>
-        </div>
-      </div>
-      <div className={`${addMore ? 'row' : 'd-none'}`}>
-        <div className="col-6">
-          <div className="npat-cont">
-            <select className="form-select pat-select" name="noseeDays" id="noSeeDays" 
-            onChange={(event) => handleNoSeeDays(event.target.value)}
-            >
-              <option disabled selected value="">Select Days</option>
-              <option className={`${formData.noSeeDays.sunday ? 'd-none' : null}`} value="sunday">
-                Sunday
-              </option>
-              <option className={`${formData.noSeeDays.monday ? 'd-none' : null}`} value="monday">
-                Monday
-              </option>
-              <option className={`${formData.noSeeDays.tuesday ? 'd-none' : null}`} value="tuesday">
-                Tuesday
-              </option>
-              <option className={`${formData.noSeeDays.wednesday ? 'd-none' : null}`} value="wednesday">
-                Wednesday
-              </option>
-              <option className={`${formData.noSeeDays.thursday ? 'd-none' : null}`} value="thursday">
-                Thursday
-              </option>
-              <option className={`${formData.noSeeDays.friday ? 'd-none' : null}`} value="friday">
-                Friday
-              </option>
-              <option className={`${formData.noSeeDays.saturday ? 'd-none' : null}`} value="saturday">
-                Saturday
-              </option>
-            </select>
-            <div className="d-flex">
-              {Object.entries(formData.noSeeDays).map(([propertyName, propertyValue]) => (
-                propertyValue && (
-                  <div className="nsd-cont" key={propertyName}>
-                    <span class="badge">{propertyName}
-                      <button className='btn-close' onClick={(propertyName) => handleNoSeeDays(propertyName)}></button>
-                    </span>
-                  </div>
-                )
-              ))}
-            </div>
+        <div className="col">
+          <div className='d-flex justify-content-end'>
+            <button type="button" class="btn-close close-all" aria-label="Close"
+            onClick={handleClose}></button>
           </div>
         </div>
-        <div className="col-6"></div>
       </div>
-    
+      <div className="overflow-cont">
+        <div className="row">
+          <div className="col d-flex justify-content-center flex-column">
+            <form className='form-cont'>
+              <div className="row">
+                <div className="col-6 d-flex justify-content-center flex-column">
+                  <div className="npat-cont">
+                    <label className='nPat-label my-2'>First Name</label>
+                    <input
+                      type="text"
+                      className="form-control npat-input"
+                      id="firstName"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={(event) => handleInputChange(event)}
+                    />
+                  </div>
+                  <div className="npat-cont">
+                    <label className='nPat-label my-2'>Last Name</label>
+                    <input
+                      type="text"
+                      className="form-control npat-input"
+                      id="lastName"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={(event) => handleInputChange(event)}
+                    />
+                  </div>
+                  <div className="npat-cont">
+                    <label className='nPat-label my-2'>Address</label>
+                    <input
+                      className="form-control npat-input"
+                      id="address"
+                      name="address"
+                      value={formData.address}
+                      onChange={(event) => handleInputChange(event)}
+                    />
+                  </div>
+                </div>
+                <div className="col-6 d-flex justify-content-center flex-column">
+                  <div className="npat-cont">
+                    <label className='nPat-label my-2'>Primary Number</label>
+                    <input
+                      type="number"
+                      className="form-control npat-input"
+                      id="primaryNumber"
+                      name="primaryNumber"
+                      value={formData.primaryNumber}
+                      onChange={(event) => handleInputChange(event)}
+                    />
+                  </div>
+                  <div className="npat-cont">
+                    <label className='nPat-label my-2'>Secondary Number</label>
+                    <input
+                      type="number"
+                      className="form-control npat-input"
+                      id="secondaryNumber"
+                      name="secondaryNumber"
+                      value={formData.secondaryNumber}
+                      onChange={(event) => handleInputChange(event)}
+                    />
+                  </div>
+                  <div className="npat-cont">
+                    <label className='nPat-label my-2'>Email</label>
+                    <input
+                      className="form-control npat-input"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={(event) => handleInputChange(event)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div className="row py-2">
+          <div className="col d-flex justify-content-end">
+            <button className="add-more" onClick={handleAddMore}>Add More Patient Info...</button>
+          </div>
+        </div>
+        <div className={`pb-3 ${addMore ? 'row' : 'd-none'}`}>
+          <div className="col-6">
+            <div className="npat-cont">
+              <label className='nPat-label my-2'>Patient CANNOT be Seen On:</label>
+              <select className="form-select pat-select npat-input nsd-select" name="noseeDays" id="noSeeDays" 
+              onChange={(event) => handleNoSeeDays(event.target.value)}
+              >
+                <option disabled selected value="">Select Days</option>
+                <option className={`${formData.noSeeDays.sunday ? 'd-none' : null}`} value="sunday">
+                  Sunday
+                </option>
+                <option className={`${formData.noSeeDays.monday ? 'd-none' : null}`} value="monday">
+                  Monday
+                </option>
+                <option className={`${formData.noSeeDays.tuesday ? 'd-none' : null}`} value="tuesday">
+                  Tuesday
+                </option>
+                <option className={`${formData.noSeeDays.wednesday ? 'd-none' : null}`} value="wednesday">
+                  Wednesday
+                </option>
+                <option className={`${formData.noSeeDays.thursday ? 'd-none' : null}`} value="thursday">
+                  Thursday
+                </option>
+                <option className={`${formData.noSeeDays.friday ? 'd-none' : null}`} value="friday">
+                  Friday
+                </option>
+                <option className={`${formData.noSeeDays.saturday ? 'd-none' : null}`} value="saturday">
+                  Saturday
+                </option>
+              </select>
+              <div className="d-flex row nsd-cont my-2">
+                {Object.entries(formData.noSeeDays).map(([propertyName, propertyValue]) => (
+                  propertyValue && (
+                    <div className="col-6" key={propertyName}>
+                      <span class="badge">{propertyName}
+                        <button className='btn-close' onClick={() => handleNoSeeDays(propertyName)}></button>
+                      </span>
+                    </div>
+                  )
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="col-6">
+            <div className="npat-cont">
+              <label className='nPat-label my-2'>Frequency</label>
+              <input
+                type="number"
+                className="form-control npat-input frequency"
+                id="frequency"
+                name="frequency"
+                value={formData.frequency}
+                onChange={(event) => handleInputChange(event)}
+              />
+            </div>
+            <div className="npat-cont my-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input npat-input" type="checkbox" role="switch" id="active" onChange={handleActive} 
+              checked={formData.active} />
+              <label class="form-check-label nPat-label" for="active">
+                Active
+              </label>
+            </div>
+            </div>
+          </div>      
+        </div>
+      </div>
+      <div className="row my-2 pe-3">
+        <div className="col d-flex justify-content-end align-items-center">
+          <button className="add-btn btn save">Save</button>
+        </div>
+      </div>
     </div>
   );
 }
