@@ -1,7 +1,7 @@
 const User = require('../models/User-Model');
 const axios = require('axios');
 require('dotenv').config();
-const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+const apiKey = process.env.MAPS_API_KEY;
 const router = require("express").Router();
 
 router.get('/user/:user', async (req, res) => {

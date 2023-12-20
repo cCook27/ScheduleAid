@@ -26,9 +26,16 @@ function CreatePatient({close}) {
       _id: '',
       noSeeDays: {sunday: false, monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: false},
       active: true,
-      frequency: null
+      frequency: 1
     }
   );
+
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      _id: uuidv4(),
+    }));
+  }, []);
 
   const handleInputChange = (event) => {
     const {name, value} = event.target;
@@ -37,6 +44,13 @@ function CreatePatient({close}) {
       ...formData,
       [name]: value
     });
+  };
+
+  const handleAddressChange = (value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      address: value,
+    }));
   };
 
   const handleAddMore = () => {
@@ -107,13 +121,46 @@ function CreatePatient({close}) {
                   </div>
                   <div className="npat-cont">
                     <label className='nPat-label my-2'>Address</label>
-                    <input
-                      className="form-control npat-input"
-                      id="address"
-                      name="address"
+                    
+                    <PlacesAutocomplete
                       value={formData.address}
-                      onChange={(event) => handleInputChange(event)}
-                    />
+                      onChange={handleAddressChange}
+                    >
+
+                      {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                        <div >
+                          <input
+                            {...getInputProps({
+                              placeholder: 'Search Address ...',
+                              className: 'location-search-input form-control',
+                            })}
+                          />
+                          <div className="autocomplete-dropdown-container">
+                            {loading && <div>Loading...</div>}
+                            {suggestions.map(suggestion => {
+                              const className = suggestion.active
+                                ? 'suggestion-item--active'
+                                : 'suggestion-item';
+                              const style = suggestion.active
+                                ? { backgroundColor: '#fafafa', cursor: 'pointer' }
+                                : { backgroundColor: '#ffffff', cursor: 'pointer' };
+                              return (
+                                <div
+                                  key={suggestion.description}
+                                  {...getSuggestionItemProps(suggestion, {
+                                    className,
+                                    style,
+                                  })}
+                                >
+                                  <span>{suggestion.description}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </PlacesAutocomplete> 
+
                   </div>
                 </div>
                 <div className="col-6 d-flex justify-content-center flex-column">
@@ -156,7 +203,8 @@ function CreatePatient({close}) {
         </div>
         <div className="row py-2">
           <div className="col d-flex justify-content-end">
-            <button className="add-more" onClick={handleAddMore}>Add More Patient Info...</button>
+            <button className={!addMore ? "add-more" : "d-none"} onClick={handleAddMore}>Add More Patient Info...</button>
+            <button className={addMore ? "add-more" : "d-none"} onClick={handleAddMore}>Show Less Patient Info...</button>
           </div>
         </div>
         <div className={`pb-3 ${addMore ? 'row' : 'd-none'}`}>
@@ -228,7 +276,7 @@ function CreatePatient({close}) {
       </div>
       <div className="row my-2 pe-3">
         <div className="col d-flex justify-content-end align-items-center">
-          <button className="add-btn btn save">Save</button>
+          <button disabled={formData.address === ''} className="add-btn btn save">Save</button>
         </div>
       </div>
     </div>
@@ -268,12 +316,12 @@ export default CreatePatient;
 //     frequency: null
 //   });
 
-//   useEffect(() => {
-//     setFormData((prevData) => ({
-//       ...prevData,
-//       _id: uuidv4(),
-//     }));
-//   }, [])
+  // useEffect(() => {
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     _id: uuidv4(),
+  //   }));
+  // }, [])
 
 //   const handleSelect = (value) => {
 //     setFormData((prevData) => ({
@@ -282,12 +330,12 @@ export default CreatePatient;
 //     }));
 //   };
 
-//   const handleAddressChange = (value) => {
-//     setFormData((prevData) => ({
-//       ...prevData,
-//       address: value,
-//     }));
-//   };
+  // const handleAddressChange = (value) => {
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     address: value,
+  //   }));
+  // };
 
 //   const handleState = (event) => {
 //     const {name, value} = event.target;
@@ -338,45 +386,45 @@ export default CreatePatient;
 
 //             <div className="form-group my-3">
 //               <label>Address</label>
-//               <PlacesAutocomplete
-//                 value={formData.address}
-//                 onChange={handleAddressChange}
-//                 onSelect={handleSelect}
-//               >
+              // <PlacesAutocomplete
+              //   value={formData.address}
+              //   onChange={handleAddressChange}
+              //   onSelect={handleSelect}
+              // >
 
-//                 {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-//                   <div >
-//                     <input
-//                       {...getInputProps({
-//                         placeholder: 'Search Address ...',
-//                         className: 'location-search-input form-control',
-//                       })}
-//                     />
-//                     <div className="autocomplete-dropdown-container">
-//                       {loading && <div>Loading...</div>}
-//                       {suggestions.map(suggestion => {
-//                         const className = suggestion.active
-//                           ? 'suggestion-item--active'
-//                           : 'suggestion-item';
-//                         const style = suggestion.active
-//                           ? { backgroundColor: '#fafafa', cursor: 'pointer' }
-//                           : { backgroundColor: '#ffffff', cursor: 'pointer' };
-//                         return (
-//                           <div
-//                             key={suggestion.description}
-//                             {...getSuggestionItemProps(suggestion, {
-//                               className,
-//                               style,
-//                             })}
-//                           >
-//                             <span>{suggestion.description}</span>
-//                           </div>
-//                         );
-//                       })}
-//                     </div>
-//                   </div>
-//                 )}
-//               </PlacesAutocomplete> 
+              //   {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+              //     <div >
+              //       <input
+              //         {...getInputProps({
+              //           placeholder: 'Search Address ...',
+              //           className: 'location-search-input form-control',
+              //         })}
+              //       />
+              //       <div className="autocomplete-dropdown-container">
+              //         {loading && <div>Loading...</div>}
+              //         {suggestions.map(suggestion => {
+              //           const className = suggestion.active
+              //             ? 'suggestion-item--active'
+              //             : 'suggestion-item';
+              //           const style = suggestion.active
+              //             ? { backgroundColor: '#fafafa', cursor: 'pointer' }
+              //             : { backgroundColor: '#ffffff', cursor: 'pointer' };
+              //           return (
+              //             <div
+              //               key={suggestion.description}
+              //               {...getSuggestionItemProps(suggestion, {
+              //                 className,
+              //                 style,
+              //               })}
+              //             >
+              //               <span>{suggestion.description}</span>
+              //             </div>
+              //           );
+              //         })}
+              //       </div>
+              //     </div>
+              //   )}
+              // </PlacesAutocomplete> 
 //             </div>
 
 //             <div className="form-group my-3">
