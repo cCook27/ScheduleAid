@@ -34,3 +34,23 @@
   align-items: center;
   height: 100vh;
 }
+
+.form-control:focus {
+  border-color: #6a9f6d;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+}
+
+select:active {
+  border-color: #6a9f6d;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+}
+
+.form-select:focus {
+  border-color: #6a9f6d;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+}
+
+.form-check-input:focus {
+  border-color: #6a9f6d;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+}

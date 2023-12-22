@@ -90,3 +90,35 @@
   position: relative;
   bottom: 10px;
 }
+
+.close-all:focus {
+  border-color: #6a9f6d;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+}
+
+.autocomplete-dropdown-container {
+  border-radius: 5px;
+  border-color: #6a9f6d;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+  border-top: none;
+}
+
+.autocomplete-dropdown-container-none {
+  border: none;
+}
+
+.bottom-border {
+  border-radius: 5px;
+  border-color: #6a9f6d;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+  border-top: none;
+}
+
+.location-search-input-bot {
+  border-bottom: none;
+}
+
+.form-select:focus {
+  border-color: #6a9f6d;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+}

@@ -134,17 +134,17 @@ function CreatePatient({close}) {
                           <input
                             {...getInputProps({
                               placeholder: 'Search Address ...',
-                              className: 'location-search-input form-control npat-input',
                             })}
+                            className={`${suggestions.length > 0 ? 'location-search-input-bot form-control npat-input' : 'location-search-input form-control npat-input'}`}
                           />
-                          <div className="autocomplete-dropdown-container">
+                          <div className={`${suggestions.length > 0 ? 'autocomplete-dropdown-container' : 'autocomplete-dropdown-container-none'}`}>
                             {loading && <div>Loading...</div>}
                             {suggestions.map(suggestion => {
                               const className = suggestion.active
                                 ? 'suggestion-item--active'
                                 : 'suggestion-item';
                               const style = suggestion.active
-                                ? { backgroundColor: '#fafafa', cursor: 'pointer' }
+                                ? { backgroundColor: '#6a9f6d', cursor: 'pointer' }
                                 : { backgroundColor: '#ffffff', cursor: 'pointer' };
                               return (
                                 <div
@@ -213,7 +213,7 @@ function CreatePatient({close}) {
           </div>
         </div>
         <div className={`pb-3 ${addMore ? 'row' : 'd-none'}`}>
-          <div className="col-6 d-flex justify-content-center flex-column">
+          <div className="col-6">
             <div className="npat-cont ps-2">
               <label className='nPat-label my-2'>Patient CANNOT be Seen On:</label>
               <select className="form-select pat-select npat-input nsd-select" name="noseeDays" id="noSeeDays" 
@@ -255,7 +255,7 @@ function CreatePatient({close}) {
               </div>
             </div>
           </div>
-          <div className="col-6 d-flex justify-content-center flex-column">
+          <div className="col-6">
             <div className="npat-cont">
               <label className='nPat-label my-2'>Frequency</label>
               <input
