@@ -102,6 +102,7 @@ function CreatePatient({close}) {
                     <input
                       type="text"
                       className="form-control npat-input"
+                      placeholder='e.g. Jane'
                       id="firstName"
                       name="firstName"
                       value={formData.firstName}
@@ -113,6 +114,7 @@ function CreatePatient({close}) {
                     <input
                       type="text"
                       className="form-control npat-input"
+                      placeholder='e.g. Doe'
                       id="lastName"
                       name="lastName"
                       value={formData.lastName}
@@ -132,7 +134,7 @@ function CreatePatient({close}) {
                           <input
                             {...getInputProps({
                               placeholder: 'Search Address ...',
-                              className: 'location-search-input form-control',
+                              className: 'location-search-input form-control npat-input',
                             })}
                           />
                           <div className="autocomplete-dropdown-container">
@@ -169,6 +171,7 @@ function CreatePatient({close}) {
                     <input
                       type="number"
                       className="form-control npat-input"
+                      placeholder='e.g. 480-123-456'
                       id="primaryNumber"
                       name="primaryNumber"
                       value={formData.primaryNumber}
@@ -180,6 +183,7 @@ function CreatePatient({close}) {
                     <input
                       type="number"
                       className="form-control npat-input"
+                      placeholder='e.g. 928-789-1234'
                       id="secondaryNumber"
                       name="secondaryNumber"
                       value={formData.secondaryNumber}
@@ -190,6 +194,7 @@ function CreatePatient({close}) {
                     <label className='nPat-label my-2'>Email</label>
                     <input
                       className="form-control npat-input"
+                      placeholder='e.g. janedoe@example.com'
                       id="email"
                       name="email"
                       value={formData.email}
@@ -208,8 +213,8 @@ function CreatePatient({close}) {
           </div>
         </div>
         <div className={`pb-3 ${addMore ? 'row' : 'd-none'}`}>
-          <div className="col-6">
-            <div className="npat-cont">
+          <div className="col-6 d-flex justify-content-center flex-column">
+            <div className="npat-cont ps-2">
               <label className='nPat-label my-2'>Patient CANNOT be Seen On:</label>
               <select className="form-select pat-select npat-input nsd-select" name="noseeDays" id="noSeeDays" 
               onChange={(event) => handleNoSeeDays(event.target.value)}
@@ -250,7 +255,7 @@ function CreatePatient({close}) {
               </div>
             </div>
           </div>
-          <div className="col-6">
+          <div className="col-6 d-flex justify-content-center flex-column">
             <div className="npat-cont">
               <label className='nPat-label my-2'>Frequency</label>
               <input
