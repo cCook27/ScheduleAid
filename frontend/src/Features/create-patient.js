@@ -6,13 +6,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 import useHomeRequests from '../hooks/home-requests';
 import {UserContext, AccessTokenContext} from '../context/context';
-import { geocodeByAddress } from 'react-places-autocomplete';
 
 function CreatePatient({close}) {
   const {addNewHome} = useHomeRequests();
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
 
   const [addMore, setAddMore] = useState(false);
   const [formData, setFormData] = useState(
@@ -76,6 +74,10 @@ function CreatePatient({close}) {
 
   const handleClose = () => {
     close();
+  };
+
+  const handleSave = () => {
+    addNewHome(formData, user._id, accessToken);
   };
 
   return (
@@ -281,7 +283,7 @@ function CreatePatient({close}) {
       </div>
       <div className="row my-2 pe-3">
         <div className="col d-flex justify-content-end align-items-center">
-          <button disabled={formData.address === ''} className="add-btn btn save">Save</button>
+          <button disabled={formData.address === '' || formData.firstName === '' || formData.lastName === ''} onClick={handleSave} className="add-btn btn save">Save</button>
         </div>
       </div>
     </div>

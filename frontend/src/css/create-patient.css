@@ -101,6 +101,8 @@
   border-color: #6a9f6d;
   box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
   border-top: none;
+  position: absolute;
+  z-index: 2000;
 }
 
 .autocomplete-dropdown-container-none {

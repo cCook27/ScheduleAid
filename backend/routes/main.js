@@ -2,6 +2,7 @@ const User = require('../models/User-Model');
 const axios = require('axios');
 require('dotenv').config();
 const apiKey = process.env.MAPS_API_KEY;
+const googleApiKey = process.env.GOOGLE_MAPS_API_KEY;
 const router = require("express").Router();
 
 router.get('/user/:user', async (req, res) => {
@@ -964,18 +965,12 @@ router.post('/homes/:user', async (req, res) => {
       return res.status(404).send('User not found');
     };
 
-    // Object.getOwnPropertyNames(newHomeInfo).forEach((property) => {
-    //   if(!newHomeInfo[property]) {
-    //     return res.status(400).send('All fields are required when saving a new client home.');
-    //   }
-    // });
-
     const address = newHomeInfo.address;
 
     const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
       params: {
         address: address,
-        key: apiKey
+        key: googleApiKey
       }
     });
 
