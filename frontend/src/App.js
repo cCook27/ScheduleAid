@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState, useContext } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { useAuth0 } from "@auth0/auth0-react";
 
 import Home from './static/Home.js'
@@ -94,13 +94,13 @@ function App() {
                   null
                 }
                   
-                  <Switch> 
-                    <Route exact path="/" component={Dashboard}></Route>
-                    <Route exact path="/profile" component={Profile}></Route>
-                    <Route exact path="/logout" component={LogoutButton}></Route>
-                    <Route exact path="/manage" component={DisplayClients} ></Route>
-                    <Route exact path="/scheduling" component={Calendar} ></Route>
-                  </Switch>
+                  <Routes> 
+                    <Route exact path="/" element={<Dashboard/>} />
+                    <Route exact path="/profile" element={<Profile/>} />
+                    <Route exact path="/logout" element={<LogoutButton/>} />
+                    <Route exact path="/manage" element={<DisplayClients/>}  />
+                    <Route exact path="/scheduling" element={<Calendar/>} />
+                  </Routes>
                 </Router>
                </GroupsContext.Provider>
             </AccessTokenContext.Provider>
@@ -121,13 +121,13 @@ function App() {
           <AccessTokenContext.Provider value={accessToken}>
             <GroupsContext.Provider value={{groups, updateGroups}}>
               <Router>                
-                <Switch> 
-                  <Route exact path="/" component={Dashboard}></Route>
-                  <Route exact path="/profile" component={Profile}></Route>
-                  <Route exact path="/logout" component={LogoutButton}></Route>
-                  <Route exact path="/manage" component={DisplayClients} ></Route>
-                  <Route exact path="/scheduling" component={Calendar} ></Route>
-                </Switch>
+                <Routes> 
+                  <Route exact path="/" element={<Dashboard/>} />
+                  <Route exact path="/profile" element={<Profile/>} />
+                  <Route exact path="/logout" element={<LogoutButton/>} />
+                  <Route exact path="/manage" element={<DisplayClients/>}  />
+                  <Route exact path="/scheduling" element={<Calendar/>}  />
+                </Routes>
               </Router>
             </GroupsContext.Provider>
           </AccessTokenContext.Provider>
