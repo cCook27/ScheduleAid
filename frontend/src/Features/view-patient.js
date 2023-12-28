@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import PlacesAutocomplete from 'react-places-autocomplete';
 
 
 import useHomeRequests from '../hooks/home-requests';
@@ -24,9 +25,45 @@ const ViewPatient = () => {
     () => viewPatient(user._id, id, accessToken)
   );
 
+  const [editContact, setEditContact] = useState(false);
+  const [patientData, setPatientData] = useState(undefined);
+
+  useEffect(() => {
+    setPatientData(patient);
+  },[patient]);
+  
+
+  const handleContactEdit = () => {
+    setEditContact(!editContact);
+  };
+
+  const saveChanges = () => {
+    // save changes to the patient
+  }
+
   const handleActive = () => {
     // need to be able to change the active patient
-  }
+  };
+
+  const handleInputChange = (event) => {
+    const {name, value} = event.target;
+
+    setPatientData({
+      ...patientData,
+      [name]: value
+    });
+  };
+
+  const handleNoSeeDays = () => {
+    // handle the days they can't be seen
+  };
+
+  const handleAddressChange = (value) => {
+    setPatientData((prevData) => ({
+      ...prevData,
+      address: value,
+    }));
+  };
 
 
   return (
@@ -40,19 +77,22 @@ const ViewPatient = () => {
             Patient not found
           </div>
         ) :
-        patient ? (
+        !patientData ? (
+          <div><Loading /></div>
+        ) :
+        patientData ? (
           <div className="container">
             <div className="row mt-5 header-cont d-flex align-items-center">
               <div className="col-6">
                 <div className="d-flex ms-4">
-                  <div className="p-name me-3">{patient.firstName}</div>
-                  <div className="p-name">{patient.lastName}</div>
+                  <div className="p-name me-3">{patientData.firstName}</div>
+                  <div className="p-name">{patientData.lastName}</div>
                 </div>
               </div>
               <div className="col-2">
                 <div class="form-check form-switch">
                   <input class="form-check-input npat-input" type="checkbox" role="switch" id="active" onChange={handleActive} 
-                  checked={patient.active} />
+                  checked={patientData.active} />
                   <contact-label class="form-check-contact-label nPat-contact-label" for="active">
                     Active
                   </contact-label>
@@ -85,7 +125,12 @@ const ViewPatient = () => {
                 <div className="contact-section d-flex flex-column">
                   <div className="d-flex contact-header">
                     <div className="contact-title">Contact Info:</div>
-                    <button className="contact-edit">Edit</button>
+                    <button onClick={saveChanges} className={`${!editContact ? 'd-none' : 'contact-edit'}`}>
+                     Save
+                    </button>
+                    <button onClick={handleContactEdit} className={`${!editContact ? 'contact-edit' : 'd-none'}`}>
+                     Edit
+                    </button>
                   </div>
                     <div className="row p-2">
                       <div className="col-4">
@@ -95,15 +140,150 @@ const ViewPatient = () => {
                         <div className="contact-label">Address:</div>
                       </div>
                       <div className="col-8">
-                        <div className="contact-info">{patient.primaryNumber}</div>
-                        <div className="contact-info">{patient.secondaryNumber || 'NA'}</div>
-                        <div className="contact-info">{patient.email}</div>
-                        <div className="contact-info">{patient.address}</div>
+                        <div className={`${!editContact ? '' : 'd-none'}`}>
+                          <div className="contact-info">
+                            {patientData.primaryNumber || 'NA'}
+                          </div>
+                          <div className="contact-info">
+                            {patientData.secondaryNumber || 'NA'}
+                          </div>
+                          <div className="contact-info">
+                            {patientData.email || 'NA'}
+                          </div>
+                          <div className="contact-info">
+                            {patientData.address}
+                          </div>
+                        </div>
+
+                        <div className={`${!editContact ? 'd-none' : 'solid'}`}>
+                          <div className="contact-info">
+                            <input
+                              type="tel"
+                              className="edit-input"
+                              placeholder='e.g. 480-123-456'
+                              id="primaryNumber"
+                              name="primaryNumber"
+                              value={patientData.primaryNumber}
+                              onChange={(event) => handleInputChange(event)}
+                            />
+                          </div>
+                          <div className="contact-info">
+                            <input
+                              type="tel"
+                              className="edit-input"
+                              placeholder='e.g. 928-789-1234'
+                              id="secondaryNumber"
+                              name="secondaryNumber"
+                              value={patientData.secondaryNumber}
+                              onChange={(event) => handleInputChange(event)}
+                            />
+                          </div>
+                          <div className="contact-info">
+                            <input
+                              className="edit-input"
+                              placeholder='e.g. janedoe@example.com'
+                              id="email"
+                              name="email"
+                              value={patientData.email}
+                              onChange={(event) => handleInputChange(event)}
+                            />
+                          </div>
+                          <div className="contact-info">
+                            <PlacesAutocomplete
+                              value={patientData.address}
+                              onChange={handleAddressChange}
+                            >
+
+                              {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                              <div >
+                                <input
+                                  {...getInputProps({
+                                    placeholder: 'Search Address ...',
+                                  })}
+                                  className={`${suggestions.length > 0 ? 'location-search-input-bot edit-input ' : 'location-search-input edit-input'}`}
+                                />
+                                <div className={`${suggestions.length > 0 ? 'autocomplete-dropdown-container' : 'autocomplete-dropdown-container-none'}`}>
+                                  {loading && <div>Loading...</div>}
+                                  {suggestions.map(suggestion => {
+                                    const className = suggestion.active
+                                      ? 'suggestion-item--active'
+                                      : 'suggestion-item';
+                                    const style = suggestion.active
+                                      ? { backgroundColor: '#6a9f6d', cursor: 'pointer' }
+                                      : { backgroundColor: '#ffffff', cursor: 'pointer' };
+                                    return (
+                                      <div
+                                        key={suggestion.description}
+                                        {...getSuggestionItemProps(suggestion, {
+                                          className,
+                                          style,
+                                        })}
+                                      >
+                                        <span>{suggestion.description}</span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                              )}
+                            </PlacesAutocomplete> 
+                          </div>
+                        </div>
                       </div>
                     </div>
                 </div>
 
-                <div className="contact-section extra-section d-flex flex-column"></div>
+                <div className="contact-section extra-section d-flex flex-column">
+                  <div className="d-flex contact-header">
+                    <div className="contact-title">Scheduling Info:</div>
+                  </div>
+                  <div className="row p-2">
+                   <div className="col-4">
+                    <div className="contact-label">Frequency:</div>
+                   </div>
+                   <div className="col-8">
+                    <input
+                      type="number"
+                      className="contact-info extra-input"
+                      id="frequency"
+                      name="frequency"
+                      value={patientData.frequency}
+                      onChange={(event) => handleInputChange(event)}
+                    />
+                   </div>
+                    
+                  </div>
+                  <div className="row p-2">
+                    <div className="col-4">
+                      <div className="contact-label nsd-label">Cannot Be Seen:</div>
+                      <select className="contact-label extra-nsd" name="noseeDays" id="noSeeDays" 
+                      onChange={(event) => handleNoSeeDays(event.target.value)}>
+                        <option disabled selected value="">Select Days</option>
+                        <option className={`${patientData.noSeeDays.sunday ? 'd-none' : null}`} value="sunday">
+                          Sunday
+                        </option>
+                        <option className={`${patientData.noSeeDays.monday ? 'd-none' : null}`} value="monday">
+                          Monday
+                        </option>
+                        <option className={`${patientData.noSeeDays.tuesday ? 'd-none' : null}`} value="tuesday">
+                          Tuesday
+                        </option>
+                        <option className={`${patientData.noSeeDays.wednesday ? 'd-none' : null}`} value="wednesday">
+                          Wednesday
+                        </option>
+                        <option className={`${patientData.noSeeDays.thursday ? 'd-none' : null}`} value="thursday">
+                          Thursday
+                        </option>
+                        <option className={`${patientData.noSeeDays.friday ? 'd-none' : null}`} value="friday">
+                          Friday
+                        </option>
+                        <option className={`${patientData.noSeeDays.saturday ? 'd-none' : null}`} value="saturday">
+                          Saturday
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -115,3 +295,47 @@ const ViewPatient = () => {
 
 
 export default ViewPatient;
+
+
+
+
+{/* <div className="npat-cont ps-2">
+              <label className='nPat-label my-2'>Patient CANNOT be Seen On:</label>
+              <select className="form-select pat-select npat-input nsd-select" name="noseeDays" id="noSeeDays" 
+              onChange={(event) => handleNoSeeDays(event.target.value)}
+              >
+                <option disabled selected value="">Select Days</option>
+                <option className={`${patientData.noSeeDays.sunday ? 'd-none' : null}`} value="sunday">
+                  Sunday
+                </option>
+                <option className={`${patientData.noSeeDays.monday ? 'd-none' : null}`} value="monday">
+                  Monday
+                </option>
+                <option className={`${patientData.noSeeDays.tuesday ? 'd-none' : null}`} value="tuesday">
+                  Tuesday
+                </option>
+                <option className={`${patientData.noSeeDays.wednesday ? 'd-none' : null}`} value="wednesday">
+                  Wednesday
+                </option>
+                <option className={`${patientData.noSeeDays.thursday ? 'd-none' : null}`} value="thursday">
+                  Thursday
+                </option>
+                <option className={`${patientData.noSeeDays.friday ? 'd-none' : null}`} value="friday">
+                  Friday
+                </option>
+                <option className={`${patientData.noSeeDays.saturday ? 'd-none' : null}`} value="saturday">
+                  Saturday
+                </option>
+              </select>
+              <div className="d-flex row nsd-cont my-2">
+                {Object.entries(patientData.noSeeDays).map(([propertyName, propertyValue]) => (
+                  propertyValue && (
+                    <div className="col-6" key={propertyName}>
+                      <span class="badge">{propertyName}
+                        <button className='btn-close' onClick={() => handleNoSeeDays(propertyName)}></button>
+                      </span>
+                    </div>
+                  )
+                ))}
+              </div>
+            </div> */}

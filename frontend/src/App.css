@@ -8,7 +8,8 @@
   --personBg: rgb(248, 247, 247);
   --usedBg: rgba(128, 128, 128, 0.267);
   --disabledBg: #93d9ae50;
-  /* --fulfilled: #8dcaa4; */
+  --borderRad: 5px;
+  --customBorder: 1px solid var(--borderColor);
 
   /* nav */
   --link: #141414;

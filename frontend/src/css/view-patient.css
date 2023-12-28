@@ -130,5 +130,52 @@
   color: var(--viewLetters);
 }
 
+.solid {
+  width: 100%;
+  position: relative;
+  bottom: 5px;
+}
+
+.edit-input {
+  margin-top: 0;
+  padding: 0;
+  padding-left: 2px;
+  width: 100%;
+  border-radius: var(--borderRad);
+  border: var(--customBorder);
+}
+
+.edit-input:focus {
+  border-color: #6a9f6d;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+  outline: var(--customBorder);
+}
+
 .extra-section {
+}
+
+.extra-input {
+  background: transparent;
+  width: 40px;
+  border-radius: var(--borderRad);
+  border: var(--customBorder);
+}
+
+.extra-input:focus {
+  border-color: #6a9f6d;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+  outline: var(--customBorder);
+}
+
+.extra-nsd {
+  width: 100px;
+  border-radius: var(--borderRad);
+  border: var(--customBorder);
+  margin-top: 2px;
+}
+
+.extra-nsd:focus {
+  border-color: #6a9f6d;
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+  outline: var(--customBorder);
 }

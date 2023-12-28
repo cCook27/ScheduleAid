@@ -171,7 +171,7 @@ function CreatePatient({close}) {
                   <div className="npat-cont">
                     <label className='nPat-label my-2'>Primary Number</label>
                     <input
-                      type="number"
+                      type="tel"
                       className="form-control npat-input"
                       placeholder='e.g. 480-123-456'
                       id="primaryNumber"
@@ -183,7 +183,7 @@ function CreatePatient({close}) {
                   <div className="npat-cont">
                     <label className='nPat-label my-2'>Secondary Number</label>
                     <input
-                      type="number"
+                      type="tel"
                       className="form-control npat-input"
                       placeholder='e.g. 928-789-1234'
                       id="secondaryNumber"
