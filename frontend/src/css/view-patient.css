@@ -1,0 +1,134 @@
+.header-cont {
+  background: var(--personBg);
+  height: 60px;
+  border-radius: 5px;
+  border: 1px solid var(--borderColor);
+}
+
+.p-name {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--patientLetters);
+  display: flex;
+  align-items: center;
+}
+
+.nPat-contact-label {
+  font-weight: 600;
+  color: var(--viewLetters);
+}
+
+.remove-pat {
+  border-radius: 5px;
+  background: transparent;
+  font-weight: 600;
+  width: 100px;
+  padding: 2px;
+}
+
+.trash:hover {
+  fill: var(--fulfilled);
+}
+
+.edit-name {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--viewLetters);
+  padding: 0;
+}
+
+.edit-name:hover {
+  color: var(--patientLetters);
+}
+
+.edit-name:active {
+  transform: translateY(2px);
+}
+
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--borderColor);
+}
+
+.notes-section {
+  height: 70vh;
+  width: 100%;
+  border: 1px solid var(--borderColor);
+  background: var(--personBg);
+  border-radius: 5px;
+}
+
+.notes-title {
+  font-weight: 600;
+  color: var(--patientLetters);
+  padding: 3px;
+}
+
+.notes-add {
+  background: var(--fulfilled);
+  margin: 5px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  color: var(--hoverLetters);
+  font-weight: 600;
+}
+
+.contact-section {
+  height: 32.5vh;
+  width: 100%;
+  border: 1px solid var(--borderColor);
+  background: var(--personBg);
+  border-radius: 5px;
+  margin-bottom: 33px;
+}
+
+.contact-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.contact-title {
+  font-weight: 600;
+  color: var(--patientLetters);
+  padding: 3px;
+}
+
+.contact-edit {
+  background: transparent;
+  border: none;
+  margin-top: 3px;
+  margin-right: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--patientLetters);
+}
+
+.contact-edit:hover {
+  color: var(--viewLetters);
+}
+
+.contact-edite:active {
+  transform: translateY(2px);
+}
+
+.contact-label {
+  margin-top: 15px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--patientLetters);
+}
+
+.contact-info {
+  margin-top: 15px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--viewLetters);
+}
+
+.extra-section {
+}
