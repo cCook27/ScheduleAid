@@ -58,6 +58,35 @@ function useHomeRequests () {
     }
   };
 
+  const updatePatient = async (userId, patientInfo, accessToken) => {
+    try {
+      const options = {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
+        body: JSON.stringify(patientInfo)
+      };
+
+      const response = await fetch(`${url}/updatePatient/${userId}`, options);
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const patientUpdated = await response.json();
+
+      return patientUpdated;
+
+    } catch (error) {
+      console.error('Error:', error);
+      const errorResponse = {
+        error: 'An error occurred while creating user data',
+        message: error.message 
+      };
+
+      return errorResponse;
+    }
+  };
+
   const addNewHome = async (home, userId, accessToken) => {
     try {
       const options = {
@@ -97,6 +126,7 @@ function useHomeRequests () {
   return {
    getHomes,
    viewPatient,
+   updatePatient,
    addNewHome,
    removeHome,
   }

@@ -1045,6 +1045,33 @@ router.post('/schedule/:user', async (req, res) => {
   }
 });
 
+router.put('/updatePatient/:user', async (req, res) => {
+  try{
+    const patientInfo = req.body;
+    const userId = req.params.user;
+    const user = await User.findOne({_id: userId});
+
+    const updatedPatientList = user.homes.map((patient) => {
+      if(patient._id === patientInfo._id) {
+        return patientInfo;
+      };
+
+      return patient;
+    });
+
+    user.homes = updatedPatientList;
+
+    await user.save();
+
+    return res.status(201).json(user);
+
+  } catch(error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while looking for the User.');
+  }
+  
+});
+
 router.put('/user/:user', async (req, res) => {
   try{
     const userInfo = req.body;

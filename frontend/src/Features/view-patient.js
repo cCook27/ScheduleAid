@@ -19,7 +19,7 @@ const ViewPatient = () => {
   const accessToken = useContext(AccessTokenContext);
   const { isLoading } = useAuth0();
 
-  const {viewPatient} = useHomeRequests();
+  const {viewPatient, updatePatient} = useHomeRequests();
   const { id } = useParams();
   const { data: patient, status } = useQuery('patient',
     () => viewPatient(user._id, id, accessToken)
@@ -38,8 +38,9 @@ const ViewPatient = () => {
   };
 
   const saveChanges = () => {
-    // save changes to the patient
-  }
+    setEditContact(!editContact);
+    updatePatient(user._id, patientData, accessToken);
+  };
 
   const handleActive = () => {
     // need to be able to change the active patient
