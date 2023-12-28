@@ -133,3 +133,8 @@
   margin-left: 2px;
   align-items: top;
 }
+
+.link {
+  text-decoration: none;
+  color: inherit;
+}

@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../css/display-clients.css';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { Link } from 'react-router-dom';
 
 import CreatePatient from './create-patient';
 import useHomeRequests from '../hooks/home-requests';
@@ -151,7 +152,9 @@ function DisplayClients() {
                     <div className="pat-number ellipsis-overflow">{home.number}number</div>
                   </div>
                   <div className="col info-cont">
-                    <button className='btn view-btn'>View</button>
+                    <button className='btn view-btn'>
+                      <Link className='link' to={`/manage/${home._id}`}>View</Link>
+                    </button>
                   </div>
                 </div>
               ))
@@ -175,7 +178,9 @@ function DisplayClients() {
                     <div className="pat-number ellipsis-overflow">{home.number}number</div>
                   </div>
                   <div className="col info-cont">
-                    <button className='btn view-btn'>View</button>
+                    <button className='btn view-btn'>
+                      <Link className='link' to={`/manage/${home._id}`}>View</Link>
+                    </button>
                   </div>
                 </div>
               ))

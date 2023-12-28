@@ -8,9 +8,6 @@ import {UserContext, AccessTokenContext} from '../context/context';
 import { useAuth0 } from "@auth0/auth0-react";
 import Loading from "../pop-ups/loading";
 
-
-
-
 const ViewPatient = () => {
   const queryClient = useQueryClient();
 
@@ -23,11 +20,11 @@ const ViewPatient = () => {
   const {viewPatient} = useHomeRequests();
 
 
-  const { _id } = useParams();
+  const { id } = useParams();
 
 
-  const { data: home, status } = useQuery('homes',
-    () => viewPatient(user._id, _id, accessToken)
+  const { data: patient, status } = useQuery('patient',
+    () => viewPatient(user._id, id, accessToken)
   );
 
 
@@ -37,15 +34,13 @@ const ViewPatient = () => {
         isLoading ? (
           <div><Loading /></div>
         ) :
-
-
-        !home ? (
+        !patient ? (
           <div>
             Patient not found
           </div>
         ) :
-        home ? (
-          <div>{home.address}</div>
+        patient ? (
+          <div>{patient.address}</div>
         ) : null
       }
     </div>

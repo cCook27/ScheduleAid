@@ -62,36 +62,30 @@ router.get('/homes/:user', async (req, res) => {
   }
 });
 
-router.get('home/:user/:home', async (req, res) => {
+router.get('/patient/:user/:patient', async (req, res) => {
   try {
     const userId = req.params.user;
-    const homeId = req.params.home;
-
+    const patientId = req.params.patient;
 
     const user = await User.findOne({_id: userId});
-
 
     if(!userId) {
       return res.status(400).send('Bad request, User Id not sent.');
     } else if(!user) {
       return res.status(404).send('User not found');
-    } else if(!homeId) {
+    } else if(!patientId) {
       return res.status(400).send('Bad request, Patient Id not sent.');
     }
 
-
-    const homeToReturn = user.homes.find((home) => {
-      return home._id === homeId;
+    const patientToReturn = user.homes.find((home) => {
+      return home._id === patientId;
     });
 
-
-    if(!homeToReturn) {
+    if(!patientToReturn) {
       return res.status(404).send('Patient not found');
     };
 
-
-    res.send(homeToReturn);
-
+    res.send(patientToReturn);
 
   } catch (error) {
     console.error('Error:', error);

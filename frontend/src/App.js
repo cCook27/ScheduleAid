@@ -17,6 +17,7 @@ import CreateProfile from './auth/CreateProfile.js';
 import { UserContext, AccessTokenContext, GroupsContext } from './context/context.js';
 
 import './App.css'
+import ViewPatient from './Features/view-patient.js';
 
 
 function App() {
@@ -99,6 +100,7 @@ function App() {
                     <Route exact path="/profile" element={<Profile/>} />
                     <Route exact path="/logout" element={<LogoutButton/>} />
                     <Route exact path="/manage" element={<DisplayClients/>}  />
+                    <Route path="/manage/:id" element={<ViewPatient />} />
                     <Route exact path="/scheduling" element={<Calendar/>} />
                   </Routes>
                 </Router>
@@ -126,6 +128,7 @@ function App() {
                   <Route exact path="/profile" element={<Profile/>} />
                   <Route exact path="/logout" element={<LogoutButton/>} />
                   <Route exact path="/manage" element={<DisplayClients/>}  />
+                  <Route path="/manage/:id" element={<ViewPatient />} />
                   <Route exact path="/scheduling" element={<Calendar/>}  />
                 </Routes>
               </Router>
