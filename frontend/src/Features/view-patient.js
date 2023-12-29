@@ -10,6 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Loading from "../pop-ups/loading";
 
 import '../css/view-patient.css';
+import DeletePatientModal from '../pop-ups/delete-patient-modal';
 
 const ViewPatient = () => {
   const queryClient = useQueryClient();
@@ -27,7 +28,8 @@ const ViewPatient = () => {
 
   const [edit, setEdit] = useState({
     contactSide: false,
-    scheduleSide: false
+    scheduleSide: false,
+    deletePatient: false,
   });
   const [patientData, setPatientData] = useState(undefined);
 
@@ -42,6 +44,7 @@ const ViewPatient = () => {
   
   const handleDeletePatient = () => {
     removeHome(id, user._id, accessToken);
+    window.location.href = '/manage';
   };
 
   const handleContactEdit = () => {
@@ -55,6 +58,13 @@ const ViewPatient = () => {
     setEdit((prev) => ({
       ...prev,
       scheduleSide: !prev.scheduleSide,
+    }));
+  };
+  
+  const handleDeletePatientEdit = () => {
+    setEdit((prev) => ({
+      ...prev,
+      deletePatient: !prev.deletePatient,
     }));
   };
 
@@ -111,7 +121,7 @@ const ViewPatient = () => {
 
 
   return (
-    <div className="container">
+    <div className={`container ${edit.deletePatient ? 'overlay' : ''}`}>
       {
         isLoading ? (
           <div><Loading /></div>
@@ -143,7 +153,7 @@ const ViewPatient = () => {
                 </div>
               </div>
               <div className="col-2">
-                <button className="remove-pat btn d-flex justify-content-center align-items-center">
+                <button className="remove-pat btn d-flex justify-content-center align-items-center" onClick={handleDeletePatientEdit}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path className='trash' fillRule="evenodd" clipRule="evenodd" d="M20 5.5V4.5C20 4.22386 19.7761 4 19.5 4H15V3C15 2.44772 14.5523 2 14 2H10C9.44772 2 9 2.44772 9 3V4H4.5C4.22386 4 4 4.22386 4 4.5V5.5C4 5.77614 4.22386 6 4.5 6H19.5C19.7761 6 20 5.77614 20 5.5ZM7.87 22C6.81787 22.0026 5.94365 21.1896 5.87 20.14L5 8H19L18.15 20.14C18.0764 21.1896 17.2021 22.0026 16.15 22H7.87Z" fill="red"/>
                   </svg>
@@ -357,6 +367,10 @@ const ViewPatient = () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className={`${!edit.deletePatient ? 'd-none' : 'delete-modal'}`}>
+              <DeletePatientModal patientData={patientData} handleDeletePatient={handleDeletePatient} handleDeletePatientEdit={handleDeletePatientEdit} />
             </div>
           </div>
         ) : null

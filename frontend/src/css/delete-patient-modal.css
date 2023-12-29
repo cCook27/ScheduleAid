@@ -1,0 +1,39 @@
+.del-header {
+  border-bottom: var(--customBorder);
+}
+
+.del-title {
+  font-weight: 600;
+  color: var(--patientLetters);
+  font-size: 20px;
+}
+
+.del-explanation {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--viewLetters);
+  padding: 5px;
+}
+
+.del-name {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--patientLetters);
+}
+
+.cancel-del {
+  background: var(--fulfilled);
+  color: var(--hoverLetters);
+  font-weight: 600;
+}
+
+.remove-del {
+  background: red;
+  color: var(--hoverLetters);
+  font-weight: 600;
+}
+
+.del-btn {
+  width: 80px;
+}
