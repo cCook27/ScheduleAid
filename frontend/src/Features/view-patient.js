@@ -27,6 +27,7 @@ const ViewPatient = () => {
   );
 
   const [edit, setEdit] = useState({
+    patientName: false,
     contactSide: false,
     scheduleSide: false,
     deletePatient: false,
@@ -45,6 +46,17 @@ const ViewPatient = () => {
   const handleDeletePatient = () => {
     removeHome(id, user._id, accessToken);
     window.location.href = '/manage';
+  };
+
+  const handleBack = () => {
+    window.location.href = '/manage';
+  };
+
+  const handleEditName = () => {
+    setEdit((prev) => ({
+      ...prev,
+      patientName: !prev.patientName,
+    }));
   };
 
   const handleContactEdit = () => {
@@ -119,7 +131,6 @@ const ViewPatient = () => {
     }));
   };
 
-
   return (
     <div className={`container ${edit.deletePatient ? 'overlay' : ''}`}>
       {
@@ -137,10 +148,38 @@ const ViewPatient = () => {
         patientData ? (
           <div className="container">
             <div className="row mt-5 header-cont d-flex align-items-center">
-              <div className="col-6">
-                <div className="d-flex ms-4">
+              <div className="col-6 d-flex">
+                <div className="d-flex align-items-center ms-3">
+                  <button onClick={handleBack} className='back-btn'>
+                    <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path className='back-color' d="M20 6.49985V7.49985C20 7.77599 19.7761 7.99985 19.5 7.99985H3.33L7.78 12.4399C7.87466 12.5337 7.9279 12.6615 7.9279 12.7949C7.9279 12.9282 7.87466 13.056 7.78 13.1499L7.07 13.8499C6.97612 13.9445 6.84832 13.9978 6.715 13.9978C6.58168 13.9978 6.45388 13.9445 6.36 13.8499L0.22 7.71985C0.0793075 7.57934 0.000175052 7.3887 0 7.18985V6.80985C0.00230401 6.61144 0.081116 6.42157 0.22 6.27985L6.36 0.149852C6.45388 0.055196 6.58168 0.00195312 6.715 0.00195312C6.84832 0.00195312 6.97612 0.055196 7.07 0.149852L7.78 0.859852C7.87406 0.952016 7.92707 1.07816 7.92707 1.20985C7.92707 1.34154 7.87406 1.46769 7.78 1.55985L3.33 5.99985H19.5C19.7761 5.99985 20 6.22371 20 6.49985Z" fill="#499165"/>
+                    </svg>
+                  </button>
+                 
+                </div>
+                <div className={`${!edit.patientName ? 'd-flex ms-5' : 'd-none'}`}>
                   <div className="p-name me-3">{patientData.firstName}</div>
                   <div className="p-name">{patientData.lastName}</div>
+                </div>
+                <div className={`${!edit.patientName ? 'd-none' : 'd-flex ms-5'}`}>
+                  <input
+                    type="text"
+                    className="form-control npat-input me-2"
+                    placeholder='First Name'
+                    id="firstName"
+                    name="firstName"
+                    value={patientData.firstName}
+                    onChange={(event) => handleInputChange(event)}
+                  />
+                  <input
+                    type="text"
+                    className="form-control npat-input"
+                    placeholder='Last Name'
+                    id="lastName"
+                    name="lastName"
+                    value={patientData.lastName}
+                    onChange={(event) => handleInputChange(event)}
+                  />
                 </div>
               </div>
               <div className="col-2">
@@ -148,7 +187,7 @@ const ViewPatient = () => {
                   <input className="form-check-input npat-input" type="checkbox" role="switch" id="active" onChange={handleActive} 
                   checked={patientData.active} />
                   <contact-label className="form-check-contact-label nPat-contact-label" for="active">
-                    Active
+                    <span className="edit-active">Active</span>
                   </contact-label>
                 </div>
               </div>
@@ -160,7 +199,14 @@ const ViewPatient = () => {
                 </button>
               </div>
               <div className="col-2">
-                <button className='edit-name'>Edit Name</button>
+                <button onClick={handleEditName} className='edit-name'>
+                  <span className={`${!edit.patientName ? '' : 'd-none'}`}>
+                    Edit Name
+                  </span>
+                  <span className={`${!edit.patientName ? 'd-none' : ''}`}>
+                    Save
+                  </span>
+                </button>
               </div>
             </div>
 

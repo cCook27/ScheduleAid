@@ -80,6 +80,7 @@ function CreatePatient({close}) {
   const handleSave = () => {
     addNewHome(formData, user._id, accessToken);
     close();
+    window.location.href = '/manage';
   };
 
   return (
