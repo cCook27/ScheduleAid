@@ -172,10 +172,22 @@
   border-radius: var(--borderRad);
   border: var(--customBorder);
   margin-top: 2px;
+  cursor: pointer;
 }
 
 .extra-nsd:focus {
   border-color: #6a9f6d;
   box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
   outline: var(--customBorder);
+}
+
+.extra-nsd:disabled {
+  background: var(--disabledBg);
+  cursor: auto;
+}
+
+.dis-badge {
+  background: var(--disabledBg);
+  color: var(--viewLetters);
+  border: var(--customBorder);
 }

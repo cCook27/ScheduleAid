@@ -25,25 +25,62 @@ const ViewPatient = () => {
     () => viewPatient(user._id, id, accessToken)
   );
 
-  const [editContact, setEditContact] = useState(false);
+  const [edit, setEdit] = useState({
+    contactSide: false,
+    scheduleSide: false
+  });
   const [patientData, setPatientData] = useState(undefined);
 
   useEffect(() => {
     setPatientData(patient);
   },[patient]);
+
+  useEffect(() => {
+    console.log(edit);
+  },[edit]);
   
 
   const handleContactEdit = () => {
-    setEditContact(!editContact);
+    setEdit((prev) => ({
+      ...prev,
+      contactSide: !prev.contactSide,
+    }));
+  };
+
+  const handleScheduleEdit = () => {
+    setEdit((prev) => ({
+      ...prev,
+      scheduleSide: !prev.scheduleSide,
+    }));
+  };
+
+  const saveScheduleChanges = () => {
+    setEdit((prev) => ({
+      ...prev,
+      scheduleSide: !prev.scheduleSide,
+    }));
+    saveChanges();
+  };
+
+  const saveContactChanges = () => {
+    setEdit((prev) => ({
+      ...prev,
+      contactSide: !prev.contactSide,
+    }));
+    saveChanges();
   };
 
   const saveChanges = () => {
-    setEditContact(!editContact);
     updatePatient(user._id, patientData, accessToken);
   };
 
   const handleActive = () => {
-    // need to be able to change the active patient
+    setPatientData((prev) => ({
+      ...prev,
+      active: !prev.active
+    }));
+
+    saveChanges();
   };
 
   const handleInputChange = (event) => {
@@ -55,8 +92,14 @@ const ViewPatient = () => {
     });
   };
 
-  const handleNoSeeDays = () => {
-    // handle the days they can't be seen
+  const handleNoSeeDays = (value) => {
+    setPatientData((prev) => ({
+      ...prev,
+      noSeeDays: {
+        ...prev.noSeeDays,
+        [value]: !prev.noSeeDays[value]
+      }
+    }));
   };
 
   const handleAddressChange = (value) => {
@@ -126,10 +169,10 @@ const ViewPatient = () => {
                 <div className="contact-section d-flex flex-column">
                   <div className="d-flex contact-header">
                     <div className="contact-title">Contact Info:</div>
-                    <button onClick={saveChanges} className={`${!editContact ? 'd-none' : 'contact-edit'}`}>
+                    <button onClick={saveContactChanges} className={`${!edit.contactSide ? 'd-none' : 'contact-edit'}`}>
                      Save
                     </button>
-                    <button onClick={handleContactEdit} className={`${!editContact ? 'contact-edit' : 'd-none'}`}>
+                    <button onClick={handleContactEdit} className={`${!edit.contactSide ? 'contact-edit' : 'd-none'}`}>
                      Edit
                     </button>
                   </div>
@@ -141,7 +184,7 @@ const ViewPatient = () => {
                         <div className="contact-label">Address:</div>
                       </div>
                       <div className="col-8">
-                        <div className={`${!editContact ? '' : 'd-none'}`}>
+                        <div className={`${!edit.contactSide ? '' : 'd-none'}`}>
                           <div className="contact-info">
                             {patientData.primaryNumber || 'NA'}
                           </div>
@@ -156,7 +199,7 @@ const ViewPatient = () => {
                           </div>
                         </div>
 
-                        <div className={`${!editContact ? 'd-none' : 'solid'}`}>
+                        <div className={`${!edit.contactSide ? 'd-none' : 'solid'}`}>
                           <div className="contact-info">
                             <input
                               type="tel"
@@ -237,29 +280,43 @@ const ViewPatient = () => {
                 <div className="contact-section extra-section d-flex flex-column">
                   <div className="d-flex contact-header">
                     <div className="contact-title">Scheduling Info:</div>
+                    <button onClick={saveScheduleChanges} className={`${!edit.scheduleSide ? 'd-none' : 'contact-edit'}`}>
+                     Save
+                    </button>
+                    <button onClick={handleScheduleEdit} className={`${!edit.scheduleSide ? 'contact-edit' : 'd-none'}`}>
+                     Edit
+                    </button>
                   </div>
                   <div className="row p-2">
                    <div className="col-4">
                     <div className="contact-label">Frequency:</div>
                    </div>
                    <div className="col-8">
-                    <input
-                      type="number"
-                      className="contact-info extra-input"
-                      id="frequency"
-                      name="frequency"
-                      value={patientData.frequency}
-                      onChange={(event) => handleInputChange(event)}
-                    />
-                   </div>
+                    <div className={`${!edit.scheduleSide ? 'd-none' : 'd-flex'}`}>
+                      <input
+                        type="number"
+                        className="contact-info extra-input"
+                        id="frequency"
+                        name="frequency"
+                        value={patientData.frequency}
+                        onChange={(event) => handleInputChange(event)}
+                      />
+                      <div className="contact-info ps-1">/Week</div>
+                    </div>
+                    <div className={`${!edit.scheduleSide ? 'd-flex' : 'd-none'}`}>
+                      <div className="contact-info">
+                        {patientData.frequency}/Week
+                      </div>
+                    </div>
                     
+                   </div>
                   </div>
                   <div className="row p-2">
                     <div className="col-4">
                       <div className="contact-label nsd-label">Cannot Be Seen:</div>
-                      <select className="contact-label extra-nsd" name="noseeDays" id="noSeeDays" 
+                      <select disabled={!edit.scheduleSide} className="contact-label extra-nsd" name="noseeDays" id="noSeeDays" 
                       onChange={(event) => handleNoSeeDays(event.target.value)}>
-                        <option disabled selected value="">Select Days</option>
+                        <option disabled selected value="">Select Day</option>
                         <option className={`${patientData.noSeeDays.sunday ? 'd-none' : null}`} value="sunday">
                           Sunday
                         </option>
@@ -283,6 +340,20 @@ const ViewPatient = () => {
                         </option>
                       </select>
                     </div>
+                    <div className="col-8">
+                      <div className="d-flex row nsd-cont my-2">
+                        {Object.entries(patientData.noSeeDays).map(([propertyName, propertyValue]) => (
+                          propertyValue && (
+                            <div className="col-6" key={propertyName}>
+                              <span className={`${!edit.scheduleSide ? 'badge dis-badge' : 'badge'}`}>
+                                {propertyName}
+                                <button className={`${!edit.scheduleSide ? 'd-none' : 'btn-close'}`} onClick={() => handleNoSeeDays(propertyName)}></button>
+                              </span>
+                            </div>
+                          )
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -300,43 +371,3 @@ export default ViewPatient;
 
 
 
-{/* <div className="npat-cont ps-2">
-              <label className='nPat-label my-2'>Patient CANNOT be Seen On:</label>
-              <select className="form-select pat-select npat-input nsd-select" name="noseeDays" id="noSeeDays" 
-              onChange={(event) => handleNoSeeDays(event.target.value)}
-              >
-                <option disabled selected value="">Select Days</option>
-                <option className={`${patientData.noSeeDays.sunday ? 'd-none' : null}`} value="sunday">
-                  Sunday
-                </option>
-                <option className={`${patientData.noSeeDays.monday ? 'd-none' : null}`} value="monday">
-                  Monday
-                </option>
-                <option className={`${patientData.noSeeDays.tuesday ? 'd-none' : null}`} value="tuesday">
-                  Tuesday
-                </option>
-                <option className={`${patientData.noSeeDays.wednesday ? 'd-none' : null}`} value="wednesday">
-                  Wednesday
-                </option>
-                <option className={`${patientData.noSeeDays.thursday ? 'd-none' : null}`} value="thursday">
-                  Thursday
-                </option>
-                <option className={`${patientData.noSeeDays.friday ? 'd-none' : null}`} value="friday">
-                  Friday
-                </option>
-                <option className={`${patientData.noSeeDays.saturday ? 'd-none' : null}`} value="saturday">
-                  Saturday
-                </option>
-              </select>
-              <div className="d-flex row nsd-cont my-2">
-                {Object.entries(patientData.noSeeDays).map(([propertyName, propertyValue]) => (
-                  propertyValue && (
-                    <div className="col-6" key={propertyName}>
-                      <span class="badge">{propertyName}
-                        <button className='btn-close' onClick={() => handleNoSeeDays(propertyName)}></button>
-                      </span>
-                    </div>
-                  )
-                ))}
-              </div>
-            </div> */}
