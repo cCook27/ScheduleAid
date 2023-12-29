@@ -136,8 +136,9 @@ function DisplayClients() {
             (
               filteredHomes.map((home) => (
                 <div key={home._id} className="row pat-cont my-2 d-flex justify-content-center align-items-center">
-                  <div className="col info-cont">
-                    <div className="pat-name">{home.name}</div>
+                  <div className="col info-cont d-flex">
+                    <div className="pat-name">{home.firstName}</div>
+                    <div className="pat-name">{home.lastName}</div>
                   </div>
                   <div className="col info-cont">
                     <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
@@ -162,8 +163,9 @@ function DisplayClients() {
             (
               homes.map((home) => (
                 <div key={home._id} className="row pat-cont my-2 d-flex justify-content-center align-items-center">
-                  <div className="col info-cont">
-                    <div className="pat-name">{home.name}</div>
+                  <div className="col info-cont d-flex">
+                    <div className="pat-name me-1">{home.firstName}</div>
+                    <div className="pat-name">{home.lastName}</div>
                   </div>
                   <div className="col info-cont">
                     <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
@@ -175,7 +177,7 @@ function DisplayClients() {
                     <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
                   </div>
                   <div className="col info-cont">
-                    <div className="pat-number ellipsis-overflow">{home.number}number</div>
+                    <div className="pat-number ellipsis-overflow">{home.primaryNumber}</div>
                   </div>
                   <div className="col info-cont">
                     <button className='btn view-btn'>

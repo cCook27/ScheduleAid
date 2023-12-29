@@ -24,7 +24,8 @@ function CreatePatient({close}) {
       _id: '',
       noSeeDays: {sunday: false, monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: false},
       active: true,
-      frequency: 1
+      frequency: 1,
+      notes: []
     }
   );
 
