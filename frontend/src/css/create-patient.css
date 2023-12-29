@@ -33,7 +33,7 @@
   transform: translateY(2px);
 }
 
-.btn-close {
+.btn-close-create {
   position: relative;
   left: 5px;
 }
@@ -83,7 +83,7 @@
   border: 1px solid var(--borderColor);
 }
 
-.close-all {
+.close-all-custom {
   font-size: 15px;
   font-weight: 600;
   padding: 15px;

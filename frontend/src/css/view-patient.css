@@ -218,3 +218,15 @@
   z-index: 20001;
   border-radius: var(--borderRad);
 }
+
+.p-notes-modal {
+  position: relative;
+  border: 3px solid var(--borderColor);
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+  background: var(--personBg);
+  bottom: 600px;
+  width: 55%;
+  left: 6%;
+  z-index: 20001;
+  border-radius: var(--borderRad);
+}

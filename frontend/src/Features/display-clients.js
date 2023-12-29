@@ -128,7 +128,7 @@ function DisplayClients() {
             (
               <div className="row">
                 <div className="col">
-                  <div>No Current Clients</div>     
+                  <div>No Current Patients</div>     
                 </div>
               </div>
               
@@ -159,7 +159,7 @@ function DisplayClients() {
                   </div>
                 </div>
               ))
-            ) :
+            ) : filteredHomes.length === 0 && homes.length > 0 ?
             (
               homes.map((home) => (
                 <div key={home._id} className="row pat-cont my-2 d-flex justify-content-center align-items-center">
@@ -186,6 +186,14 @@ function DisplayClients() {
                   </div>
                 </div>
               ))
+            ) : 
+            (
+              <div className='container'>
+                <div className='d-flex justify-content-center align-items-center flex-column my-4 no-p-titles'>
+                  <h4>No Current Patients</h4>
+                  <h6>Click the <span className='add-span'>Add Patient</span> button to start creating your patient list.</h6>
+                </div>
+              </div>
             )
           }
           </div>

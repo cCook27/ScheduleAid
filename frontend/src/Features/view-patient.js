@@ -11,6 +11,7 @@ import Loading from "../pop-ups/loading";
 
 import '../css/view-patient.css';
 import DeletePatientModal from '../pop-ups/delete-patient-modal';
+import PatientScheduleNotes from '../pop-ups/patient-schedule-notes';
 
 const ViewPatient = () => {
   const queryClient = useQueryClient();
@@ -31,6 +32,7 @@ const ViewPatient = () => {
     contactSide: false,
     scheduleSide: false,
     deletePatient: false,
+    patientNotes: false,
   });
   const [patientData, setPatientData] = useState(undefined);
 
@@ -77,6 +79,13 @@ const ViewPatient = () => {
     setEdit((prev) => ({
       ...prev,
       deletePatient: !prev.deletePatient,
+    }));
+  };
+
+  const handleEditPatientNotes = () => {
+    setEdit((prev) => ({
+      ...prev,
+      patientNotes: !prev.patientNotes,
     }));
   };
 
@@ -131,8 +140,15 @@ const ViewPatient = () => {
     }));
   };
 
+  const handleNoteAddition = (note) => {
+    setPatientData((prev) => ({
+      ...prev,
+      notes: prev.notes.push(note)
+    }));
+  };
+
   return (
-    <div className={`container ${edit.deletePatient ? 'overlay' : ''}`}>
+    <div className={`container ${edit.deletePatient || edit.patientNotes ? 'overlay' : ''}`}>
       {
         isLoading ? (
           <div><Loading /></div>
@@ -215,7 +231,7 @@ const ViewPatient = () => {
                 <div className="d-flex notes-section flex-column">
                   <div className="d-flex notes-header">
                     <div className="notes-title">Notes:</div>
-                    <button className="notes-add btn">Add</button>
+                    <button onClick={handleEditPatientNotes} className="notes-add btn">Add</button>
                   </div>
                   <div className="container"></div>
                 </div>
@@ -416,7 +432,15 @@ const ViewPatient = () => {
             </div>
 
             <div className={`${!edit.deletePatient ? 'd-none' : 'delete-modal'}`}>
-              <DeletePatientModal patientData={patientData} handleDeletePatient={handleDeletePatient} handleDeletePatientEdit={handleDeletePatientEdit} />
+              <DeletePatientModal patientData={patientData} 
+              handleDeletePatient={handleDeletePatient} 
+              handleDeletePatientEdit={handleDeletePatientEdit} />
+            </div>
+
+            <div className={`${!edit.patientNotes ? 'd-none' : 'p-notes-modal'}`}>
+              <PatientScheduleNotes patientData={patientData} 
+              handleEditPatientNotes={handleEditPatientNotes} 
+              handleNoteAddition={handleNoteAddition} />
             </div>
           </div>
         ) : null

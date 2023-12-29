@@ -1,0 +1,35 @@
+.p-notes-title-cont {
+  border-bottom: var(--customBorder);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.p-notes-title {
+  font-weight: 600;
+  color: var(--patientLetters);
+  font-size: 20px;
+}
+
+.p-notes-name {
+  font-weight: 700;
+}
+
+.close-all {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.p-note-text {
+  border: var(--customBorder);
+}
+
+.save-p-note {
+  background: var(--fulfilled);
+  color: var(--hoverLetters);
+  font-weight: 600;
+}
+
+.save-p-note:disabled {
+  background: var(--disabledBg);
+}

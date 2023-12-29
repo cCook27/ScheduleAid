@@ -138,3 +138,13 @@
   text-decoration: none;
   color: inherit;
 }
+
+.no-p-titles {
+  font-weight: 600;
+  color: var(--viewLetters);
+  padding: 3px;
+}
+
+.add-span {
+  font-weight: 800;
+}

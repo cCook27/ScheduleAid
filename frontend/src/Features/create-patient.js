@@ -91,7 +91,7 @@ function CreatePatient({close}) {
         </div>
         <div className="col">
           <div className='d-flex justify-content-end'>
-            <button type="button" className="btn-close close-all" aria-label="Close"
+            <button type="button" className="btn-close close-all close-all-custom btn-close-create" aria-label="Close"
             onClick={handleClose}></button>
           </div>
         </div>
