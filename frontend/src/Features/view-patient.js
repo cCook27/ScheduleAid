@@ -19,7 +19,7 @@ const ViewPatient = () => {
   const accessToken = useContext(AccessTokenContext);
   const { isLoading } = useAuth0();
 
-  const {viewPatient, updatePatient} = useHomeRequests();
+  const {viewPatient, updatePatient, removeHome} = useHomeRequests();
   const { id } = useParams();
   const { data: patient, status } = useQuery('patient',
     () => viewPatient(user._id, id, accessToken)
@@ -33,12 +33,16 @@ const ViewPatient = () => {
 
   useEffect(() => {
     setPatientData(patient);
+    console.log(patientData);
   },[patient]);
 
   useEffect(() => {
-    console.log(edit);
-  },[edit]);
+    saveChanges();
+  },[patientData]);
   
+  const handleDeletePatient = () => {
+    removeHome(id, user._id, accessToken);
+  };
 
   const handleContactEdit = () => {
     setEdit((prev) => ({
@@ -59,7 +63,6 @@ const ViewPatient = () => {
       ...prev,
       scheduleSide: !prev.scheduleSide,
     }));
-    saveChanges();
   };
 
   const saveContactChanges = () => {
@@ -67,7 +70,6 @@ const ViewPatient = () => {
       ...prev,
       contactSide: !prev.contactSide,
     }));
-    saveChanges();
   };
 
   const saveChanges = () => {
@@ -79,8 +81,6 @@ const ViewPatient = () => {
       ...prev,
       active: !prev.active
     }));
-
-    saveChanges();
   };
 
   const handleInputChange = (event) => {
@@ -134,10 +134,10 @@ const ViewPatient = () => {
                 </div>
               </div>
               <div className="col-2">
-                <div class="form-check form-switch">
-                  <input class="form-check-input npat-input" type="checkbox" role="switch" id="active" onChange={handleActive} 
+                <div className="form-check form-switch">
+                  <input className="form-check-input npat-input" type="checkbox" role="switch" id="active" onChange={handleActive} 
                   checked={patientData.active} />
-                  <contact-label class="form-check-contact-label nPat-contact-label" for="active">
+                  <contact-label className="form-check-contact-label nPat-contact-label" for="active">
                     Active
                   </contact-label>
                 </div>
@@ -145,7 +145,7 @@ const ViewPatient = () => {
               <div className="col-2">
                 <button className="remove-pat btn d-flex justify-content-center align-items-center">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path className='trash' fill-rule="evenodd" clip-rule="evenodd" d="M20 5.5V4.5C20 4.22386 19.7761 4 19.5 4H15V3C15 2.44772 14.5523 2 14 2H10C9.44772 2 9 2.44772 9 3V4H4.5C4.22386 4 4 4.22386 4 4.5V5.5C4 5.77614 4.22386 6 4.5 6H19.5C19.7761 6 20 5.77614 20 5.5ZM7.87 22C6.81787 22.0026 5.94365 21.1896 5.87 20.14L5 8H19L18.15 20.14C18.0764 21.1896 17.2021 22.0026 16.15 22H7.87Z" fill="red"/>
+                    <path className='trash' fillRule="evenodd" clipRule="evenodd" d="M20 5.5V4.5C20 4.22386 19.7761 4 19.5 4H15V3C15 2.44772 14.5523 2 14 2H10C9.44772 2 9 2.44772 9 3V4H4.5C4.22386 4 4 4.22386 4 4.5V5.5C4 5.77614 4.22386 6 4.5 6H19.5C19.7761 6 20 5.77614 20 5.5ZM7.87 22C6.81787 22.0026 5.94365 21.1896 5.87 20.14L5 8H19L18.15 20.14C18.0764 21.1896 17.2021 22.0026 16.15 22H7.87Z" fill="red"/>
                   </svg>
                 </button>
               </div>

@@ -89,7 +89,7 @@ function CreatePatient({close}) {
         </div>
         <div className="col">
           <div className='d-flex justify-content-end'>
-            <button type="button" class="btn-close close-all" aria-label="Close"
+            <button type="button" className="btn-close close-all" aria-label="Close"
             onClick={handleClose}></button>
           </div>
         </div>
@@ -249,7 +249,7 @@ function CreatePatient({close}) {
                 {Object.entries(formData.noSeeDays).map(([propertyName, propertyValue]) => (
                   propertyValue && (
                     <div className="col-6" key={propertyName}>
-                      <span class="badge">{propertyName}
+                      <span className="badge">{propertyName}
                         <button className='btn-close' onClick={() => handleNoSeeDays(propertyName)}></button>
                       </span>
                     </div>
@@ -271,10 +271,10 @@ function CreatePatient({close}) {
               />
             </div>
             <div className="npat-cont my-3">
-            <div class="form-check form-switch">
-              <input class="form-check-input npat-input" type="checkbox" role="switch" id="active" onChange={handleActive} 
+            <div className="form-check form-switch">
+              <input className="form-check-input npat-input" type="checkbox" role="switch" id="active" onChange={handleActive} 
               checked={formData.active} />
-              <label class="form-check-label nPat-label" for="active">
+              <label className="form-check-label nPat-label" for="active">
                 Active
               </label>
             </div>
