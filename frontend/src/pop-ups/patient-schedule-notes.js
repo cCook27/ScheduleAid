@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
 import '../css/patient-schedule-notes.css'
@@ -8,8 +8,18 @@ const PatientScheduleNotes = ({patientData, handleEditPatientNotes, handleNoteAd
 
   const [patientNote, setPatientNote] = useState({
     noteId: uuidv4(),
+    noteDate: undefined,
     note: undefined
   });
+
+  useEffect(() => {
+    const currentDate = new Date();
+
+    setPatientNote((prev) => ({
+      ...prev,
+      noteDate: currentDate
+    }));
+  }, []);
 
   const handleNoteChanges = (event) => {
     const {value} = event.target;

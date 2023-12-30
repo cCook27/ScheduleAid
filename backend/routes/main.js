@@ -988,7 +988,7 @@ router.post('/homes/:user', async (req, res) => {
   try {
     const newHomeInfo = req.body;
     const userId = req.params.user;
-    const user = await User.findOne({_id: userId}); 
+    let user = await User.findOne({_id: userId}); 
 
     if(!newHomeInfo || !userId) {
       return res.status(400).send('Bad request, Data not sent.');
@@ -1007,7 +1007,7 @@ router.post('/homes/:user', async (req, res) => {
 
     newHomeInfo['coordinates'] = response.data.results[0].geometry.location;
 
-    const homeAdded = user.homes.push(newHomeInfo);
+    user.homes = [newHomeInfo, ...user.homes];
     const save = user.save();
 
     res.status(201).json(newHomeInfo);

@@ -38,11 +38,13 @@ const ViewPatient = () => {
 
   useEffect(() => {
     setPatientData(patient);
-    console.log(patientData);
   },[patient]);
 
   useEffect(() => {
     saveChanges();
+    if(patientData) {
+      console.log(patientData)
+    }
   },[patientData]);
   
   const handleDeletePatient = () => {
@@ -140,10 +142,10 @@ const ViewPatient = () => {
     }));
   };
 
-  const handleNoteAddition = (note) => {
-    setPatientData((prev) => ({
-      ...prev,
-      notes: prev.notes.push(note)
+  const handleNoteAddition = (newNote) => {
+    setPatientData((prevData) => ({
+      ...prevData,
+      notes: [ newNote, ...prevData.notes]
     }));
   };
 
@@ -233,7 +235,26 @@ const ViewPatient = () => {
                     <div className="notes-title">Notes:</div>
                     <button onClick={handleEditPatientNotes} className="notes-add btn">Add</button>
                   </div>
-                  <div className="container"></div>
+                  <div className="container">
+                    {
+                      !patientData || patientData.notes < 0 ? (
+                        <div><Loading /></div>
+                      ) : (
+                        <div>
+                          {patientData.notes.map((pNote) => (
+                            <div key={pNote.noteId} className="row">
+                              <div className="col">
+                                <div className="d-flex">
+                                  {pNote.note}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        
+                      )
+                    }
+                  </div>
                 </div>
               </div>
 
@@ -455,3 +476,12 @@ export default ViewPatient;
 
 
 
+  {/* {patientData && patientData.notes && patientData.notes.map((pNote) => (
+                      <div key={pNote.noteId} className="row">
+                        <div className="col">
+                          <div className="d-flex">
+                            {pNote.note}
+                          </div>
+                        </div>
+                      </div>
+                    ))} */}

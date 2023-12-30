@@ -83,6 +83,12 @@
   padding: 3px;
 }
 
+.no-notes-titles {
+  font-weight: 600;
+  color: var(--viewLetters);
+  padding: 3px;
+}
+
 .notes-add {
   background: var(--fulfilled);
   margin: 5px;
