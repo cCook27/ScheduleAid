@@ -3,6 +3,7 @@
   height: 60px;
   border-radius: 5px;
   border: 1px solid var(--borderColor);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .back-btn {
@@ -31,6 +32,10 @@
 .edit-active {
   font-weight: 600;
   color: var(--viewLetters);
+}
+
+.form-check-input:hover {
+  cursor: pointer;
 }
 
 .remove-pat {
@@ -75,6 +80,7 @@
   border: 1px solid var(--borderColor);
   background: var(--personBg);
   border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .notes-title {
@@ -99,6 +105,78 @@
   font-weight: 600;
 }
 
+.area-for-notes {
+  overflow-y: scroll;
+}
+
+.note-cont {
+  border: var(--customBorder);
+  border-radius: var(--borderRad);
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+}
+
+.note-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--patientLetters);
+  display: flex;
+  justify-content: end;
+}
+
+.note-content-cont {
+  max-height: 80px;
+  max-width: 100%;
+  overflow-y: scroll;
+  text-overflow: ellipsis;
+}
+
+.note-content {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--viewLetters);
+  overflow-wrap: break-word;
+}
+
+.note-bottom {
+  border-top: var(--customBorder);
+}
+
+.note-del {
+  background: transparent;
+  border: none;
+  margin-top: 3px;
+  margin-right: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: red;
+}
+
+.note-del:hover {
+  color: var(--viewLetters);
+}
+
+.note-del:active {
+  transform: translateY(2px);
+}
+
+.note-edit {
+  background: transparent;
+  border: none;
+  margin-top: 3px;
+  margin-right: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--patientLetters);
+}
+
+.note-edit:hover {
+  color: var(--viewLetters);
+}
+
+.note-edit:active {
+  transform: translateY(2px);
+}
+
 .contact-section {
   height: 32.5vh;
   width: 100%;
@@ -106,6 +184,7 @@
   background: var(--personBg);
   border-radius: 5px;
   margin-bottom: 33px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .contact-header {
@@ -133,7 +212,7 @@
   color: var(--viewLetters);
 }
 
-.contact-edite:active {
+.contact-edit:active {
   transform: translateY(2px);
 }
 

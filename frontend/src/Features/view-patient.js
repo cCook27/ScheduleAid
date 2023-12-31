@@ -235,17 +235,34 @@ const ViewPatient = () => {
                     <div className="notes-title">Notes:</div>
                     <button onClick={handleEditPatientNotes} className="notes-add btn">Add</button>
                   </div>
-                  <div className="container">
+                  <div className="container area-for-notes">
                     {
                       !patientData || patientData.notes < 0 ? (
                         <div><Loading /></div>
                       ) : (
                         <div>
                           {patientData.notes.map((pNote) => (
-                            <div key={pNote.noteId} className="row">
-                              <div className="col">
-                                <div className="d-flex">
-                                  {pNote.note}
+                            <div key={pNote.noteId} className="row px-3 my-3">
+                              <div className="col note-cont">
+                                <div className="row">
+                                  <div className="col">
+                                    <div className="note-time">{pNote.noteDate}</div>
+                                  </div>
+                                </div>
+
+                                <div className="row my-2">
+                                  <div className="col note-content-cont my-2">
+                                    <div className="note-content">{pNote.note}</div>
+                                  </div>
+                                </div> 
+
+                                <div className="row note-bottom">
+                                  <div className="col">
+                                    <div className="d-flex">
+                                      <button className='note-del'>Delete</button>
+                                      <button className='note-edit'>Edit</button>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </div>

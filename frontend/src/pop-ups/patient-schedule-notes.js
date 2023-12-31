@@ -14,10 +14,17 @@ const PatientScheduleNotes = ({patientData, handleEditPatientNotes, handleNoteAd
 
   useEffect(() => {
     const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; 
+    const day = currentDate.getDate();
+    const hours = currentDate.getHours();
+    const minutes = currentDate.getMinutes();
+
+    const date = `${month}/${day}/${year} ${hours}:${minutes}`
 
     setPatientNote((prev) => ({
       ...prev,
-      noteDate: currentDate
+      noteDate: date
     }));
   }, []);
 
