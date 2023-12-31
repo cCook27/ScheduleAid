@@ -4,10 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 import '../css/patient-schedule-notes.css'
 
-const PatientScheduleNotes = ({patientData, handleEditPatientNotes, handleNoteAddition}) => {
+const EditPatientNotes = ({patientData, handleEditNote, editId, handleUpdatedNote}) => {
 
   const [patientNote, setPatientNote] = useState({
-    noteId: undefined,
+    noteId: editId,
     noteDate: undefined,
     note: undefined
   });
@@ -22,12 +22,16 @@ const PatientScheduleNotes = ({patientData, handleEditPatientNotes, handleNoteAd
 
     const date = `${month}/${day}/${year} ${hours}:${minutes}`
 
+    const noteValue = patientData.notes.find((note) => {
+      return note.noteId === editId;
+    });
+
     setPatientNote((prev) => ({
       ...prev,
-      noteId: uuidv4(),
-      noteDate: date
+      noteDate: date,
+      note: noteValue.note
     }));
-  }, []);
+  }, [patientData]);
 
   const handleNoteChanges = (event) => {
     const {value} = event.target;
@@ -39,12 +43,12 @@ const PatientScheduleNotes = ({patientData, handleEditPatientNotes, handleNoteAd
   };
 
   const handleSaveNote = () => {
-    handleNoteAddition(patientNote);
-    handleEditPatientNotes();
+    handleUpdatedNote(patientNote);
+    handleEditNote();
   };
 
   const handleCancelNote = () => {
-    handleEditPatientNotes();
+    handleEditNote();
   };
 
   return (
@@ -62,6 +66,7 @@ const PatientScheduleNotes = ({patientData, handleEditPatientNotes, handleNoteAd
           name="patientNote"
           placeholder="Jane Doe cannot be seen before 10am."
           className="form-control p-note-text"
+          value={patientNote.note}
           onChange={handleNoteChanges}
           rows={5}
         />
@@ -74,4 +79,4 @@ const PatientScheduleNotes = ({patientData, handleEditPatientNotes, handleNoteAd
   )
 };
 
-export default PatientScheduleNotes;
+export default EditPatientNotes;

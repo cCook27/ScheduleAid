@@ -159,6 +159,10 @@
   transform: translateY(2px);
 }
 
+#button-tooltip {
+  background: var(--fulfilled);
+}
+
 .note-edit {
   background: transparent;
   border: none;

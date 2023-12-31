@@ -9,9 +9,13 @@ import {UserContext, AccessTokenContext} from '../context/context';
 import { useAuth0 } from "@auth0/auth0-react";
 import Loading from "../pop-ups/loading";
 
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+
 import '../css/view-patient.css';
 import DeletePatientModal from '../pop-ups/delete-patient-modal';
 import PatientScheduleNotes from '../pop-ups/patient-schedule-notes';
+import EditPatientNotes from '../pop-ups/edit-patient-note';
 
 const ViewPatient = () => {
   const queryClient = useQueryClient();
@@ -33,6 +37,7 @@ const ViewPatient = () => {
     scheduleSide: false,
     deletePatient: false,
     patientNotes: false,
+    editNote: false,
   });
   const [patientData, setPatientData] = useState(undefined);
 
@@ -42,9 +47,6 @@ const ViewPatient = () => {
 
   useEffect(() => {
     saveChanges();
-    if(patientData) {
-      console.log(patientData)
-    }
   },[patientData]);
   
   const handleDeletePatient = () => {
@@ -88,6 +90,13 @@ const ViewPatient = () => {
     setEdit((prev) => ({
       ...prev,
       patientNotes: !prev.patientNotes,
+    }));
+  };
+
+  const handleEditNote = (noteId) => {
+    setEdit((prev) => ({
+      ...prev,
+      editNote: noteId,
     }));
   };
 
@@ -148,6 +157,31 @@ const ViewPatient = () => {
       notes: [ newNote, ...prevData.notes]
     }));
   };
+
+  const handleNoteRemoval = (noteId) => {
+    setPatientData((prevData) => ({
+      ...prevData,
+      notes: prevData.notes.filter((note) => note.noteId !== noteId)
+    }));
+  };
+
+  const handleUpdatedNote = (newNote) => {
+    const index = patientData.notes.findIndex((note) => note.noteId === newNote.noteId);
+
+    const patientNotes = [...patientData.notes];
+    patientNotes[index] = newNote;
+
+    setPatientData((prevData) => ({
+      ...prevData,
+      notes: patientNotes
+    }));
+  };
+
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      This change cannot be undone.
+    </Tooltip>
+  );
 
   return (
     <div className={`container ${edit.deletePatient || edit.patientNotes ? 'overlay' : ''}`}>
@@ -259,8 +293,15 @@ const ViewPatient = () => {
                                 <div className="row note-bottom">
                                   <div className="col">
                                     <div className="d-flex">
-                                      <button className='note-del'>Delete</button>
-                                      <button className='note-edit'>Edit</button>
+                                      <OverlayTrigger
+                                        placement="bottom"
+                                        delay={{ show: 250, hide: 400 }}
+                                        overlay={renderTooltip}
+                                      >
+                                        <button 
+                                        onClick={() => handleNoteRemoval(pNote.noteId)} className='note-del'>Delete</button>
+                                      </OverlayTrigger>
+                                      <button onClick={() => handleEditNote(pNote.noteId)} className='note-edit'>Edit</button>
                                     </div>
                                   </div>
                                 </div>
@@ -468,18 +509,35 @@ const ViewPatient = () => {
                 </div>
               </div>
             </div>
+            {edit.deletePatient && (
+              <div className='delete-modal'>
+                <DeletePatientModal patientData={patientData} 
+                handleDeletePatient={handleDeletePatient} 
+                handleDeletePatientEdit={handleDeletePatientEdit} />
+              </div>
+            )}
+           
 
-            <div className={`${!edit.deletePatient ? 'd-none' : 'delete-modal'}`}>
-              <DeletePatientModal patientData={patientData} 
-              handleDeletePatient={handleDeletePatient} 
-              handleDeletePatientEdit={handleDeletePatientEdit} />
-            </div>
+            {edit.patientNotes && (
+              <div key="patientNotes" className="p-notes-modal">
+                <PatientScheduleNotes
+                  patientData={patientData}
+                  handleEditPatientNotes={handleEditPatientNotes}
+                  handleNoteAddition={handleNoteAddition}
+                />
+              </div>
+            )}
 
-            <div className={`${!edit.patientNotes ? 'd-none' : 'p-notes-modal'}`}>
-              <PatientScheduleNotes patientData={patientData} 
-              handleEditPatientNotes={handleEditPatientNotes} 
-              handleNoteAddition={handleNoteAddition} />
-            </div>
+            {edit.editNote && (
+              <div key="patientNotes" className="p-notes-modal">
+                <EditPatientNotes
+                  patientData={patientData}
+                  handleEditNote={handleEditNote}
+                  editId={edit.editNote}
+                  handleUpdatedNote={handleUpdatedNote}
+                />
+              </div>
+            )}
           </div>
         ) : null
       }
@@ -489,16 +547,3 @@ const ViewPatient = () => {
 
 
 export default ViewPatient;
-
-
-
-
-  {/* {patientData && patientData.notes && patientData.notes.map((pNote) => (
-                      <div key={pNote.noteId} className="row">
-                        <div className="col">
-                          <div className="d-flex">
-                            {pNote.note}
-                          </div>
-                        </div>
-                      </div>
-                    ))} */}
