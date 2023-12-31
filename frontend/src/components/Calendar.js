@@ -223,7 +223,7 @@ function Calendar(props) {
 
     
     setMyEvents([...schedule]);
-  }
+  };
 
   const newEvent = useCallback(
     (event) => {

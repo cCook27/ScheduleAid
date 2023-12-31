@@ -109,7 +109,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
                     (
                       <div className="col-6 d-flex patient-cont used" key={patient._id} >
                         <div className="patient-name ellipsis-overflow">
-                          {patient.name}
+                          <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
                         </div>
                       </div>
                     ) :
@@ -117,7 +117,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
                     (
                       <div className="col-6 d-flex patient-cont" key={patient._id} draggable onDragStart={() => handleDragStart(patient.name, patient.address, patient.coordinates, index)}>
                         <div className="patient-name ellipsis-overflow">
-                          {patient.name}
+                          <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
                         </div>
                       </div>
                     )

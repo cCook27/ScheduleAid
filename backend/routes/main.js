@@ -318,7 +318,7 @@ router.post('/checkGroups/:user', async (req, res) => {
     const currentGroupList = [].concat(...user.groups);
 
     const sortPatients = (patients) => {
-      const sortedArray = patients.sort((a, b) => a.name.localeCompare(b.name));
+      const sortedArray = patients.sort((a, b) => a.lastName.localeCompare(b.lastName));
 
       return sortedArray;
     }
@@ -570,7 +570,7 @@ router.post('/grouping/:user', async (req, res) => {
     const currentGroupList = [].concat(...user.groups);
 
     const sortPatients = (patients) => {
-      const sortedArray = patients.sort((a, b) => a.name - b.name);
+      const sortedArray = patients.sort((a, b) => a.lastName - b.lastName);
 
       return sortedArray;
     }
@@ -580,7 +580,7 @@ router.post('/grouping/:user', async (req, res) => {
       const sortedVisitList = sortPatients(visits)
   
       const groupandVisitMatch = sortedVisitList.map((visit, index) => {
-        if(visit._id === sortedGroupList[index]._id && visit.name === sortedGroupList[index].name) {
+        if(visit._id === sortedGroupList[index]._id && visit.lastName === sortedGroupList[index].lastName) {
           return 'match'
         } else {
           return 'noMatch'
