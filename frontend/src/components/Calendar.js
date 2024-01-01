@@ -277,8 +277,8 @@ function Calendar(props) {
   );
 
   const handleDragStart = useCallback(
-    (client, address, coordinates, groupNumber) => {
-      setDraggedClient({client: client, address: address, coordinates: coordinates, groupNumber: groupNumber});
+    (name, address, coordinates, groupNumber) => {
+      setDraggedClient({client: name, address: address, coordinates: coordinates, groupNumber: groupNumber});
   },[])
   
   const testSchedule = async () => {
