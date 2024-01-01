@@ -30,10 +30,10 @@ function DisplayClients() {
     setFilter(filterEvent);
 
     if(filterEvent === 'A-Z') {
-      const sortAZ = homes.sort((a, b) => a.name.localeCompare(b.name));
+      const sortAZ = homes.sort((a, b) => a.lastName.localeCompare(b.lastName));
       sortAZ.length > 0 ? setFilteredHomes(sortAZ) : window.alert('Add Patients!');
     } else if(filterEvent === 'Z-A')  {
-      const sortZA = homes.sort((a, b) => b.name.localeCompare(a.name));
+      const sortZA = homes.sort((a, b) => b.lastName.localeCompare(a.lastName));
       sortZA.length > 0 ? setFilteredHomes(sortZA) : window.alert('Add Patients!');
     } else if(filterEvent === 'Active') {
       const filterActive = homes.filter((home) => home.active);
@@ -51,7 +51,7 @@ function DisplayClients() {
   };
 
   const searchName = () => {
-    const isName = homes.filter((home) => home.name.toUpperCase() === searchFilter.toUpperCase());
+    const isName = homes.filter((home) => home.firstName.toUpperCase() === searchFilter.toUpperCase() || home.lastName.toUpperCase() === searchFilter.toUpperCase());
 
     isName.length > 0 ? setFilteredHomes(isName) : window.alert(`Sorry, it looks like there is no one by the name of ${searchFilter} in your patient list.`);
 
@@ -137,7 +137,7 @@ function DisplayClients() {
               filteredHomes.map((home) => (
                 <div key={home._id} className="row pat-cont my-2 d-flex justify-content-center align-items-center">
                   <div className="col info-cont d-flex">
-                    <div className="pat-name">{home.firstName}</div>
+                    <div className="pat-name me-1">{home.firstName}</div>
                     <div className="pat-name">{home.lastName}</div>
                   </div>
                   <div className="col info-cont">
