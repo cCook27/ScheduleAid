@@ -109,6 +109,16 @@
   overflow-y: scroll;
 }
 
+.no-note-alt {
+  font-weight: 600;
+  color: var(--viewLetters);
+}
+
+.notes-add-span {
+  color: var(--patientLetters);
+  font-weight: 800;
+}
+
 .note-cont {
   border: var(--customBorder);
   border-radius: var(--borderRad);

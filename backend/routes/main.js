@@ -1046,7 +1046,7 @@ router.post('/schedule/:user', async (req, res) => {
 });
 
 router.put('/updatePatient/:user', async (req, res) => {
-  try{
+  try {
     const patientInfo = req.body;
     const userId = req.params.user;
     const user = await User.findOne({_id: userId});
@@ -1069,7 +1069,6 @@ router.put('/updatePatient/:user', async (req, res) => {
     console.error('Error:', error);
     res.status(500).send('An error occurred while looking for the User.');
   }
-  
 });
 
 router.put('/user/:user', async (req, res) => {
@@ -1162,7 +1161,6 @@ router.delete('/schedule/patient/:user/', async (req, res) => {
     res.status(500).send('An error occurred while looking for client homes.');
   }
 });
-
 
 module.exports = router;
   

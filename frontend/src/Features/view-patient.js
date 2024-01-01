@@ -206,8 +206,7 @@ const ViewPatient = () => {
                     <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path className='back-color' d="M20 6.49985V7.49985C20 7.77599 19.7761 7.99985 19.5 7.99985H3.33L7.78 12.4399C7.87466 12.5337 7.9279 12.6615 7.9279 12.7949C7.9279 12.9282 7.87466 13.056 7.78 13.1499L7.07 13.8499C6.97612 13.9445 6.84832 13.9978 6.715 13.9978C6.58168 13.9978 6.45388 13.9445 6.36 13.8499L0.22 7.71985C0.0793075 7.57934 0.000175052 7.3887 0 7.18985V6.80985C0.00230401 6.61144 0.081116 6.42157 0.22 6.27985L6.36 0.149852C6.45388 0.055196 6.58168 0.00195312 6.715 0.00195312C6.84832 0.00195312 6.97612 0.055196 7.07 0.149852L7.78 0.859852C7.87406 0.952016 7.92707 1.07816 7.92707 1.20985C7.92707 1.34154 7.87406 1.46769 7.78 1.55985L3.33 5.99985H19.5C19.7761 5.99985 20 6.22371 20 6.49985Z" fill="#499165"/>
                     </svg>
-                  </button>
-                 
+                  </button>                
                 </div>
                 <div className={`${!edit.patientName ? 'd-flex ms-5' : 'd-none'}`}>
                   <div className="p-name me-3">{patientData.firstName}</div>
@@ -271,9 +270,10 @@ const ViewPatient = () => {
                   </div>
                   <div className="container area-for-notes">
                     {
-                      !patientData || patientData.notes < 0 ? (
+                      !patientData ? (
                         <div><Loading /></div>
-                      ) : (
+                      ) : patientData.notes.length > 0 ?
+                      (
                         <div>
                           {patientData.notes.map((pNote) => (
                             <div key={pNote.noteId} className="row px-3 my-3">
@@ -310,7 +310,13 @@ const ViewPatient = () => {
                           ))}
                         </div>
                         
-                      )
+                      ) : (
+                        <div className='d-flex flex-column align-items-center justify-content-center p-5 m-5'>
+                          <h5 className='text-center no-note-alt'>Have something you want to remember</h5>
+                          <h5 className='text-center no-note-alt'>about your patient's schedule?</h5>
+                          <h6 className='text-center mt-3 no-note-alt'>Click the <span className='notes-add-span'>Add</span> button above to take a note.</h6>
+                        </div>
+                      ) 
                     }
                   </div>
                 </div>
