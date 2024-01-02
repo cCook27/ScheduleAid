@@ -70,10 +70,18 @@ function Calendar(props) {
     }
   );
 
-  const displaySourceHeight = document.getElementById('display-source').clientHeight;
-  const calendarTarget = document.getElementById('calendar-target');
+  // const displaySourceHeight = document.getElementById('display-source') ? document.getElementById('display-source').clientHeight : '85vh';
 
-  calendarTarget.style.height = `${displaySourceHeight}px`
+  // if(displaySourceHeight) {
+  //   const calendarTarget = document.getElementById('calendar-target');
+
+  //   if(calendarTarget) {
+  //     calendarTarget.style.height = `${displaySourceHeight}px`
+  //   }
+
+    
+  // }
+  
 
   const handleNavigate = date => {
     let newStart, newEnd;
@@ -474,7 +482,7 @@ function Calendar(props) {
       <div className={`row mt-3 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
 
         {/* calendar */}
-        <div className='col-12 col-lg-8 d-flex flex-column justify-content-start align-items-start calendar-cont'>
+        <div className='col-12 col-lg-7 d-flex flex-column calendar-cont'>
           <div className="d-flex d-lg-none justify-content-center align-items-center">
             <select className="form-select daySelect" name="testDay" id="testDay" 
             onChange={(event) => daySelection(event.target.value)}
@@ -499,7 +507,7 @@ function Calendar(props) {
             <h6>Need to Reschedule or Add Extra Visits This Week?</h6>
           </div>
           
-          <div className='dndCal-container' id='calendar-target'>
+          <div className='dndCal-container d-flex justify-content-start align-items-start' id='calendar-target'>
             <DnDCalendar {...props} 
               localizer={localizer} 
               events={myEvents} 
