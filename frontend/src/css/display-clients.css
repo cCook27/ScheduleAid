@@ -35,14 +35,22 @@
   align-items: center;
 }
 
+.contacts-bg {
+  background: var(--personBg);
+  border-radius: var(--borderRad);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.contact-title-row {
+  border-bottom: var(--customBorder);
+  margin: 4px;
+}
+
 .pat-cont {
-  border: 2px solid var(--borderColor);
-  border-radius: 3px;
+  border-bottom: var(--customBorder);
   background: var(--personBg);
   width: 100%;
   height: 60px;
-  padding: 3px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .ellipsis-overflow {
@@ -50,6 +58,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+}
+
+.contacts-bg {
+  background: var(--personBg);
 }
 
 .info-cont {
@@ -63,7 +75,14 @@
   width: 200px;
 }
 
+.labeling-description {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--patientLetters);
+}
+
 .pat-name {
+  font-size: 14px;
   font-weight: 700;
   color: var(--patientLetters);
 }
@@ -72,8 +91,9 @@
 .pat-address,
 .pat-frequency,
 .pat-number {
+  font-size: 13px;
+  font-weight: 700;
   color: var(--viewLetters);
-  font-weight: 600;
 }
 
 .view-btn {

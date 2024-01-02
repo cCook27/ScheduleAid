@@ -105,7 +105,7 @@ function DisplayClients() {
           </div>
         </div>
         <div className="row d-flex justify-content-center align-items-center">
-          <div className="col-10 ps-5 pt-4">
+          <div className="col-10 pt-4">
           {
             isLoading ? 
             (
@@ -132,60 +132,118 @@ function DisplayClients() {
                 </div>
               </div>
               
-            ): filteredHomes.length > 0 ?
+            ) : filteredHomes.length > 0 ?
             (
-              filteredHomes.map((home) => (
-                <div key={home._id} className="row pat-cont my-2 d-flex justify-content-center align-items-center">
-                  <div className="col info-cont d-flex">
-                    <div className="pat-name me-1">{home.firstName}</div>
-                    <div className="pat-name">{home.lastName}</div>
+              <div className="contacts-bg mb-3 d-flex flex-column">
+                <div className="row mt-2 contact-title-row py-2">
+                  <div className="col info-cont">
+                    <div className="d-flex labeling-description">Name</div>
                   </div>
                   <div className="col info-cont">
-                    <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
+                    <div className="d-flex labeling-description">Status</div>
                   </div>
                   <div className="col info-cont larger-cont">
-                    <div className="pat-address ellipsis-overflow">{home.address}</div>
+                    <div className="d-flex labeling-description">Address</div>
                   </div>
                   <div className="col info-cont">
-                    <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
+                    <div className="d-flex labeling-description">Frequency</div>
                   </div>
                   <div className="col info-cont">
-                    <div className="pat-number ellipsis-overflow">{home.number}number</div>
+                    <div className="d-flex labeling-description">Primary Number</div>
                   </div>
                   <div className="col info-cont">
-                    <button className='btn view-btn'>
-                      <Link className='link' to={`/manage/${home._id}`}>View</Link>
-                    </button>
+                    
                   </div>
                 </div>
-              ))
+
+                <div className="row">
+                  <div className="col p-3 d-flex flex-column justify-content-center align-items-center">
+                    { filteredHomes.map((home) => (
+                      <div key={home._id} className="row pat-cont">
+                        <div className="col info-cont">
+                          <div className="pat-name me-1">{home.firstName}</div>
+                          <div className="pat-name">{home.lastName}</div>
+                        </div>
+                        <div className="col info-cont">
+                          <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
+                        </div>
+                        <div className="col info-cont larger-cont">
+                          <div className="pat-address ellipsis-overflow">{home.address}</div>
+                        </div>
+                        <div className="col info-cont">
+                          <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
+                        </div>
+                        <div className="col info-cont">
+                          <div className="pat-number ellipsis-overflow">{home.primaryNumber}</div>
+                        </div>
+                        <div className="col info-cont">
+                          <button className='btn view-btn'>
+                            <Link className='link' to={`/manage/${home._id}`}>View</Link>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+              </div>
+             
             ) : filteredHomes.length === 0 && homes.length > 0 ?
             (
-              homes.map((home) => (
-                <div key={home._id} className="row pat-cont my-2 d-flex justify-content-center align-items-center">
-                  <div className="col info-cont d-flex">
-                    <div className="pat-name me-1">{home.firstName}</div>
-                    <div className="pat-name">{home.lastName}</div>
+              <div className="contacts-bg mb-3 d-flex flex-column">
+                <div className="row mt-2 contact-title-row py-2">
+                  <div className="col info-cont">
+                    <div className="d-flex labeling-description">Name</div>
                   </div>
                   <div className="col info-cont">
-                    <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
+                    <div className="d-flex labeling-description">Status</div>
                   </div>
                   <div className="col info-cont larger-cont">
-                    <div className="pat-address ellipsis-overflow">{home.address}</div>
+                    <div className="d-flex labeling-description">Address</div>
                   </div>
                   <div className="col info-cont">
-                    <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
+                    <div className="d-flex labeling-description">Frequency</div>
                   </div>
                   <div className="col info-cont">
-                    <div className="pat-number ellipsis-overflow">{home.primaryNumber}</div>
+                    <div className="d-flex labeling-description">Primary Number</div>
                   </div>
                   <div className="col info-cont">
-                    <button className='btn view-btn'>
-                      <Link className='link' to={`/manage/${home._id}`}>View</Link>
-                    </button>
+                    
                   </div>
                 </div>
-              ))
+
+                <div className="row">
+                  <div className="col p-3 d-flex flex-column justify-content-center align-items-center">
+                    { homes.map((home) => (
+                      <div key={home._id} className="row pat-cont">
+                        <div className="col info-cont">
+                          <div className="pat-name me-1">{home.firstName}</div>
+                          <div className="pat-name">{home.lastName}</div>
+                        </div>
+                        <div className="col info-cont">
+                          <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
+                        </div>
+                        <div className="col info-cont larger-cont">
+                          <div className="pat-address ellipsis-overflow">{home.address}</div>
+                        </div>
+                        <div className="col info-cont">
+                          <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
+                        </div>
+                        <div className="col info-cont">
+                          <div className="pat-number ellipsis-overflow">{home.primaryNumber}</div>
+                        </div>
+                        <div className="col info-cont">
+                          <button className='btn view-btn'>
+                            <Link className='link' to={`/manage/${home._id}`}>View</Link>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+              </div>
+             
             ) : 
             (
               <div className='container'>
@@ -214,3 +272,58 @@ export default DisplayClients;
 
 
 
+// filteredHomes.length > 0 ?
+//             (
+//               filteredHomes.map((home) => (
+//                 <div key={home._id} className="row pat-cont my-2 d-flex justify-content-center align-items-center">
+//                   <div className="col info-cont d-flex">
+//                     <div className="pat-name me-1">{home.firstName}</div>
+//                     <div className="pat-name">{home.lastName}</div>
+//                   </div>
+//                   <div className="col info-cont">
+//                     <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
+//                   </div>
+//                   <div className="col info-cont larger-cont">
+//                     <div className="pat-address ellipsis-overflow">{home.address}</div>
+//                   </div>
+//                   <div className="col info-cont">
+//                     <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
+//                   </div>
+//                   <div className="col info-cont">
+//                     <div className="pat-number ellipsis-overflow">{home.number}number</div>
+//                   </div>
+//                   <div className="col info-cont">
+//                     <button className='btn view-btn'>
+//                       <Link className='link' to={`/manage/${home._id}`}>View</Link>
+//                     </button>
+//                   </div>
+//                 </div>
+//               ))
+//             ) : filteredHomes.length === 0 && homes.length > 0 ?
+//             (
+//               homes.map((home) => (
+//                 <div key={home._id} className="row pat-cont my-2 d-flex justify-content-center align-items-center">
+//                   <div className="col info-cont d-flex">
+//                     <div className="pat-name me-1">{home.firstName}</div>
+//                     <div className="pat-name">{home.lastName}</div>
+//                   </div>
+//                   <div className="col info-cont">
+//                     <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
+//                   </div>
+//                   <div className="col info-cont larger-cont">
+//                     <div className="pat-address ellipsis-overflow">{home.address}</div>
+//                   </div>
+//                   <div className="col info-cont">
+//                     <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
+//                   </div>
+//                   <div className="col info-cont">
+//                     <div className="pat-number ellipsis-overflow">{home.primaryNumber}</div>
+//                   </div>
+//                   <div className="col info-cont">
+//                     <button className='btn view-btn'>
+//                       <Link className='link' to={`/manage/${home._id}`}>View</Link>
+//                     </button>
+//                   </div>
+//                 </div>
+//               ))
+//             )
