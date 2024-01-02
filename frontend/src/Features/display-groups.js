@@ -20,7 +20,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
       const updatedGroups = patientGroups.map((group, index) => {
         const editGroup = group.map((patient) => {
           const frequency = parseInt(patient.frequency);
-          const isScheduled = currentEvents.filter((event) => event.address === patient.address && event.title === patient.name);
+          const isScheduled = currentEvents.filter((event) => event.address === patient.address && event.title === `${patient.firstName} ${patient.lastName}`);
 
           if(isScheduled.length === 0) {
             patient.scheduled = false;
@@ -94,8 +94,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
               <div><Loading /></div>
             ) : 
           
-          groups.length >= 1 && groups.length <= 7 ? 
-          
+            groups.length >= 1 && groups.length <= 7 ? 
             (
               groups.map((group, index) => (
                 <div className="col d-flex flex-column group mx-3 my-2">
@@ -115,7 +114,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
                     ) :
 
                     (
-                      <div className="col-6 d-flex patient-cont" key={patient._id} draggable onDragStart={() => handleDragStart(patient.name, patient.address, patient.coordinates, index)}>
+                      <div className="col-6 d-flex patient-cont" key={patient._id} draggable onDragStart={() => handleDragStart(`${patient.firstName} ${patient.lastName}`, patient.address, patient.coordinates, index)}>
                         <div className="patient-name ellipsis-overflow">
                           <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
                         </div>
