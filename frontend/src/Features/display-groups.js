@@ -20,7 +20,10 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
       const updatedGroups = patientGroups.map((group, index) => {
         const editGroup = group.map((patient) => {
           const frequency = parseInt(patient.frequency);
-          const isScheduled = currentEvents.filter((event) => event.address === patient.address && event.title === `${patient.firstName} ${patient.lastName}`);
+          const isScheduled = currentEvents.filter((event) => {
+            const evAddress = event.address.replace(/,/g, '');
+            return evAddress === patient.address && event.title === `${patient.firstName} ${patient.lastName}`
+          });
 
           if(isScheduled.length === 0) {
             patient.scheduled = false;
