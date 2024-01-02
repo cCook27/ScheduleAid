@@ -70,6 +70,11 @@ function Calendar(props) {
     }
   );
 
+  const displaySourceHeight = document.getElementById('display-source').clientHeight;
+  const calendarTarget = document.getElementById('calendar-target');
+
+  calendarTarget.style.height = `${displaySourceHeight}px`
+
   const handleNavigate = date => {
     let newStart, newEnd;
 
@@ -490,7 +495,11 @@ function Calendar(props) {
               Test
             </button>
           </div>
-          <div className='dndCal-container'>
+          <div className="d-flex justify-content-center align-items-center">
+            <h6>Need to Reschedule or Add Extra Visits This Week?</h6>
+          </div>
+          
+          <div className='dndCal-container' id='calendar-target'>
             <DnDCalendar {...props} 
               localizer={localizer} 
               events={myEvents} 
@@ -510,70 +519,73 @@ function Calendar(props) {
         </div>
 
         {/* Homes */}
-        <div className="col d-flex flex-column align-items-center">
-          <div className="row testing mb-2">
-            <div className="col">
+        <div className="col">
+          <div id="display-source" className='d-flex flex-column align-items-center'>
+            <div className="row testing mb-2">
+              <div className="col">
 
-              <div className="d-none d-lg-flex justify-content-center align-items-center">
-                <select className="form-select daySelect" name="testDay" id="testDay" 
-                onChange={(event) => daySelection(event.target.value)}
-                value={testDay || ''}
-                >
-                  <option disabled selected value="">Select a Day to Test</option>
-                  <option value="Sunday">Sunday</option>
-                  <option value="Monday">Monday</option>
-                  <option value="Tuesday">Tuesday</option>
-                  <option value="Wednesday">Wednesday</option>
-                  <option value="Thursday">Thursday</option>
-                  <option value="Friday">Friday</option>
-                  <option value="Saturday">Saturday</option>
-                </select>
+                <div className="d-none d-lg-flex justify-content-center align-items-center">
+                  <select className="form-select daySelect" name="testDay" id="testDay" 
+                  onChange={(event) => daySelection(event.target.value)}
+                  value={testDay || ''}
+                  >
+                    <option disabled selected value="">Select a Day to Test</option>
+                    <option value="Sunday">Sunday</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                  </select>
 
-                <button onClick={testSchedule} className="test btn m-2" 
-                disabled={!testDay}>
-                  Test
-                </button>
-              </div>
-        
-            </div>
-          </div>
-
-          <div className="row views mb-3">
-            <div className="col">
-              <div className="btn-group" role="group" aria-label="Basic radio  toggle button group">
-                
-                <input type="radio" className="btn-check view-btn" name="Patient" id="Patient" 
-                checked={viewFocus.view === 'Patient'}  onChange={viewCheck}
-                />
-                <label className="view left-rad" htmlFor="Patient">Patient View</label>
-
-                <input type="radio" className="btn-check view-btn" name="Edit" id="Edit" checked={viewFocus.view === 'Edit'}  onChange={viewCheck} />
-                <label className="view" htmlFor="Edit">Edit Parameters</label>
-
-                <input type="radio" className="btn-check view-btn" name="Group" id="Group" checked={viewFocus.view === 'Group'}  onChange={viewCheck} />
-                <label className="view right-rad" htmlFor="Group">Group View</label>
+                  <button onClick={testSchedule} className="test btn m-2" 
+                  disabled={!testDay}>
+                    Test
+                  </button>
+                </div>
+          
               </div>
             </div>
-          </div>
-            
-          <div className="row displays">
-            {!viewFocus.showGroups && !viewFocus.groupParams ? (
-              <div className="mb-3">
-                <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} />
+
+            <div className="row views mb-3">
+              <div className="col">
+                <div className="btn-group" role="group" aria-label="Basic radio  toggle button group">
+                  
+                  <input type="radio" className="btn-check view-btn" name="Patient" id="Patient" 
+                  checked={viewFocus.view === 'Patient'}  onChange={viewCheck}
+                  />
+                  <label className="view left-rad" htmlFor="Patient">Patient View</label>
+
+                  <input type="radio" className="btn-check view-btn" name="Edit" id="Edit" checked={viewFocus.view === 'Edit'}  onChange={viewCheck} />
+                  <label className="view" htmlFor="Edit">Edit Parameters</label>
+
+                  <input type="radio" className="btn-check view-btn" name="Group" id="Group" checked={viewFocus.view === 'Group'}  onChange={viewCheck} />
+                  <label className="view right-rad" htmlFor="Group">Group View</label>
+                </div>
               </div>
-            ) : viewFocus.showGroups ? (
-                <div>
-                  <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
+            </div>
+              
+            <div className="row displays">
+              {!viewFocus.showGroups && !viewFocus.groupParams ? (
+                <div className="mb-3">
+                  <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} />
                 </div>
-            ) : viewFocus.groupParams ? (
-                <div>
-                  <EditParameters therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
-                  handleGrouping={handleGrouping}
-                  closeModal={closeModal} />
-                </div>
-            ) : null
-            }
+              ) : viewFocus.showGroups ? (
+                  <div>
+                    <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
+                  </div>
+              ) : viewFocus.groupParams ? (
+                  <div>
+                    <EditParameters therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
+                    handleGrouping={handleGrouping}
+                    closeModal={closeModal} />
+                  </div>
+              ) : null
+              }
+            </div>
           </div>
+          
          </div>
       
 

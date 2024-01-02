@@ -38,7 +38,7 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
 
   return (
     <div className="container">
-      <div className="row py-2">
+      <div className="row">
         <div className="col d-flex justify-content-center">
           <h4 className="title">Patients</h4>
         </div>
@@ -53,7 +53,7 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
           <div>No Patients saved</div>     
         </div>
       ) : (
-        remainingPatients.sort((a, b) => a.lastName- b.lastName).map((patient, index) => (
+        remainingPatients.sort((a, b) => a.lastName - b.lastName).map((patient, index) => (
           patient ? 
               (
                 <div key={patient._id} className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" >
