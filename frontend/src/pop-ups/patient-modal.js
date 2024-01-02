@@ -9,7 +9,10 @@ const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, hand
     let availableGroups = [];
 
     groups.forEach((group, index) => {
-      const patientMatches = group.filter((patient) => patient.address === client.address && `${patient.firstName} ${patient.lastName}` === client.title && !patient.scheduled);
+      const patientMatches = group.filter((patient) => {
+        const clientAddress = client.address.replace(/,/g, '');
+        return patient.address === clientAddress && `${patient.firstName} ${patient.lastName}` === client.title && !patient.scheduled
+      });
 
       if(patientMatches.length > 0) {
         const groupsAvail = patientMatches.map((patient) => {
@@ -48,7 +51,7 @@ const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, hand
         {
           groupsAvailable.length > 0 ? (
             groupsAvailable.map((patient, index) => (
-              <button key={index} onClick={() => handleAssignGroup(patient.group)} >{patient.group}</button>
+              <button key={index} onClick={() => handleAssignGroup(patient.group)} >{patient.group + 1}</button>
             ))
           ): null
         }
