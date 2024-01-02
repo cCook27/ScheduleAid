@@ -38,7 +38,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
               updateEvents(schedEvent);
             };
 
-            if(schedEvent.groupNumber) {
+            if(schedEvent.groupNumber || schedEvent.groupNumber === 0) {
               patient.scheduled = true;
               return patient;
             };
