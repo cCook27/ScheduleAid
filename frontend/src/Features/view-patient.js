@@ -19,8 +19,7 @@ import EditPatientNotes from '../pop-ups/edit-patient-note';
 
 const ViewPatient = () => {
   const queryClient = useQueryClient();
-
-
+  
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
   const { isLoading } = useAuth0();

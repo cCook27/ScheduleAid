@@ -1,6 +1,6 @@
 .dndCal-container {
-  height: 84vh;
-  width: 100%;
+  height: 90vh;
+  /* width: 100%; */
 
   @media screen and (max-width: 987px) {
     height: 60vh;

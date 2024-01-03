@@ -2,23 +2,19 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { Link } from 'react-router-dom';
 
-import 'bootstrap/dist/css/bootstrap.css';
-import '../css/display-clients.css';
-
-import CreatePatient from './create-patient';
 import useHomeRequests from '../hooks/home-requests';
 import {UserContext, AccessTokenContext} from '../context/context';
 
-function DisplayClients() {
+
+const AdditionalVisits = ({handleAdditionalToggle}) => {
   const queryClient = useQueryClient();
 
   const { isLoading } = useAuth0();
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
-  const { getHomes, removeHome } = useHomeRequests();
+  const { getHomes } = useHomeRequests();
   const { data: homes, status } = useQuery('homes', 
     () => getHomes(user._id, accessToken)
   );
@@ -26,7 +22,6 @@ function DisplayClients() {
   const [filteredHomes, setFilteredHomes] = useState([]);
   const [filter, setFilter] = useState(null);
   const [searchFilter, setSearchFilter] = useState(null);
-  const [addPatinet, setAddPatient] = useState(false);
 
   const filterSelection = (filterEvent) => {
     setFilter(filterEvent);
@@ -60,22 +55,9 @@ function DisplayClients() {
     setFilter(null);
   };
 
-  const handleAddPatModal = () => {
-    setAddPatient(!addPatinet);
-  };
-
-  const deleteHome = useMutation({
-    mutationFn: (id) => 
-      removeHome(id, user._id, accessToken),
-      
-    onSuccess: () => {
-      queryClient.invalidateQueries('homes');
-    },
-  });
-
   return (
     <div className="page-container">
-      <div className={`container-fluid ${addPatinet ? 'overlay' : ''}`}>
+      <div className='container-fluid'>
         <div className="row p-3 d-flex justify-content-center align-items-center">
           <div className="col-10">
             <h2 className='sched-title'>Manage Your Patients</h2>
@@ -92,10 +74,6 @@ function DisplayClients() {
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
               </select>
-
-              <div className="add mx-2">
-                <button onClick={handleAddPatModal} className="btn add-btn">Add Patient</button>
-              </div>
             </div>
 
             <div className="col-5 d-flex justify-content-end">
@@ -178,11 +156,6 @@ function DisplayClients() {
                         <div className="col info-cont">
                           <div className="pat-number ellipsis-overflow">{home.primaryNumber}</div>
                         </div>
-                        <div className="col info-cont">
-                          <button className='btn view-btn'>
-                            <Link className='link' to={`/manage/${home._id}`}>View</Link>
-                          </button>
-                        </div>
                       </div>
                     ))}
                   </div>
@@ -234,11 +207,6 @@ function DisplayClients() {
                         <div className="col info-cont">
                           <div className="pat-number ellipsis-overflow">{home.primaryNumber}</div>
                         </div>
-                        <div className="col info-cont">
-                          <button className='btn view-btn'>
-                            <Link className='link' to={`/manage/${home._id}`}>View</Link>
-                          </button>
-                        </div>
                       </div>
                     ))}
                   </div>
@@ -258,19 +226,9 @@ function DisplayClients() {
           }
           </div>
         </div>
-
-        {addPatinet ?
-          <div className="above-overlay-n">
-              <CreatePatient close={handleAddPatModal} />
-          </div> : null 
-        }
       </div>
     </div>
-  );
-}
+  )
+};
 
-export default DisplayClients;
-
-
-
-
+export default AdditionalVisits;

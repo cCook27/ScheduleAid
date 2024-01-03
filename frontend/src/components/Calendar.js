@@ -1,6 +1,4 @@
 import React, {useEffect, useContext, useState, useCallback} from 'react';
-import '../css/calendar.css';
-import '../css/calendar-extra.css'
 import { v4 as uuidv4 } from 'uuid';
 import { useQuery } from 'react-query';
 
@@ -8,17 +6,21 @@ import { UserContext, AccessTokenContext } from '../context/context';
 import useDistanceRequests from '../hooks/distance-request';
 import useHomeRequests from '../hooks/home-requests.js';
 import useScheduleRequests from '../hooks/schedule-requests';
-
-import { momentLocalizer, Calendar as BigCalendar } from 'react-big-calendar';
 import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
+import '../css/calendar.css';
+import '../css/calendar-extra.css'
+
+import { momentLocalizer, Calendar as BigCalendar } from 'react-big-calendar';
 import DisplayGroups from '../Features/display-groups';
 import DisplayPatients from '../Features/display-patients';
 import EditParameters from '../Features/edit-parameters.js';
 import ErrorModal from '../pop-ups/error-modal';
 import PatientModal from '../pop-ups/patient-modal';
+import AdditionalVisits from '../pop-ups/additional-visits.js';
 
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
@@ -38,7 +40,8 @@ function Calendar(props) {
   const [modal, setModal] = useState({
     patient: false,
     group: false,
-    error: false
+    error: false,
+    additional: false,
   });
   const [client, setClient] = useState(null);
   const [calViewChange, setCalViewChange] = useState(false);
@@ -68,20 +71,7 @@ function Calendar(props) {
         fillInCalendar(data); 
       },
     }
-  );
-
-  // const displaySourceHeight = document.getElementById('display-source') ? document.getElementById('display-source').clientHeight : '85vh';
-
-  // if(displaySourceHeight) {
-  //   const calendarTarget = document.getElementById('calendar-target');
-
-  //   if(calendarTarget) {
-  //     calendarTarget.style.height = `${displaySourceHeight}px`
-  //   }
-
-    
-  // }
-  
+  );  
 
   const handleNavigate = date => {
     let newStart, newEnd;
@@ -475,58 +465,43 @@ function Calendar(props) {
     }));
     setClient(null);
   };
- 
+
+  const handleAdditionalToggle = () => {
+    setModal((prev) => ({
+      ...prev,
+      additional: !prev.additional
+    }));
+  };
+
   return (
-    <div className="container-fluid d-flex flex-column">
-      <h2 className='sched-title'>Schedule Your Patients</h2>
-      <div className={`row mt-3 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
+    <div className={`container-fluid ${modal.patient | modal.group | modal.error | modal.additional ? 'overlay' : ''}`}>
+      <div className="row">
+        <div className="col-4">
+          <h2 className='sched-title'>Schedule Your Patients</h2>
+        </div>
+      </div>
 
-        {/* calendar */}
-        <div className='col-12 col-lg-7 d-flex flex-column calendar-cont'>
-          <div className="d-flex d-lg-none justify-content-center align-items-center">
-            <select className="form-select daySelect" name="testDay" id="testDay" 
-            onChange={(event) => daySelection(event.target.value)}
-            value={testDay || ''}
-            >
-              <option disabled selected value="">Select a Day to Test</option>
-              <option value="Sunday">Sunday</option>
-              <option value="Monday">Monday</option>
-              <option value="Tuesday">Tuesday</option>
-              <option value="Wednesday">Wednesday</option>
-              <option value="Thursday">Thursday</option>
-              <option value="Friday">Friday</option>
-              <option value="Saturday">Saturday</option>
-            </select>
-
-            <button onClick={testSchedule} className="test btn m-2" 
-            disabled={!testDay}>
-              Test
-            </button>
-          </div>
-          <div className="d-flex justify-content-center align-items-center">
-            <h6>Need to Reschedule or Add Extra Visits This Week?</h6>
-          </div>
-          
-          <div className='dndCal-container d-flex justify-content-start align-items-start' id='calendar-target'>
-            <DnDCalendar {...props} 
-              localizer={localizer} 
-              events={myEvents} 
-              onDropFromOutside={onDropFromOutside}
-              onEventDrop={moveEvent}
-              onEventResize={moveEvent}
-              eventPropGetter={eventPropGetter}
-              onSelectEvent={selectEvent}
-              step={5}
-              defaultView="week" 
-              onNavigate={handleNavigate}
-              onView={changeView}
-              resizable
-              selectable
-            />
-          </div>
+      <div className="row">
+        {/* Calendar */}
+        <div className="col-7 dndCal-container">
+          <DnDCalendar {...props} 
+            localizer={localizer} 
+            events={myEvents} 
+            onDropFromOutside={onDropFromOutside}
+            onEventDrop={moveEvent}
+            onEventResize={moveEvent}
+            eventPropGetter={eventPropGetter}
+            onSelectEvent={selectEvent}
+            step={5}
+            defaultView="week" 
+            onNavigate={handleNavigate}
+            onView={changeView}
+            resizable
+            selectable
+          />
         </div>
 
-        {/* Homes */}
+        {/* Display */}
         <div className="col">
           <div id="display-source" className='d-flex flex-column align-items-center'>
             <div className="row testing mb-2">
@@ -577,7 +552,8 @@ function Calendar(props) {
             <div className="row displays">
               {!viewFocus.showGroups && !viewFocus.groupParams ? (
                 <div className="mb-3">
-                  <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} />
+                  <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} 
+                  handleAdditionalToggle={handleAdditionalToggle} />
                 </div>
               ) : viewFocus.showGroups ? (
                   <div>
@@ -593,24 +569,160 @@ function Calendar(props) {
               }
             </div>
           </div>
-          
-         </div>
-      
-
-        {modal.patient ? 
-          <div className="above-overlay" >
-            <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groups={groupsForPatientModal} myEvents={myEvents} handleEventsUpdate={handleEventsUpdate} />
-          </div> : null
-        }
-
-        {modal.error ? 
-          <div className="above-overlay" >
-            <ErrorModal closeModal={closeModal} />
-          </div> : null
-        }
+        </div>
       </div>
+
+      {modal.patient ? 
+        <div className="above-overlay" >
+          <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groups={groupsForPatientModal} myEvents={myEvents} handleEventsUpdate={handleEventsUpdate} />
+        </div> : null
+      }
+
+      {modal.additional ? 
+        <div className="above-overlay" >
+          <AdditionalVisits handleAdditionalToggle={handleAdditionalToggle} />
+        </div> : null
+      } 
+
+      {modal.error ? 
+        <div className="above-overlay" >
+          <ErrorModal closeModal={closeModal} />
+        </div> : null
+      }
     </div>
   )
 }
 
 export default Calendar;
+
+    // <div className="container-fluid d-flex flex-column">
+    //   <h2 className='sched-title'>Schedule Your Patients</h2>
+    //   <div className={`row mt-3 ${modal.patient | modal.group | modal.error ? 'overlay' : ''}`}>
+
+    //     {/* calendar */}
+    //     <div className='col-12 col-lg-7 d-flex flex-column calendar-cont'>
+    //       <div className="d-flex d-lg-none justify-content-center align-items-center">
+    //         <select className="form-select daySelect" name="testDay" id="testDay" 
+    //         onChange={(event) => daySelection(event.target.value)}
+    //         value={testDay || ''}
+    //         >
+    //           <option disabled selected value="">Select a Day to Test</option>
+    //           <option value="Sunday">Sunday</option>
+    //           <option value="Monday">Monday</option>
+    //           <option value="Tuesday">Tuesday</option>
+    //           <option value="Wednesday">Wednesday</option>
+    //           <option value="Thursday">Thursday</option>
+    //           <option value="Friday">Friday</option>
+    //           <option value="Saturday">Saturday</option>
+    //         </select>
+
+    //         <button onClick={testSchedule} className="test btn m-2" 
+    //         disabled={!testDay}>
+    //           Test
+    //         </button>
+    //       </div>
+          
+          
+    //       <div className='dndCal-container d-flex justify-content-start align-items-start' id='calendar-target'>
+            // <DnDCalendar {...props} 
+            //   localizer={localizer} 
+            //   events={myEvents} 
+            //   onDropFromOutside={onDropFromOutside}
+            //   onEventDrop={moveEvent}
+            //   onEventResize={moveEvent}
+            //   eventPropGetter={eventPropGetter}
+            //   onSelectEvent={selectEvent}
+            //   step={5}
+            //   defaultView="week" 
+            //   onNavigate={handleNavigate}
+            //   onView={changeView}
+            //   resizable
+            //   selectable
+            // />
+    //       </div>
+    //     </div>
+
+    //     {/* Homes */}
+    //     <div className="col">
+        //   <div id="display-source" className='d-flex flex-column align-items-center'>
+        //     <div className="row testing mb-2">
+        //       <div className="col">
+
+        //         <div className="d-none d-lg-flex justify-content-center align-items-center">
+        //           <select className="form-select daySelect" name="testDay" id="testDay" 
+        //           onChange={(event) => daySelection(event.target.value)}
+        //           value={testDay || ''}
+        //           >
+        //             <option disabled selected value="">Select a Day to Test</option>
+        //             <option value="Sunday">Sunday</option>
+        //             <option value="Monday">Monday</option>
+        //             <option value="Tuesday">Tuesday</option>
+        //             <option value="Wednesday">Wednesday</option>
+        //             <option value="Thursday">Thursday</option>
+        //             <option value="Friday">Friday</option>
+        //             <option value="Saturday">Saturday</option>
+        //           </select>
+
+        //           <button onClick={testSchedule} className="test btn m-2" 
+        //           disabled={!testDay}>
+        //             Test
+        //           </button>
+        //         </div>
+          
+        //       </div>
+        //     </div>
+
+        //     <div className="row views mb-3">
+        //       <div className="col">
+        //         <div className="btn-group" role="group" aria-label="Basic radio  toggle button group">
+                  
+        //           <input type="radio" className="btn-check view-btn" name="Patient" id="Patient" 
+        //           checked={viewFocus.view === 'Patient'}  onChange={viewCheck}
+        //           />
+        //           <label className="view left-rad" htmlFor="Patient">Patient View</label>
+
+        //           <input type="radio" className="btn-check view-btn" name="Edit" id="Edit" checked={viewFocus.view === 'Edit'}  onChange={viewCheck} />
+        //           <label className="view" htmlFor="Edit">Edit Parameters</label>
+
+        //           <input type="radio" className="btn-check view-btn" name="Group" id="Group" checked={viewFocus.view === 'Group'}  onChange={viewCheck} />
+        //           <label className="view right-rad" htmlFor="Group">Group View</label>
+        //         </div>
+        //       </div>
+        //     </div>
+              
+        //     <div className="row displays">
+        //       {!viewFocus.showGroups && !viewFocus.groupParams ? (
+        //         <div className="mb-3">
+        //           <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} />
+        //         </div>
+        //       ) : viewFocus.showGroups ? (
+        //           <div>
+        //             <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
+        //           </div>
+        //       ) : viewFocus.groupParams ? (
+        //           <div>
+        //             <EditParameters therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
+        //             handleGrouping={handleGrouping}
+        //             closeModal={closeModal} />
+        //           </div>
+        //       ) : null
+        //       }
+        //     </div>
+        //   </div>
+          
+        //  </div>
+      
+
+        // {modal.patient ? 
+        //   <div className="above-overlay" >
+        //     <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groups={groupsForPatientModal} myEvents={myEvents} handleEventsUpdate={handleEventsUpdate} />
+        //   </div> : null
+        // }
+
+        // {modal.error ? 
+        //   <div className="above-overlay" >
+        //     <ErrorModal closeModal={closeModal} />
+        //   </div> : null
+        // }
+    //   </div>
+    // </div>

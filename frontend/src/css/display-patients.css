@@ -11,6 +11,44 @@
   padding: 5px;
 }
 
+.info-icon-btn {
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+}
+
+.info-icon:hover {
+  fill: #499165;
+}
+
+.extra-add-btn {
+  font-weight: 600;
+  font-size: 12px;
+  background: var(--fulfilled);
+  color: var(--hoverLetters);
+  height: 30px;
+}
+
+.add-ex-cont {
+  font-weight: 600;
+  font-size: 12px;
+  background: var(--fulfilled);
+  color: var(--hoverLetters);
+  height: 30px;
+  width: 9rem;
+  padding: 3px;
+  height: 45px;
+  margin-bottom: 5px;
+  background: var(--fulfilled);
+  border-radius: 3px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.add-ex-cont:hover {
+  background: var(--borderColor);
+}
+
 .person-cont {
   width: 9rem;
   padding: 3px;
