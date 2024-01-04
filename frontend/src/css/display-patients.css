@@ -47,6 +47,11 @@
   border: 1px solid var(--borderColor);
   border-radius: 3px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+}
+
+.person-cont:active {
+  cursor: grabbing;
 }
 
 .name {

@@ -57,7 +57,7 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
             </div>
         ) : 
         (
-          remainingPatients.map((patient, index) => 
+          remainingPatients.map((patient) => 
             (   
               <div key={patient._id} className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" >
                 <div 
