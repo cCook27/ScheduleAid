@@ -1,0 +1,83 @@
+.patient-modal {
+  width: 400px;
+  height: auto;
+  background: var(--personBg);
+  border-radius: var(--borderRad);
+  border: 3px solid var(--borderColor);
+  box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+}
+
+.p-modal-title-cont {
+  border-bottom: var(--customBorder);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.p-modal-title {
+  font-weight: 600;
+  color: var(--patientLetters);
+  font-size: 20px;
+}
+
+.pat-name-modal {
+  font-weight: 600;
+  color: var(--patientLetters);
+  font-size: 25px;
+}
+
+.pat-start-modal {
+  font-weight: 600;
+  color: var(--viewLetters);
+  font-size: 15px;
+}
+
+.p-modal-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--viewLetters);
+}
+
+.pat-modal-info {
+  color: var(--patientLetters);
+  font-weight: 700;
+}
+
+.p-modal-badge {
+  width: 75px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+}
+
+.remove-cal {
+  background: red;
+  font-weight: 600;
+  color: var(--hoverLetters);
+}
+
+.close-pat-modal {
+  background: var(--fulfilled);
+  font-weight: 600;
+  color: var(--hoverLetters);
+}
+
+.pat-modal-btn {
+  width: 90px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.group-btn-modal {
+  background: var(--fulfilled);
+  font-weight: 600;
+  color: var(--hoverLetters);
+}
+
+.assign-row {
+  border-radius: var(--borderRad);
+  border: var(--customBorder);
+}

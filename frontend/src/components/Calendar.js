@@ -374,8 +374,10 @@ function Calendar(props) {
         patient: true
       }));
 
-      setClient({title: event.title,
+      setClient({
+                title: event.title,
                 address: event.address,
+                coordinates: event.coordinates,
                  id: event.id,
                  start: `${month}-${day}-${year} at ${hours}:${minutes}`,
                 });
@@ -612,7 +614,8 @@ function Calendar(props) {
 
       {modal.patient ? 
         <div className="above-overlay" >
-          <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groups={groupsForPatientModal} myEvents={myEvents} handleEventsUpdate={handleEventsUpdate} />
+          <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groups={groupsForPatientModal} myEvents={myEvents} handleEventsUpdate={handleEventsUpdate} patients={homes} 
+          view={viewFocus.view} />
         </div> : null
       }
 
