@@ -324,7 +324,7 @@
   box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
   background: var(--personBg);
   bottom: 600px;
-  width: 5%;
+  width: 55%;
   left: 6%;
   z-index: 20001;
   border-radius: var(--borderRad);
