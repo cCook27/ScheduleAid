@@ -5,7 +5,9 @@
   --patientLetters: #499165;
   --hoverLetters: #fff;
   --eventBg: #438774;
+  --additionalDay: #72c3ac;
   --personBg: rgb(248, 247, 247);
+  --modalBg: #dce2de;
   --usedBg: rgba(128, 128, 128, 0.267);
   --disabledBg: #93d9ae50;
   --borderRad: 5px;
@@ -34,6 +36,10 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
+}
+
+.form-check-input {
+  border: var(--customBorder);
 }
 
 .form-control:focus {

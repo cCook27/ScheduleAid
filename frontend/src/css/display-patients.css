@@ -11,17 +11,6 @@
   padding: 5px;
 }
 
-.info-icon-btn {
-  font-weight: 600;
-  background: transparent;
-  border: none;
-  font-size: 12px;
-}
-
-.info-icon:hover {
-  fill: #499165;
-}
-
 .extra-add-btn {
   font-weight: 600;
   font-size: 12px;
@@ -72,6 +61,39 @@
   color: var(--viewLetters);
 }
 
-.used {
+.freq-fulfilled {
   background: var(--usedBg);
+}
+
+.key {
+  text-align: left;
+  display: flex;
+}
+
+.blob-key {
+  border-radius: 5px;
+  color: var(--eventBg);
+  width: 15px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  margin-top: 3px;
+}
+
+.des-key {
+  display: flex;
+  align-items: center;
+}
+
+.normal {
+  background: var(--eventBg);
+}
+
+.assign-grp {
+  background: transparent;
+  border: 2px dotted red;
+}
+
+.add-resch {
+  background: var(--additionalDay);
 }

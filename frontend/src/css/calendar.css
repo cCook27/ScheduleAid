@@ -897,8 +897,12 @@ span.rbc-label {
 
 .assign-day {
   background: transparent !important;
-  color: #003271 !important;
+  color: red !important;
   border: 2px dotted red !important;
+}
+
+.additional-day {
+  background: var(--additionalDay) !important;
 }
 
 .bothViable {

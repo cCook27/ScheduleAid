@@ -6,6 +6,7 @@ import "../css/display-groups.css"
 const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups }) => {
 
   const [groups, setGroups] = useState([]);
+  const additional = false;
  
   useEffect(() => {
     if(patientGroups) {
@@ -19,6 +20,10 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
 
       const updatedGroups = patientGroups.map((group, index) => {
         const editGroup = group.map((patient) => {
+          if(patient.additional) {
+            patient.scheduled = true;
+          }
+
           const frequency = parseInt(patient.frequency);
           const isScheduled = currentEvents.filter((event) => {
             const evAddress = event.address.replace(/,/g, '');
@@ -100,7 +105,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
             groups.length >= 1 && groups.length <= 7 ? 
             (
               groups.map((group, index) => (
-                <div className="col d-flex flex-column group mx-3 my-2">
+                <div className="col-3 d-flex flex-column group mx-3 my-2">
                   <div className="group-number">Group {index + 1}</div>
                   <div className="d-flex justify-content-center align-items-center row">
 
@@ -117,7 +122,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
                     ) :
 
                     (
-                      <div className="col-6 d-flex patient-cont" key={patient._id} draggable onDragStart={() => handleDragStart(`${patient.firstName} ${patient.lastName}`, patient.address, patient.coordinates, index)}>
+                      <div className="col-6 d-flex patient-cont" key={patient._id} draggable onDragStart={() => handleDragStart(`${patient.firstName} ${patient.lastName}`, patient.address, patient.coordinates, index, additional)}>
                         <div className="patient-name ellipsis-overflow">
                           <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
                         </div>

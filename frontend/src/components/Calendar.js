@@ -20,8 +20,6 @@ import DisplayPatients from '../Features/display-patients';
 import EditParameters from '../Features/edit-parameters.js';
 import ErrorModal from '../pop-ups/error-modal';
 import PatientModal from '../pop-ups/patient-modal';
-import AdditionalVisits from '../pop-ups/additional-visits.js';
-
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
 const localizer = momentLocalizer(moment);
@@ -41,7 +39,6 @@ function Calendar(props) {
     patient: false,
     group: false,
     error: false,
-    additional: false,
   });
   const [client, setClient] = useState(null);
   const [calViewChange, setCalViewChange] = useState(false);
@@ -140,39 +137,54 @@ function Calendar(props) {
     setCalViewChange(!calViewChange);
   };
   
-  const eventPropGetter = (event) => ({
-    ...(event.isViableDest === false && event.isViableOrg === true && {
-      className: 'orgVDestN',
-    }),
-    ...(event.isViableDest === true && event.isViableOrg === false && {
-      className: 'orgNDestV',
-    }),
-
-    ...(event.isViableDest === false && event.isViableOrg === null && {
-      className: 'orgNullDestN',
-    }),
-    ...(event.isViableDest === null && event.isViableOrg === false && {
-      className: 'orgNDestNull',
-    }),
-
-    ...(event.isViableDest === null && event.isViableOrg === true && {
-      className: 'orgVDestNull',
-    }),
-    ...(event.isViableDest === true && event.isViableOrg === null && {
-      className: 'orgNullDestV',
-    }),
-
-    ...(event.isViableDest === false && event.isViableOrg === false && {
-      className: 'bothNotViable',
-    }),
-    ...(event.isViableDest === true && event.isViableOrg === true && {
-      className: 'bothViable',
-    }),
+  const eventPropGetter = (event) => {
+    let className = '';
+  
+    if (event.isViableDest === false && event.isViableOrg === true) {
+      className += 'orgVDestN ';
+    }
+  
+    if (event.isViableDest === true && event.isViableOrg === false) {
+      className += 'orgNDestV ';
+    }
+  
+    if (event.isViableDest === false && event.isViableOrg === null) {
+      className += 'orgNullDestN ';
+    }
+  
+    if (event.isViableDest === null && event.isViableOrg === false) {
+      className += 'orgNDestNull ';
+    }
+  
+    if (event.isViableDest === null && event.isViableOrg === true) {
+      className += 'orgVDestNull ';
+    }
+  
+    if (event.isViableDest === true && event.isViableOrg === null) {
+      className += 'orgNullDestV ';
+    }
+  
+    if (event.isViableDest === false && event.isViableOrg === false) {
+      className += 'bothNotViable ';
+    }
+  
+    if (event.isViableDest === true && event.isViableOrg === true) {
+      className += 'bothViable ';
+    }
+  
+    if (event.groupNumber === undefined && viewFocus.view === 'Group') {
+      className += 'assign-day ';
+    }
+  
+    if (event.additional) {
+      className += 'additional-day ';
+    }
     
-    ...(event.groupNumber === undefined && viewFocus.view === 'Group' && {
-      className: 'assign-day',
-    }),
-  });
+    className = className.trim();
+  
+    return { className };
+  };
+  
 
   const handleEventsUpdate = (events) => {
     setMyEvents(events);
@@ -242,7 +254,7 @@ function Calendar(props) {
 
       const end = new Date(start.getTime() + 60 * 60 * 1000);
 
-      const {client, address, coordinates, groupNumber} = draggedClient;
+      const {client, address, coordinates, groupNumber, additional} = draggedClient;
       const calId = uuidv4();
 
       const event = {
@@ -251,6 +263,7 @@ function Calendar(props) {
         address: address,
         coordinates: coordinates,
         groupNumber: groupNumber,
+        additional: additional,
         start,
         end,
         isAllDay,
@@ -280,8 +293,8 @@ function Calendar(props) {
   );
 
   const handleDragStart = useCallback(
-    (name, address, coordinates, groupNumber) => {
-      setDraggedClient({client: name, address: address, coordinates: coordinates, groupNumber: groupNumber});
+    (name, address, coordinates, groupNumber, additional) => {
+      setDraggedClient({client: name, address: address, coordinates: coordinates, groupNumber: groupNumber, additional: additional});
   },[])
   
   const testSchedule = async () => {
@@ -466,13 +479,6 @@ function Calendar(props) {
     setClient(null);
   };
 
-  const handleAdditionalToggle = () => {
-    setModal((prev) => ({
-      ...prev,
-      additional: !prev.additional
-    }));
-  };
-
   return (
     <div className={`container-fluid ${modal.patient | modal.group | modal.error | modal.additional ? 'overlay' : ''}`}>
       <div className="row">
@@ -552,8 +558,7 @@ function Calendar(props) {
             <div className="row displays">
               {!viewFocus.showGroups && !viewFocus.groupParams ? (
                 <div className="mb-3">
-                  <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} 
-                  handleAdditionalToggle={handleAdditionalToggle} />
+                  <DisplayPatients handleDragStart={handleDragStart} homes={homes} homeStatus={homeStatus} myEvents={myEvents} start={viewStartDate} end={viewEndDate} />
                 </div>
               ) : viewFocus.showGroups ? (
                   <div>
@@ -577,12 +582,6 @@ function Calendar(props) {
           <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groups={groupsForPatientModal} myEvents={myEvents} handleEventsUpdate={handleEventsUpdate} />
         </div> : null
       }
-
-      {modal.additional ? 
-        <div className="above-overlay" >
-          <AdditionalVisits handleAdditionalToggle={handleAdditionalToggle} />
-        </div> : null
-      } 
 
       {modal.error ? 
         <div className="above-overlay" >

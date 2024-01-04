@@ -56,3 +56,7 @@ select {
   background-color: var(--fulfilled);
   color: var(--hoverLetters);
 }
+
+.info-key {
+  width: 20px;
+}
