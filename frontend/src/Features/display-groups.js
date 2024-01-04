@@ -6,6 +6,7 @@ import "../css/display-groups.css"
 const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups }) => {
 
   const [groups, setGroups] = useState([]);
+  const [currEv, setCurrEv] = useState([]);
   const additional = false;
  
   useEffect(() => {
@@ -17,6 +18,8 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
         const eventStart = new Date(event.start).getTime();
         return eventStart >= viewStart && eventStart <= viewEnd;
       });
+
+      setCurrEv(currentEvents);
 
       const updatedGroups = patientGroups.map((group, index) => {
         const editGroup = group.map((patient) => {
@@ -75,6 +78,11 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
     
   }, [start, myEvents]);
 
+  const uniformAddress = (address) => {
+    const newAddress = address.replace(/,/g, '');
+    return newAddress;
+  }
+
   const updateEvents = (event) => {
     const updatedEvents = [...myEvents];
     const index = updatedEvents.findIndex((ev) => ev.id === event.id);
@@ -86,6 +94,13 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
     }
   };
 
+  const checkForUnassigned = (patient) => {
+    const unassignedEvents = currEv.filter((event) => {
+      return uniformAddress(event.address) === uniformAddress(patient.address) && event.groupNumber !== 0 && (event.groupNumber === undefined || event.groupNumber === null)
+    });
+
+    return unassignedEvents.length > 0 ? true : false;
+  };
   
   return (
     <div className="container">
@@ -119,6 +134,14 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
                           <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
                         </div>
                       </div>
+                    ) : checkForUnassigned(patient) ? 
+
+                    (
+                      <div className="col-6 d-flex patient-cont" key={patient._id} >
+                        <div className="patient-name ellipsis-overflow">
+                          <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
+                        </div>
+                      </div>
                     ) :
 
                     (
@@ -127,7 +150,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
                           <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
                         </div>
                       </div>
-                    )
+                    ) 
 
                   ))
                 }

@@ -38,12 +38,6 @@
   width: 200px;
 }
 
-.save-btn:hover {
-  background: var(--testHover);
-  border: 1px solid var(--borderColor);
-  color: var(--hoverLetters);
-}
-
 .save-btn:active {
   transform: translateY(2px);
 }
