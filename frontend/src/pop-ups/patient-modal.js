@@ -1,24 +1,26 @@
 import React from "react";
 import { useEffect, useState } from "react";
 
+import useComparisonRequests from "../hooks/comparison-requests";
+
 import '../css/patient-modal.css';
 
 const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, handleEventsUpdate, patients, view}) => {
+
+  const { abbrevationFix } = useComparisonRequests();
 
   const [groupsAvailable, setGroupsAvailable] = useState([]);
   const [patient, setPatient] = useState(undefined);
 
   useEffect(() => {
     let availableGroups = [];
-    const uniformAddress = (address) => {
-      const newAddress = address.replace(/,/g, '');
-      return newAddress;
-    }
-
+    const clientAddress = abbrevationFix(client.address);
+   
     if(view === 'Group') {
       groups.forEach((group, index) => {
         const patientMatches = group.filter((patient) => {
-          return uniformAddress(patient.address) === uniformAddress(client.address) && `${patient.firstName} ${patient.lastName}` === client.title && !patient.scheduled
+          const patAddress = abbrevationFix(patient.address);
+          return patAddress === clientAddress && `${patient.firstName} ${patient.lastName}` === client.title && !patient.scheduled
         });
   
         if(patientMatches.length > 0) {
@@ -38,7 +40,8 @@ const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, hand
     }
 
     const patientData = patients.find((patient) => {
-      return uniformAddress(patient.address) === uniformAddress(client.address) && `${patient.firstName} ${patient.lastName}` === client.title;
+      const patAddress = abbrevationFix(patient.address);
+      return patAddress === clientAddress && `${patient.firstName} ${patient.lastName}` === client.title;
     });
 
     setPatient(patientData);

@@ -3,7 +3,11 @@ import React, {useState, useEffect} from "react";
 import Loading from "../pop-ups/loading";
 import "../css/display-groups.css"
 
+import useComparisonRequests from "../hooks/comparison-requests";
+
 const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups }) => {
+
+  const { abbrevationFix } = useComparisonRequests();
 
   const [groups, setGroups] = useState([]);
   const [currEv, setCurrEv] = useState([]);
@@ -29,9 +33,11 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
 
           const frequency = parseInt(patient.frequency);
           const isScheduled = currentEvents.filter((event) => {
-            const evAddress = event.address.replace(/,/g, '');
-            return evAddress === patient.address && event.title === `${patient.firstName} ${patient.lastName}`
+            const evAddress = abbrevationFix(event.address);
+            const patAddress = abbrevationFix(patient.address);
+            return evAddress === patAddress;
           });
+        
 
           if(isScheduled.length === 0) {
             patient.scheduled = false;

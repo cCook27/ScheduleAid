@@ -2,9 +2,13 @@ import React, { useEffect, useState } from "react";
 
 import Loading from "../pop-ups/loading";
 
+import useComparisonRequests from "../hooks/comparison-requests";
+
 import "../css/display-patients.css"
 
 const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, end }) => {
+
+  const { abbrevationFix } = useComparisonRequests();
 
   const [remainingPatients, setRemainingPatients]=useState([]);
  
@@ -22,8 +26,14 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
       });
   
       const patients = activePatients.map((patient) => {
+        const patAddress = abbrevationFix(patient.address);
         const frequency = parseInt(patient.frequency);
-        const patientsEvents =  eventsUsed.filter((event) => event.address === patient.address && event.title === `${patient.firstName} ${patient.lastName}`);
+        
+        const patientsEvents =  eventsUsed.filter((event) => {
+          const evAddress = abbrevationFix(event.address);
+
+          return evAddress === patAddress && event.title === `${patient.firstName} ${patient.lastName}`
+        });
       
         if(frequency > patientsEvents.length) {
           patient.additional = false;
