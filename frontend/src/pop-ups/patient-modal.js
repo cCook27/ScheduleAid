@@ -90,7 +90,7 @@ const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, hand
         <div className="col d-flex align-items-center">
           <div className="row">
             {
-              patient ? 
+              patient &&  Object.entries(patient.noSeeDays).length > 0 ? 
                 (
                   Object.entries(patient.noSeeDays).map(([propertyName, propertyValue]) =>(
                   propertyValue && (
@@ -132,7 +132,7 @@ const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, hand
       }
 
       {
-        view === 'Group' ? 
+        view === 'Group' && groupsAvailable.length > 0 ? 
         (
           <div className="row p my-3 d-flex justify-content-center assign-row">
             <div className="col-4 d-flex align-items-center">

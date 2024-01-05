@@ -35,7 +35,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
           const isScheduled = currentEvents.filter((event) => {
             const evAddress = abbrevationFix(event.address);
             const patAddress = abbrevationFix(patient.address);
-            return evAddress === patAddress;
+            return evAddress === patAddress && `${patient.firstName} ${patient.lastName}` === event.title;
           });
         
 
@@ -132,7 +132,7 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
 
                 {
                   group.map((patient) => (
-                    patient.scheduled === true || checkForUnassigned(patient)  ? 
+                    patient.scheduled === true ? 
 
                     (
                       <div className="col-6 d-flex patient-cont used" key={patient._id} >
@@ -140,7 +140,17 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, 
                           <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
                         </div>
                       </div>
-                    ) : 
+                    ) : checkForUnassigned(patient) ? 
+
+                    (
+                      (
+                        <div className="col-6 d-flex patient-cont pat-cont-disabled" key={patient._id} >
+                          <div className="patient-name ellipsis-overflow">
+                            <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
+                          </div>
+                        </div>
+                      )
+                    ) :
 
                     (
                       <div className="col-6 d-flex patient-cont" key={patient._id} draggable onDragStart={() => handleDragStart(`${patient.firstName} ${patient.lastName}`, patient.address, patient.coordinates, index, additional)}>
