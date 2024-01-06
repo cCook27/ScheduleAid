@@ -101,7 +101,10 @@ function Calendar(props) {
   }, []);
 
   useEffect(() => {
-    saveUserSchedule(user._id, myEvents, accessToken);
+    if(dbSchedule) {
+      saveUserSchedule(user._id, myEvents, accessToken);
+    }
+    
   }, [myEvents]);
 
   useEffect(() => {
