@@ -30,8 +30,9 @@ function useScheduleRequests () {
         return null;
       };
 
+      console.log(scheduleData);
+
       return scheduleData;
-      
 
     } catch (error) {
         console.log(error);

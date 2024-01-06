@@ -92,10 +92,6 @@ function Calendar(props) {
   };
 
   useEffect(() => {
-    console.log(therapistParameters);
-  }, [therapistParameters]);
-
-  useEffect(() => {
     const currentDay = new Date(moment().toLocaleString('en-US', { weekday: 'short' })).getDay();
     const startDate = localizer.add(moment(), -currentDay, 'days');
     const endDate = localizer.add(moment(), (6-currentDay), 'days'); 
