@@ -76,10 +76,11 @@ function Calendar(props) {
   const handleNavigate = date => {
     let newStart, newEnd;
 
-    const newDate = new Date(date);
-    const today = new Date(moment())
+    const newDate = new Date(date).getTime();
+    const viewStart = new Date(viewStartDate).getTime();
+    const viewEnd = new Date(viewEndDate).getTime();
 
-    if(newDate.getTime() > today.getTime()) {
+    if(newDate > viewStart && newDate > viewEnd) {
       newStart = localizer.add(viewStartDate, 7, 'days');
       newEnd = localizer.add(viewEndDate, 7, 'days');
     } else {
