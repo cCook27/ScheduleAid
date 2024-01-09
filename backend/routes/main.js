@@ -106,8 +106,6 @@ router.get('/schedule/:user', async (req, res) => {
 
     const schedule = user.schedule;
 
-    console.log(schedule);
-
     res.status(200).json(schedule);
 
   } catch {
