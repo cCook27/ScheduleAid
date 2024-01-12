@@ -147,63 +147,90 @@ router.post('/grouping/:user', async (req, res) => {
 
     const patientVisits = [].concat(...fulfillAllFrequecies);
 
-    let remainingVisits = [...patientVisits];
+    const k = workingDays;
 
-    const averageVisits = Math.ceil(patientVisits.length/workingDays);
-
-    const getDistance = (origin, destination) => {
-      const R = 6371;
-
-      const lat1 = origin.lat * (Math.PI / 180);
-      const lon1 = origin.lng * (Math.PI / 180);
-      const lat2 = destination.lat * (Math.PI / 180);
-      const lon2 = destination.lng * (Math.PI / 180);
-
-      const dLat = lat2 - lat1;
-      const dLon = lon2 - lon1;
-
-      const a =
-          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
+    function haversine(point1, point2) {
+      const lat1 = point1.lat;
+      const lon1 = point1.lng;
+      const lat2 = point2.lat;
+      const lon2 = point2.lng;
+    
+      const R = 6371; 
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
       const distance = R * c;
-
       return distance;
     };
 
-    const getFurthesPoint = (origin) => {
-      const sortedArr = remainingVisits.map((patient) => {
-        patient.distance = getDistance(origin, patient.coordinates);
-        return patient;
-      }).sort((a, b) => b.distance - a.distance);
-      // Check to see if the furthest point is the same as any of the ones before
-      return sortedArr[0];
-    };
+    function kMeansClustering(patients, activePatients, k) {
+      let centroids = [];
+      
+      for (let i = 0; i < k; i++) {
+        const centroidIndex = Math.floor(Math.random() * activePatients.length);
 
-    const evaluateDistanceData = (data) => {
-      if(data.length > averageVisits+3) {
-        // This will give us 3 extra to look at
-        const closestPatients = data.splice(0, averageVisits+4);
-         
+        centroids.push(activePatients[centroidIndex].coordinates);
       }
-    }
+    
+      let prevCentroids = [];
+      let iterations = 0;
+      let clusters;
+    
+      while (!arraysEqual(centroids, prevCentroids) && iterations < 100) {
+          clusters = new Array(k).fill(0).map(() => []);
+    
+          patients.forEach(patient => {
+              let minDistance = Infinity;
+              let clusterIndex = -1;
+    
+              centroids.forEach((centroid, index) => {
+                  const distance = haversine(patient.coordinates, centroid);
+                  if (distance < minDistance) {
 
-    const createGroup = () => {
-      const furthestPoint = getFurthesPoint(therapistHome);
-      const patientsWDistance = remainingVisits.map((patient) => {
-        patient.distance = getDistance(furthestPoint.coordinates, patient.coordinates);
-        return patient;
-      }).sort((a, b) => a.distance - b.distance);
+                      const isDuplicate = clusters[index].find((element) => {
+                        return element._id === patient._id;
+                      });
 
-      const topDistances = evaluateDistanceData(patientsWDistance);
+                      if(!isDuplicate && clusters[index].length < 6) {
+                        minDistance = distance;
+                        clusterIndex = index;
+                      };  
+                  }
+              });
+    
+              clusters[clusterIndex].push(patient);
+          });
+    
+          // Update centroids
+          prevCentroids = [...centroids];
+          centroids = clusters.map(cluster => calculateCentroid(cluster));
+          iterations++;
+      }
+    
+      return clusters;
     };
 
-    for (let i = 0; i < workingDays; i++) {
-      createGroup();    
-    }
+    function calculateCentroid(cluster) {
+      const sumLat = cluster.reduce((acc, point) => acc + point.coordinates.lat, 0);
+      const sumLng = cluster.reduce((acc, point) => acc + point.coordinates.lng, 0);
+      const centroidLat = sumLat / cluster.length;
+      const centroidLng = sumLng / cluster.length;
+      return { lat: centroidLat, lng: centroidLng };
+    };
 
+    function arraysEqual(arr1, arr2) {
+      return JSON.stringify(arr1) === JSON.stringify(arr2);
+    };
+
+    const clusters = kMeansClustering(patientVisits, activePatients, k);
+
+    user.groups = clusters;
+    user.save;
+
+    res.status(201).json(user.groups);
   } catch (error) {
     console.error('Error:', error);
   }

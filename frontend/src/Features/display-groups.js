@@ -5,7 +5,7 @@ import "../css/display-groups.css"
 
 import useComparisonRequests from "../hooks/comparison-requests";
 
-const DisplayGroups = ({ handleDragStart, homes, patientGroups, doubleSessions, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups }) => {
+const DisplayGroups = ({ handleDragStart, homes, patientGroups, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups }) => {
 
   const { abbrevationFix } = useComparisonRequests();
 

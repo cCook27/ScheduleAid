@@ -597,7 +597,7 @@ function Calendar(props) {
                 </div>
               ) : viewFocus.showGroups ? (
                   <div>
-                    <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups.groups} doubleSessions = {patientGroups.considerDoubleSession} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
+                    <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
                   </div>
               ) : viewFocus.groupParams ? (
                   <div>
