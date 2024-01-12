@@ -19,14 +19,43 @@ function useDistanceRequests () {
     }
   };
 
-  const createGroups = async (userId, accessToken, therapistParameters) => {
+  const createVisitGroups = async (userId, accessToken, therapistParameters) => {
     try {
       const options = {
         method: 'POST',
         headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
         body: JSON.stringify(therapistParameters)
       }
-      const response = await fetch(`${url}/grouping/${userId}`, options);
+      const response = await fetch(`${url}/grouping/visit/${userId}`, options);
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const groupData = await response.json();
+
+      return groupData;
+         
+    } catch (error) {
+      console.error('Error:', error);
+
+      const errorResponse = {
+        error: 'An error occurred while creating user data',
+        message: error.message 
+      };
+
+      return errorResponse;
+    }
+  };
+
+  const createGeoGroups = async (userId, accessToken, therapistParameters) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
+        body: JSON.stringify(therapistParameters)
+      }
+      const response = await fetch(`${url}/grouping/geo/${userId}`, options);
 
       if (!response.ok) {
         throw new Error(`Request failed with status ${response.status}`);
@@ -75,11 +104,12 @@ function useDistanceRequests () {
 
       return errorResponse;
     }
-  }
+  };
 
   return {
    getTimeDistances,
-   createGroups,
+   createVisitGroups,
+   createGeoGroups,
    checkGroups
   }
 }

@@ -114,7 +114,148 @@ router.get('/schedule/:user', async (req, res) => {
   }
 });
 
-router.post('/grouping/:user', async (req, res) => {
+router.post('/grouping/visit/:user', async (req, res) => {
+  try {
+    const userId = req.params.user;
+    let user = await User.findOne({ _id: userId });
+    // therapist info needs to done differently
+    const therapistHome = {lat: 33.269950, lng: -111.736540};
+    const homes = user.homes;
+    let workingDays;
+
+    if(req.body.workingDays) {
+      workingDays =  isNaN(parseInt(req.body.workingDays)) ? user.workingDays : parseInt(req.body.workingDays);
+    } else {
+      workingDays = 5;
+    }
+
+    const activePatients = homes.filter((home) => home.active);
+
+    const fulfillAllFrequecies = activePatients.map((patient) => {
+      const patientFrequency = patient.frequency;
+      if(patientFrequency > 1) {
+        let frequencyArray = [];
+        for (let i = 0; i < patientFrequency; ++i) {
+          frequencyArray.push(patient);
+        }
+        return frequencyArray;
+      } else {
+        return [patient];
+      }
+    });
+
+    const patientVisits = [].concat(...fulfillAllFrequecies);
+
+    const k = workingDays;
+    const maxVisits = Math.ceil(patientVisits.length/workingDays);
+
+    function haversine(point1, point2) {
+      const lat1 = point1.lat;
+      const lon1 = point1.lng;
+      const lat2 = point2.lat;
+      const lon2 = point2.lng;
+    
+      const R = 6371; 
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = R * c;
+      return distance;
+    };
+
+    function kMeansClustering(patients, activePatients, k) {
+      let centroids = [];
+      
+      
+      for (let i = 0; i < k; i++) {
+        const centroidIndex = Math.floor(Math.random() * activePatients.length);
+
+        centroids.push(activePatients[centroidIndex].coordinates);
+      }
+    
+      let prevCentroids = [];
+      let iterations = 0;
+      let clusters;
+      let clusterOverflow;
+    
+      while (!arraysEqual(centroids, prevCentroids) && iterations < 100) {
+          clusters = new Array(k).fill(0).map(() => []);
+          clusterOverflow = [];
+    
+          patients.forEach(patient => {
+              let minDistance = Infinity;
+              let clusterIndex = -1;
+              let name = patient.firstName;
+    
+              centroids.forEach((centroid, index) => {
+                  const distance = haversine(patient.coordinates, centroid);
+                  if (distance < minDistance) {
+
+                      const isDuplicate = clusters[index].find((element) => {
+                        return element._id === patient._id;
+                      });
+
+                      if(!isDuplicate && clusters[index].length < maxVisits) {
+                        minDistance = distance;
+                        clusterIndex = index;
+                      };  
+                  }
+              });
+
+              if(clusterIndex < 0 && workingDays < Number(patient.frequency)) {
+                clusterOverflow.push(patient);
+              } else if(clusterIndex < 0) {
+                clusters.forEach((cluster, index) => {
+                  const isDuplicate = cluster.find((element) => {
+                    return element._id === patient._id;
+                  });
+
+                  if(!isDuplicate) {
+                    clusters[index].push(patient);
+                  }
+                });
+              } else {
+                clusters[clusterIndex].push(patient);
+              }
+
+              
+          });
+    
+          prevCentroids = [...centroids];
+          centroids = clusters.map(cluster => calculateCentroid(cluster));
+          iterations++;
+      }
+    
+      return {clusters, clusterOverflow};
+    };
+
+    function calculateCentroid(cluster) {
+      const sumLat = cluster.reduce((acc, point) => acc + point.coordinates.lat, 0);
+      const sumLng = cluster.reduce((acc, point) => acc + point.coordinates.lng, 0);
+      const centroidLat = sumLat / cluster.length;
+      const centroidLng = sumLng / cluster.length;
+      return { lat: centroidLat, lng: centroidLng };
+    };
+
+    function arraysEqual(arr1, arr2) {
+      return JSON.stringify(arr1) === JSON.stringify(arr2);
+    };
+
+    const clusterPatients = kMeansClustering(patientVisits, activePatients, k);
+
+    user.groups = {groups: clusterPatients.clusters, overflow: clusterPatients.clusterOverflow};
+    user.save;
+
+    res.status(201).json(user.groups);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+});
+
+router.post('/grouping/geo/:user', async (req, res) => {
   try {
     const userId = req.params.user;
     let user = await User.findOne({ _id: userId });
