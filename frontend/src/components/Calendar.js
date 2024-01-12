@@ -18,7 +18,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 
 import { momentLocalizer, Calendar as BigCalendar } from 'react-big-calendar';
-import DisplayGroups from '../Features/display-groups';
+import DisplayGroups from '../Features/grouping/display-groups.js';
 import DisplayPatients from '../Features/display-patients';
 import EditParameters from '../Features/edit-parameters.js';
 import ErrorModal from '../pop-ups/error-modal';
@@ -33,7 +33,7 @@ function Calendar(props) {
   const accessToken = useContext(AccessTokenContext);
 
   const {getHomes} = useHomeRequests();
-  const {getTimeDistances, createGroups} = useDistanceRequests();
+  const {getTimeDistances} = useDistanceRequests();
   const {saveUserSchedule, getUserSchedule, deleteSchedule, deletePatientSchedule} = useScheduleRequests();
 
   const [myEvents, setMyEvents] = useState([]);
@@ -51,7 +51,6 @@ function Calendar(props) {
     view: 'Patient'
   });
   const [testDay, setTestDay] = useState(undefined);
-  const [patientGroups, setPatientGroups] = useState(undefined);
   const [groupsForPatientModal, setGroupsForPatientModal] = useState([]);
   const [therapistParameters, setTherapistParameters] = useState({
     workingDays: 5,
@@ -443,15 +442,6 @@ function Calendar(props) {
   };
 
   const handleGrouping = async () => {
-    setPatientGroups(null);
-
-    const returnedGroups = await createGroups(
-      user._id, 
-      accessToken, 
-      therapistParameters
-    );
-
-    setPatientGroups(returnedGroups[0]);
     setViewFocus(prev => ({
       ...prev,
       showGroups: true,
@@ -597,7 +587,7 @@ function Calendar(props) {
                 </div>
               ) : viewFocus.showGroups ? (
                   <div>
-                    <DisplayGroups handleDragStart={handleDragStart} homes={homes} patientGroups ={patientGroups} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
+                    <DisplayGroups handleDragStart={handleDragStart} homes={homes} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} therapistParameters={therapistParameters} />
                   </div>
               ) : viewFocus.groupParams ? (
                   <div>

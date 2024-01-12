@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from "react";
 
-import Loading from "../pop-ups/loading";
-import "../css/display-groups.css"
+import Loading from "../../pop-ups/loading";
+import "../../css/display-groups.css"
 
-import useComparisonRequests from "../hooks/comparison-requests";
+import useComparisonRequests from "../../hooks/comparison-requests";
 
-const DisplayGroups = ({ handleDragStart, homes, patientGroups, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups }) => {
+const VisitGroups = ({ handleDragStart, patientGroups, homes, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups }) => {
 
   const { abbrevationFix } = useComparisonRequests();
 
@@ -196,8 +196,4 @@ const DisplayGroups = ({ handleDragStart, homes, patientGroups, myEvents, start,
   )
 }
 
-export default DisplayGroups;
-
-
-
-
+export default VisitGroups;
