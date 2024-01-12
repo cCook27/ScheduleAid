@@ -451,7 +451,7 @@ function Calendar(props) {
       therapistParameters
     );
 
-    setPatientGroups(returnedGroups);
+    setPatientGroups(returnedGroups[0]);
     setViewFocus(prev => ({
       ...prev,
       showGroups: true,

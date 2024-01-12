@@ -148,6 +148,7 @@ router.post('/grouping/:user', async (req, res) => {
     const patientVisits = [].concat(...fulfillAllFrequecies);
 
     const k = workingDays;
+    const maxVisits = Math.ceil(patientVisits.length/workingDays);
 
     function haversine(point1, point2) {
       const lat1 = point1.lat;
@@ -169,6 +170,7 @@ router.post('/grouping/:user', async (req, res) => {
     function kMeansClustering(patients, activePatients, k) {
       let centroids = [];
       
+      
       for (let i = 0; i < k; i++) {
         const centroidIndex = Math.floor(Math.random() * activePatients.length);
 
@@ -178,13 +180,16 @@ router.post('/grouping/:user', async (req, res) => {
       let prevCentroids = [];
       let iterations = 0;
       let clusters;
+      let clusterOverflow;
     
       while (!arraysEqual(centroids, prevCentroids) && iterations < 100) {
           clusters = new Array(k).fill(0).map(() => []);
+          clusterOverflow = [];
     
           patients.forEach(patient => {
               let minDistance = Infinity;
               let clusterIndex = -1;
+              let name = patient.firstName;
     
               centroids.forEach((centroid, index) => {
                   const distance = haversine(patient.coordinates, centroid);
@@ -194,23 +199,38 @@ router.post('/grouping/:user', async (req, res) => {
                         return element._id === patient._id;
                       });
 
-                      if(!isDuplicate && clusters[index].length < 6) {
+                      if(!isDuplicate && clusters[index].length < maxVisits) {
                         minDistance = distance;
                         clusterIndex = index;
                       };  
                   }
               });
-    
-              clusters[clusterIndex].push(patient);
+
+              if(clusterIndex < 0 && workingDays < Number(patient.frequency)) {
+                clusterOverflow.push(patient);
+              } else if(clusterIndex < 0) {
+                clusters.forEach((cluster, index) => {
+                  const isDuplicate = cluster.find((element) => {
+                    return element._id === patient._id;
+                  });
+
+                  if(!isDuplicate) {
+                    clusters[index].push(patient);
+                  }
+                });
+              } else {
+                clusters[clusterIndex].push(patient);
+              }
+
+              
           });
     
-          // Update centroids
           prevCentroids = [...centroids];
           centroids = clusters.map(cluster => calculateCentroid(cluster));
           iterations++;
       }
     
-      return clusters;
+      return {clusters, clusterOverflow};
     };
 
     function calculateCentroid(cluster) {
@@ -225,9 +245,9 @@ router.post('/grouping/:user', async (req, res) => {
       return JSON.stringify(arr1) === JSON.stringify(arr2);
     };
 
-    const clusters = kMeansClustering(patientVisits, activePatients, k);
+    const clusterPatients = kMeansClustering(patientVisits, activePatients, k);
 
-    user.groups = clusters;
+    user.groups = {groups: clusterPatients.clusters, overflow: clusterPatients.clusterOverflow};
     user.save;
 
     res.status(201).json(user.groups);
