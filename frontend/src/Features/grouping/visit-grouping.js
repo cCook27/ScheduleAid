@@ -173,24 +173,29 @@ const VisitGroups = ({ handleDragStart, patientGroups, homes, myEvents, start, e
             )
         }
       </div>
-      <div className="overflow-group mb-3 p-3">
-        <div className="overflow-group-des pb-2">Overflow:</div>
-        <div className="d-flex">
-          {
-            patientGroups.overflow.length > 0 ? 
-            (
-              patientGroups.overflow.map((flow) => (
-                <div className="d-flex patient-cont" key={flow._id} draggable onDragStart={() => handleDragStart(`${flow.firstName} ${flow.lastName}`, flow.address, flow.coordinates, flow, additional)}>
-                <div className="patient-name ellipsis-overflow">
-                  <span className="me-1">{flow.firstName}</span> <span>{flow.lastName}</span>
-                </div>
-              </div>
-              ))
-            ): null
-          }
-        </div>
-        
-      </div>
+      {
+        patientGroups && patientGroups.overflow.length > 0 ? 
+        (
+          <div className="overflow-group mb-3 p-3">
+            <div className="overflow-group-des pb-2">Overflow:</div>
+            <div className="d-flex">
+              {
+                patientGroups.overflow.length > 0 ? 
+                (
+                  patientGroups.overflow.map((flow) => (
+                    <div className="d-flex patient-cont" key={flow._id} draggable onDragStart={() => handleDragStart(`${flow.firstName} ${flow.lastName}`, flow.address, flow.coordinates, flow, additional)}>
+                    <div className="patient-name ellipsis-overflow">
+                      <span className="me-1">{flow.firstName}</span> <span>{flow.lastName}</span>
+                    </div>
+                  </div>
+                  ))
+                ): null
+              }
+            </div>
+            
+          </div>
+        ): null
+      }
     </div>
   
   )
