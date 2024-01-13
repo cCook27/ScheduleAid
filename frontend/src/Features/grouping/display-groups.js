@@ -24,6 +24,13 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
   });
 
   const handleGeoGroups = async () => {
+    const returnedGroups = await createGeoGroups(
+      user._id, 
+      accessToken, 
+      therapistParameters
+    );
+
+    setPatientGroups(returnedGroups[0]);
     setGroupType((prev) => ({
       ...prev,
       visit: false,
@@ -75,7 +82,7 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
             <VisitGroups handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
           ):
           (
-            <GeoGroups />
+            <GeoGroups handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups}/>
           )
         }
       </div>
