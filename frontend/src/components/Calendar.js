@@ -108,13 +108,6 @@ function Calendar(props) {
   }, [myEvents]);
 
   useEffect(() => {
-    setTherapistParameters((prev) => ({
-      ...prev,
-      workingDays: user.workingDays
-    }));
-  }, []);
-
-  useEffect(() => {
     const timeSlots = document.querySelectorAll('.rbc-time-slot');
     const timeSlotsGroups = document.querySelectorAll('.rbc-timeslot-group');
 

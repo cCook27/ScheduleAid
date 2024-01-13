@@ -1,5 +1,6 @@
 const User = require('../models/User-Model');
 const axios = require('axios');
+const _ = require('lodash');
 require('dotenv').config();
 const apiKey = process.env.MAPS_API_KEY;
 const googleApiKey = process.env.GOOGLE_MAPS_API_KEY;
@@ -123,12 +124,6 @@ router.post('/grouping/visit/:user', async (req, res) => {
     const homes = user.homes;
     let workingDays;
 
-    if(req.body.workingDays) {
-      workingDays =  isNaN(parseInt(req.body.workingDays)) ? user.workingDays : parseInt(req.body.workingDays);
-    } else {
-      workingDays = 5;
-    }
-
     const activePatients = homes.filter((home) => home.active);
 
     const fulfillAllFrequecies = activePatients.map((patient) => {
@@ -145,6 +140,22 @@ router.post('/grouping/visit/:user', async (req, res) => {
     });
 
     const patientVisits = [].concat(...fulfillAllFrequecies);
+
+    const checkSameness = (current, saved) => {
+      const sortedCurrent = current.sort((a, b) => a.lastName.localeCompare(b.lastName));
+      const sortedSaved = saved[0].groups.flat().sort((a, b) => a.lastName.localeCompare(b.lastName));
+      return _.isEqual(sortedCurrent, sortedSaved);;
+    };
+
+    if(user.workingDays === parseInt(req.body.workingDays) && checkSameness(patientVisits, user.groups)) {
+      return res.status(201).json(user.groups);
+    }
+
+    if(req.body.workingDays) {
+      workingDays =  isNaN(parseInt(req.body.workingDays)) ? user.workingDays : parseInt(req.body.workingDays);
+    } else {
+      workingDays = 5;
+    }
 
     const k = workingDays;
     const maxVisits = Math.ceil(patientVisits.length/workingDays);
@@ -247,7 +258,8 @@ router.post('/grouping/visit/:user', async (req, res) => {
     const clusterPatients = kMeansClustering(patientVisits, activePatients, k);
 
     user.groups = {groups: clusterPatients.clusters, overflow: clusterPatients.clusterOverflow};
-    user.save;
+    user.workingDays = workingDays;
+    user.save();
 
     res.status(201).json(user.groups);
   } catch (error) {
@@ -262,15 +274,24 @@ router.post('/grouping/geo/:user', async (req, res) => {
     // therapist info needs to done differently
     const therapistHome = {lat: 33.269950, lng: -111.736540};
     const homes = user.homes;
-    let workingDays;
+
+    const activePatients = homes.filter((home) => home.active);
+
+    const checkSameness = (current, saved) => {
+      const sortedCurrent = current.sort((a, b) => a.lastName.localeCompare(b.lastName));
+      const sortedSaved = saved[0].groups.flat().sort((a, b) => a.lastName.localeCompare(b.lastName));
+      return _.isEqual(sortedCurrent, sortedSaved);;
+    };
+    
+    if(user.workingDays === parseInt(req.body.workingDays) && checkSameness(activePatients, user.groups)) {
+      return res.status(201).json(user.groups);
+    }
 
     if(req.body.workingDays) {
       workingDays =  isNaN(parseInt(req.body.workingDays)) ? user.workingDays : parseInt(req.body.workingDays);
     } else {
       workingDays = 5;
     }
-
-    const activePatients = homes.filter((home) => home.active);
 
     const k = workingDays;
     const maxVisits = Math.ceil(activePatients.length/workingDays);
@@ -348,7 +369,8 @@ router.post('/grouping/geo/:user', async (req, res) => {
     const clusterPatients = kMeansClustering(activePatients, k);
 
     user.groups = {groups: clusterPatients.clusters, overflow: clusterPatients.clusterOverflow};
-    user.save;
+    user.workingDays = workingDays;
+    user.save();
 
     res.status(201).json(user.groups);
   } catch (error) {
