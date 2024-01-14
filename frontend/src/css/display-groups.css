@@ -59,3 +59,26 @@
 .pat-cont-disabled {
   border: 2px dotted red;
 }
+
+.group-view-btn:checked + .view {
+  background-color: var(--fulfilled);
+  color: var(--hoverLetters);
+}
+
+.group-view {
+  width: 80px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.group-des {
+  font-weight: 600;
+  color: var(--viewLetters);
+}
+
+.group-explain {
+  border: 3px solid var(--borderColor);
+  box-shadow: var(--colorBoxShadow);
+}

@@ -12,6 +12,9 @@
   --disabledBg: #93d9ae50;
   --borderRad: 5px;
   --customBorder: 1px solid var(--borderColor);
+  --colorBoxShadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
+  --enhanceBoxShadow: 0 4px 8px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.1);
 
   /* nav */
   --link: #141414;
