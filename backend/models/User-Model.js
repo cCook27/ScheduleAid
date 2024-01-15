@@ -6,7 +6,7 @@ const UserSchema = new Schema({
     _id: String,
     homes: Array,
     schedule: Array,
-    groups: Array,
+    groups: Object,
     buffer: Number,
     designation: String,
     email: String,

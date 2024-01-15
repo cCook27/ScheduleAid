@@ -80,5 +80,6 @@
 
 .group-explain {
   border: 3px solid var(--borderColor);
+  border-radius: var(--borderRad);
   box-shadow: var(--colorBoxShadow);
 }

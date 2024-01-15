@@ -143,12 +143,12 @@ router.post('/grouping/visit/:user', async (req, res) => {
 
     const checkSameness = (current, saved) => {
       const sortedCurrent = current.sort((a, b) => a.lastName.localeCompare(b.lastName));
-      const sortedSaved = saved[0].groups.flat().sort((a, b) => a.lastName.localeCompare(b.lastName));
+      const sortedSaved = saved.flat().sort((a, b) => a.lastName.localeCompare(b.lastName));
       return _.isEqual(sortedCurrent, sortedSaved);;
     };
 
-    if(user.workingDays === parseInt(req.body.workingDays) && checkSameness(patientVisits, user.groups)) {
-      return res.status(201).json(user.groups);
+    if(user.workingDays === parseInt(req.body.workingDays) && checkSameness(patientVisits, user.groups.visitGroups)) {
+      return res.status(201).json(user.groups.visitGroups);
     }
 
     if(req.body.workingDays) {
@@ -257,7 +257,8 @@ router.post('/grouping/visit/:user', async (req, res) => {
 
     const clusterPatients = kMeansClustering(patientVisits, activePatients, k);
 
-    user.groups = {groups: clusterPatients.clusters, overflow: clusterPatients.clusterOverflow};
+    user.groups.visitGroups = clusterPatients.clusters;
+    user.groups.overflowGroup = clusterPatients.clusterOverflow;
     user.workingDays = workingDays;
     user.save();
 
@@ -279,13 +280,13 @@ router.post('/grouping/geo/:user', async (req, res) => {
 
     const checkSameness = (current, saved) => {
       const sortedCurrent = current.sort((a, b) => a.lastName.localeCompare(b.lastName));
-      const sortedSaved = saved[0].groups.flat().sort((a, b) => a.lastName.localeCompare(b.lastName));
+      const sortedSaved = saved.flat().sort((a, b) => a.lastName.localeCompare(b.lastName));
       return _.isEqual(sortedCurrent, sortedSaved);;
     };
     
-    if(user.workingDays === parseInt(req.body.workingDays) && checkSameness(activePatients, user.groups)) {
-      return res.status(201).json(user.groups);
-    }
+    if(user.workingDays === parseInt(req.body.workingDays) && checkSameness(activePatients, user.groups.geoGroups)) {
+      return res.status(201).json(user.groups.geoGroups);
+    };
 
     if(req.body.workingDays) {
       workingDays =  isNaN(parseInt(req.body.workingDays)) ? user.workingDays : parseInt(req.body.workingDays);
@@ -368,7 +369,8 @@ router.post('/grouping/geo/:user', async (req, res) => {
 
     const clusterPatients = kMeansClustering(activePatients, k);
 
-    user.groups = {groups: clusterPatients.clusters, overflow: clusterPatients.clusterOverflow};
+    user.groups.geoGroups = clusterPatients.clusters;
+    user.groups.overflowGroup = clusterPatients.clusterOverflow;
     user.workingDays = workingDays;
     user.save();
 
