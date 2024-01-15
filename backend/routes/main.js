@@ -147,9 +147,9 @@ router.post('/grouping/visit/:user', async (req, res) => {
       return _.isEqual(sortedCurrent, sortedSaved);;
     };
 
-    if(user.workingDays === parseInt(req.body.workingDays) && checkSameness(patientVisits, user.groups.visitGroups)) {
-      return res.status(201).json(user.groups.visitGroups);
-    }
+    // if(user.workingDays === parseInt(req.body.workingDays) && checkSameness(patientVisits, user.groups.visitGroups)) {
+    //   return res.status(201).json(user.groups);
+    // };
 
     if(req.body.workingDays) {
       workingDays =  isNaN(parseInt(req.body.workingDays)) ? user.workingDays : parseInt(req.body.workingDays);
@@ -185,7 +185,7 @@ router.post('/grouping/visit/:user', async (req, res) => {
         const centroidIndex = Math.floor(Math.random() * activePatients.length);
 
         centroids.push(activePatients[centroidIndex].coordinates);
-      }
+      };
     
       let prevCentroids = [];
       let iterations = 0;
@@ -238,7 +238,7 @@ router.post('/grouping/visit/:user', async (req, res) => {
           prevCentroids = [...centroids];
           centroids = clusters.map(cluster => calculateCentroid(cluster));
           iterations++;
-      }
+      };
     
       return {clusters, clusterOverflow};
     };
@@ -257,10 +257,10 @@ router.post('/grouping/visit/:user', async (req, res) => {
 
     const clusterPatients = kMeansClustering(patientVisits, activePatients, k);
 
-    user.groups.visitGroups = clusterPatients.clusters;
-    user.groups.overflowGroup = clusterPatients.clusterOverflow;
+    user.groups.visitGroups.visits = clusterPatients.clusters;
+    user.groups.visitGroups.visitOverflow = clusterPatients.clusterOverflow || [];
     user.workingDays = workingDays;
-    user.save();
+    await user.save();
 
     res.status(201).json(user.groups);
   } catch (error) {
@@ -284,9 +284,9 @@ router.post('/grouping/geo/:user', async (req, res) => {
       return _.isEqual(sortedCurrent, sortedSaved);;
     };
     
-    if(user.workingDays === parseInt(req.body.workingDays) && checkSameness(activePatients, user.groups.geoGroups)) {
-      return res.status(201).json(user.groups.geoGroups);
-    };
+    // if(user.workingDays === parseInt(req.body.workingDays) && checkSameness(activePatients, user.groups.geoGroups)) {
+    //   return res.status(201).json(user.groups);
+    // };
 
     if(req.body.workingDays) {
       workingDays =  isNaN(parseInt(req.body.workingDays)) ? user.workingDays : parseInt(req.body.workingDays);
@@ -369,10 +369,10 @@ router.post('/grouping/geo/:user', async (req, res) => {
 
     const clusterPatients = kMeansClustering(activePatients, k);
 
-    user.groups.geoGroups = clusterPatients.clusters;
-    user.groups.overflowGroup = clusterPatients.clusterOverflow;
+    user.groups.geoGroups.geos = clusterPatients.clusters;
+    user.groups.geoGroups.geoOverflow = clusterPatients.clusterOverflow || [];
     user.workingDays = workingDays;
-    user.save();
+    await user.save();
 
     res.status(201).json(user.groups);
   } catch (error) {

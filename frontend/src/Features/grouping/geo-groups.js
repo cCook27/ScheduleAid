@@ -24,9 +24,10 @@ const GeoGroups = ({ handleDragStart, patientGroups, homes, myEvents, start, end
               <div><Loading /></div>
             ) : 
           
-            patientGroups.groups.length >= 1 && patientGroups.groups.length <= 7 ? 
+            patientGroups.geoGroups.geos.length >= 1 && 
+            patientGroups.geoGroups.geos.length <= 7 ? 
             (
-              patientGroups.groups.map((group, index) => (
+              patientGroups.geoGroups.geos.map((group, index) => (
                 <div className="col-3 d-flex flex-column group mx-3 my-2">
                   <div className="group-number">Group {index + 1}</div>
                   <div className="d-flex justify-content-center align-items-center row">

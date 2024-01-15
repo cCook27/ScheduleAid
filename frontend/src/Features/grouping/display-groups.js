@@ -27,7 +27,7 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
       therapistParameters
     );
 
-    setPatientGroups(returnedGroups[0]);
+    setPatientGroups(returnedGroups);
     setGroupType(event.target.id);
   };
 
@@ -40,7 +40,7 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
       therapistParameters
     );
 
-    setPatientGroups(returnedGroups[0]);
+    setPatientGroups(returnedGroups);
     setGroupType(event.target.id);
   };
 
