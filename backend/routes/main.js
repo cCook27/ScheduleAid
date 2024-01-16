@@ -571,21 +571,49 @@ router.post('/schedule/:user', async (req, res) => {
   }
 });
 
-router.put('/grouping/manual/:user', async (req, res) => {
+router.post('/grouping/manual/:user', async (req, res) => {
+ try {
   const userId = req.params.user;
-  const updatedFolder = req.body.groupFolder;
+  const newFolder = req.body.groupFolder;
 
-  const updateManualGroups = await User.findByIdAndUpdate(
-    { _id: userId, 'manualGroups.folderId': updatedFolder.id },
-    { $set: { 'manualGroups.$': updatedFolder } },
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { $push: { manualGroups: newFolder } },
     { new: true }
   );
 
-  if(!updateManualGroups) {
-    return res.status(404).send('Group not found');
+  if(!updatedUser) {
+    return res.status(404).send('User not found');
   };
 
-  return res.status(200).send('Group Successfully Updated!');
+  return res.status(200).send('New Group Successfully Added!');
+
+ } catch(error) {
+  console.error('Error:', error);
+  res.status(500).send('An error occurred while trying to save your groups, try again.');
+}
+});
+
+router.put('/grouping/manual/:user', async (req, res) => {
+  try {
+    const userId = req.params.user;
+    const updatedFolder = req.body.groupFolder;
+  
+    const updateManualGroups = await User.findByIdAndUpdate(
+      { _id: userId, 'manualGroups.folderId': updatedFolder.id },
+      { $set: { 'manualGroups.$': updatedFolder } },
+      { new: true }
+    );
+  
+    if(!updateManualGroups) {
+      return res.status(404).send('Group not found');
+    };
+  
+    return res.status(200).send('Group Successfully Updated!');
+  } catch(error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while trying to save your groups, try again.');
+  }
 });
 
 router.put('/updatePatient/:user', async (req, res) => {
