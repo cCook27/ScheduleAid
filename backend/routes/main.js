@@ -571,6 +571,23 @@ router.post('/schedule/:user', async (req, res) => {
   }
 });
 
+router.put('/grouping/manual/:user', async (req, res) => {
+  const userId = req.params.user;
+  const updatedFolder = req.body.groupFolder;
+
+  const updateManualGroups = await User.findByIdAndUpdate(
+    { _id: userId, 'manualGroups.folderId': updatedFolder.id },
+    { $set: { 'manualGroups.$': updatedFolder } },
+    { new: true }
+  );
+
+  if(!updateManualGroups) {
+    return res.status(404).send('Group not found');
+  };
+
+  return res.status(200).send('Group Successfully Updated!');
+});
+
 router.put('/updatePatient/:user', async (req, res) => {
   try {
     const patientInfo = req.body;
@@ -633,7 +650,7 @@ router.delete('/homes/:home/:user', async (req,res) => {
 
     if (!updatedUser) {
       return res.status(404).send('User not found');
-    }
+    };
 
     res.status(204).send();
     
