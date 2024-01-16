@@ -571,6 +571,27 @@ router.post('/schedule/:user', async (req, res) => {
   }
 });
 
+router.post('/grouping/retrieve/manual/:user', async (req, res) => {
+  try {
+    const userId = req.params.user
+    const user = await User.findOne({_id: userId});
+
+    if(!userId) {
+      return res.status(400).send('Bad request, User Id not sent.');
+    } else if(!user) {
+      return res.status(404).send('User not found');
+    }
+
+    const manualGroups = user.manualGroups;
+
+    res.status(200).json(manualGroups);
+   
+  } catch(error) {
+   console.error('Error:', error);
+   res.status(500).send('An error occurred while trying to save your groups, try again.');
+ }
+ });
+
 router.post('/grouping/manual/:user', async (req, res) => {
  try {
   const userId = req.params.user;
