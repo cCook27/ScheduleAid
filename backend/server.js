@@ -7,7 +7,7 @@ const { auth } = require('express-oauth2-jwt-bearer');
 const port = process.env.PORT || 8080;
 
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost/home2home", {
+mongoose.connect("mongodb://localhost:27017/home2home", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
