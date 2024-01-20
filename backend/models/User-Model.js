@@ -6,7 +6,7 @@ const UserSchema = new Schema({
     _id: String,
     homes: Array,
     schedule: Array,
-    groups: Object,
+    groups: {geoGroups: {geos: [], geoOverflow: []}, visitGroups: {visits: [], visitOverflow: []}},
     manualGroups: Array,
     buffer: Number,
     designation: String,

@@ -263,7 +263,7 @@ router.post('/grouping/visit/:user', async (req, res) => {
     const clusterPatients = kMeansClustering(patientVisits, activePatients, k);
 
     user.groups = {
-      geoGroups: {geos: user.groups.geoGroups.geos, geoOverflow: user.groups.geoGroups.geoOverflow},
+      geoGroups: {geos: user.groups.geoGroups.geos, geoOverflow: user.groups.geoGroups.geoOverflow || []},
       visitGroups: {visits: clusterPatients.clusters, visitOverflow: clusterPatients.clusterOverflow}
     };
     

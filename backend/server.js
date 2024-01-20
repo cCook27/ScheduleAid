@@ -10,7 +10,8 @@ const mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost:27017/home2home", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
+}).catch(error => console.error('Error connecting to MongoDB:', error));
+
 
 const checkJwt = auth({
   audience: 'https://www.Home2Home-api.com',
