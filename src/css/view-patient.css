@@ -130,7 +130,7 @@
   font-weight: 600;
   color: var(--patientLetters);
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .note-content-cont {
