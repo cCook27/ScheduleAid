@@ -115,7 +115,7 @@ router.get('/schedule/:user', async (req, res) => {
   }
 });
 
-router.post('/grouping/visit/:user', async (req, res) => {
+router.post('/grouping/auto/:user', async (req, res) => {
   try {
     const userId = req.params.user;
     let user = await User.findOne({ _id: userId });
@@ -151,9 +151,9 @@ router.post('/grouping/visit/:user', async (req, res) => {
 
     if(
       user.workingDays === parseInt(req.body.workingDays) && 
-      checkSameness(patientVisits, user.groups.visitGroups.visits, user.groups.visitGroups.visitOverflow)
+      checkSameness(patientVisits, user.autoGroups.visits, user.autoGroups.visitOverflow)
     ) {
-      return res.status(201).json(user.groups);
+      return res.status(201).json(user.autoGroups);
     };
 
     if(req.body.workingDays) {
@@ -262,135 +262,15 @@ router.post('/grouping/visit/:user', async (req, res) => {
 
     const clusterPatients = kMeansClustering(patientVisits, activePatients, k);
 
-    user.groups = {
-      geoGroups: {geos: user.groups.geoGroups.geos, geoOverflow: user.groups.geoGroups.geoOverflow || []},
-      visitGroups: {visits: clusterPatients.clusters, visitOverflow: clusterPatients.clusterOverflow}
+    user.autoGroups = {
+      visits: clusterPatients.clusters, 
+      visitOverflow: clusterPatients.clusterOverflow
     };
     
     user.workingDays = workingDays;
     await user.save();
 
-    res.status(201).json(user.groups);
-  } catch (error) {
-    console.error('Error:', error);
-  }
-});
-
-router.post('/grouping/geo/:user', async (req, res) => {
-  try {
-    const userId = req.params.user;
-    let user = await User.findOne({ _id: userId });
-    // therapist info needs to done differently
-    const therapistHome = {lat: 33.269950, lng: -111.736540};
-    const homes = user.homes;
-
-    const activePatients = homes.filter((home) => home.active);
-
-    const checkSameness = (current, saved, overflow) => {
-      const sortedCurrent = current.sort((a, b) => a.lastName.localeCompare(b.lastName));
-
-      const sortedSaved = saved.flat().concat(overflow).sort((a, b) => a.lastName.localeCompare(b.lastName));
-
-      return _.isEqual(sortedCurrent, sortedSaved);;
-    };
-    
-    if(
-      user.workingDays === parseInt(req.body.workingDays) && 
-      checkSameness(activePatients, user.groups.geoGroups.geos, user.groups.geoGroups.geoOverflow)
-    ) {
-      return res.status(201).json(user.groups);
-    };
-
-    if(req.body.workingDays) {
-      workingDays =  isNaN(parseInt(req.body.workingDays)) ? user.workingDays : parseInt(req.body.workingDays);
-    } else {
-      workingDays = 5;
-    }
-
-    const k = workingDays;
-    const maxVisits = Math.ceil(activePatients.length/workingDays);
-
-    function haversine(point1, point2) {
-      const lat1 = point1.lat;
-      const lon1 = point1.lng;
-      const lat2 = point2.lat;
-      const lon2 = point2.lng;
-    
-      const R = 6371; 
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const distance = R * c;
-      return distance;
-    };
-
-    function kMeansClustering(activePatients, k) {
-      let centroids = [];
-      
-      for (let i = 0; i < k; i++) {
-        const centroidIndex = Math.floor(Math.random() * activePatients.length);
-
-        centroids.push(activePatients[centroidIndex].coordinates);
-      }
-    
-      let prevCentroids = [];
-      let iterations = 0;
-      let clusters;
-      let clusterOverflow;
-    
-      while (!arraysEqual(centroids, prevCentroids) && iterations < 100) {
-          clusters = new Array(k).fill(0).map(() => []);
-          clusterOverflow = [];
-    
-          activePatients.forEach(patient => {
-              let minDistance = Infinity;
-              let clusterIndex = -1;
-    
-              centroids.forEach((centroid, index) => {
-                  const distance = haversine(patient.coordinates, centroid);
-                  if (distance < minDistance && clusters[index].length < maxVisits) {
-                    minDistance = distance;
-                    clusterIndex = index;
-                  };
-              });
-
-              clusters[clusterIndex].push(patient);
-          });
-    
-          prevCentroids = [...centroids];
-          centroids = clusters.map(cluster => calculateCentroid(cluster));
-          iterations++;
-      }
-    
-      return {clusters, clusterOverflow};
-    };
-
-    function calculateCentroid(cluster) {
-      const sumLat = cluster.reduce((acc, point) => acc + point.coordinates.lat, 0);
-      const sumLng = cluster.reduce((acc, point) => acc + point.coordinates.lng, 0);
-      const centroidLat = sumLat / cluster.length;
-      const centroidLng = sumLng / cluster.length;
-      return { lat: centroidLat, lng: centroidLng };
-    };
-
-    function arraysEqual(arr1, arr2) {
-      return JSON.stringify(arr1) === JSON.stringify(arr2);
-    };
-
-    const clusterPatients = kMeansClustering(activePatients, k);
-
-    user.groups = {
-      geoGroups: {geos: clusterPatients.clusters, geoOverflow: clusterPatients.clusterOverflow},
-      visitGroups: {visits: user.groups.visitGroups.visits, visitOverflow: user.groups.visitGroups.visitOverflow}
-    };
-
-    user.workingDays = workingDays;
-    await user.save();
-
-    res.status(201).json(user.groups);
+    res.status(201).json(user.autoGroups);
   } catch (error) {
     console.error('Error:', error);
   }

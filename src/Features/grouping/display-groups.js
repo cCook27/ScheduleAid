@@ -1,8 +1,7 @@
 import React, {useState, useEffect, useContext} from "react";
 
 import Loading from "../../pop-ups/loading";
-import VisitGroups from "./visit-grouping";
-import GeoGroups from "./geo-groups";
+import AutoGroups from "./auto-grouping";
 
 import useDistanceRequests from "../../hooks/distance-request";
 import { UserContext } from "../../context/context";
@@ -15,26 +14,20 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
 
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
-  const {createVisitGroups, createGeoGroups} = useDistanceRequests();
+  const {createAutoGroups} = useDistanceRequests();
 
   const [patientGroups, setPatientGroups] = useState(undefined);
   const [groupType, setGroupType] = useState(null);
 
-  const handleGeoGroups = async (event) => {
-    const returnedGroups = await createGeoGroups(
-      user._id, 
-      accessToken, 
-      therapistParameters
-    );
+  const handleManualGroups = async (event) => {
 
-    setPatientGroups(returnedGroups);
     setGroupType(event.target.id);
   };
 
   const handleVisitGroups = async (event) => {
     setPatientGroups(null);
 
-    const returnedGroups = await createVisitGroups(
+    const returnedGroups = await createAutoGroups(
       user._id, 
       accessToken, 
       therapistParameters
@@ -56,8 +49,8 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
               />
               <label className="view group-view left-rad" htmlFor="visits">Visits</label>
 
-              <input type="radio" className="btn-check group-view-btn" name="patients" id="patients" checked={groupType === "patients"}  onChange={handleGeoGroups} />
-              <label className="view group-view right-rad" htmlFor="patients">Patients</label>
+              <input type="radio" className="btn-check group-view-btn" name="manual" id="manual" checked={groupType === "manual"}  onChange={handleManualGroups} />
+              <label className="view group-view right-rad" htmlFor="manual">Manual</label>
             </div>
           </div>
         </div>
@@ -66,19 +59,11 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
         {
           groupType === 'visits' ? 
           (
-            <VisitGroups handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
-          ): groupType === 'patients' ?
-          (
-            <GeoGroups handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups}/>
-          ): 
+            <AutoGroups handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
+          ):  
           (
             <div className="d-flex flex-column group-explain p-4">
-              <div className="d-flex">
-                <p className="group-des"><span className="title p-0">Visits</span> will break your Active Patient list down into individual visits and group them based on geographic location. This means that if Jane Doe must be seen twice a week she will be appear in 2 different geogrpahic groups.</p>
-              </div>
-              <div className="d-flex">
-                <p className="group-des"><span className="title p-0">Patients</span> groups all of your patients based on geogrpahic location.</p>
-              </div>
+             
             </div>
           )
         }
@@ -92,5 +77,8 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
 export default DisplayGroups;
 
 
-
+// groupType === 'patients' ?
+//           (
+//             <GeoGroups handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups}/>
+//           ):
 
