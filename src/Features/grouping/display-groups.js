@@ -6,11 +6,12 @@ import AutoGroups from "./auto-grouping";
 import useDistanceRequests from "../../hooks/distance-request";
 import { UserContext } from "../../context/context";
 import { AccessTokenContext } from "../../context/context";
+import useModalInfo from "../../hooks/modal-info";
 
 import "../../css/display-groups.css"
 
 
-const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups, therapistParameters }) => {
+const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups, therapistParameters, openModal }) => {
 
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
@@ -20,7 +21,6 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
   const [groupType, setGroupType] = useState(null);
 
   const handleManualGroups = async (event) => {
-
     setGroupType(event.target.id);
   };
 

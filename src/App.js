@@ -12,17 +12,20 @@ import Dashboard from './Features/dashboard.js';
 import Calendar from './components/Calendar.js';
 import LogoutButton from './auth/LogoutButton.js';
 import Profile from './auth/Profile.js';
-import useUserRequests from './hooks/user-requests.js';
 import CreateProfile from './auth/CreateProfile.js';
+import ViewPatient from './Features/view-patient.js';
+
 import { UserContext, AccessTokenContext, GroupsContext } from './context/context.js';
+import useUserRequests from './hooks/user-requests.js';
+import useModalInfo from './hooks/modal-info.js';
 
 import './App.css'
-import ViewPatient from './Features/view-patient.js';
 
 
 function App() {
   const { getUser } = useUserRequests();
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const { isOpen, modalType, modalProps, openModal,closeModal } = useModalInfo();
   
   const [validUser, setValidUser] = useState(false);  
   const [userInfo, setUserInfo] = useState('');
@@ -30,6 +33,10 @@ function App() {
   const [groups, setGroups] = useState(undefined);
 
   const currentPath = window.location.pathname;
+
+  useEffect(() => {
+    console.log(isOpen, modalType);
+  }, [isOpen])
 
   if(isLoading) {
     return (
@@ -87,26 +94,23 @@ function App() {
     return (
       <div className='overall'>
         <div>
-          <UserContext.Provider value={userInfo}>
-            <AccessTokenContext.Provider value={accessToken}>
-              <GroupsContext.Provider value={{ groups, updateGroups }}>
-                <Router>
-                {currentPath !== '/create-profile' ? <Navbar /> :
-                  null
-                }
-                  
+          <Router>  
+            {currentPath !== '/create-profile' ? <Navbar /> : null}
+            <UserContext.Provider value={userInfo}>
+              <AccessTokenContext.Provider value={accessToken}>
+                <GroupsContext.Provider value={{ groups, updateGroups }}>
                   <Routes> 
                     <Route exact path="/" element={<Dashboard/>} />
                     <Route exact path="/profile" element={<Profile/>} />
                     <Route exact path="/logout" element={<LogoutButton/>} />
                     <Route exact path="/manage" element={<DisplayClients/>}  />
                     <Route path="/manage/:id" element={<ViewPatient />} />
-                    <Route exact path="/scheduling" element={<Calendar/>} />
+                    <Route exact path="/scheduling" element={<Calendar />} />
                   </Routes>
-                </Router>
-               </GroupsContext.Provider>
-            </AccessTokenContext.Provider>
-          </UserContext.Provider>
+                </GroupsContext.Provider>
+              </AccessTokenContext.Provider>
+            </UserContext.Provider>
+          </Router>
         </div>
       </div>
     );
