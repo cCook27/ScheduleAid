@@ -14,6 +14,7 @@ import LogoutButton from './auth/LogoutButton.js';
 import Profile from './auth/Profile.js';
 import CreateProfile from './auth/CreateProfile.js';
 import ViewPatient from './Features/view-patient.js';
+import ModalWrapper from './components/Modal-Wrapper.js';
 
 import { UserContext, AccessTokenContext, GroupsContext } from './context/context.js';
 import useUserRequests from './hooks/user-requests.js';
@@ -21,11 +22,10 @@ import useModalInfo from './hooks/modal-info.js';
 
 import './App.css'
 
-
 function App() {
   const { getUser } = useUserRequests();
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
-  const { isOpen, modalType, modalProps, openModal,closeModal } = useModalInfo();
+  const { isOpen, modalType, modalProps, openModal, closeModal } = useModalInfo();
   
   const [validUser, setValidUser] = useState(false);  
   const [userInfo, setUserInfo] = useState('');
@@ -33,10 +33,6 @@ function App() {
   const [groups, setGroups] = useState(undefined);
 
   const currentPath = window.location.pathname;
-
-  useEffect(() => {
-    console.log(isOpen, modalType);
-  }, [isOpen])
 
   if(isLoading) {
     return (
@@ -112,6 +108,7 @@ function App() {
             </UserContext.Provider>
           </Router>
         </div>
+        {isOpen ? <ModalWrapper modalType={modalType} modalProps={modalProps} closeModal={closeModal} /> : null}
       </div>
     );
   } else if(isLoading) {
