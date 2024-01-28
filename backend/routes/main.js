@@ -30,7 +30,7 @@ router.get('/user/:user', async (req, res) => {
 
 });
 
-router.get('/homes/:user', async (req, res) => {
+router.get('/patients/:user', async (req, res) => {
   try{
     const userId = req.params.user;    
     const user = await User.findOne({_id: userId});
@@ -434,7 +434,7 @@ router.post('/patients/distanceMatrix', async (req, res) => {
 
 });
 
-router.post('/homes/:user', async (req, res) => {
+router.post('/patients/:user', async (req, res) => {
   try {
     const newHomeInfo = req.body;
     const userId = req.params.user;

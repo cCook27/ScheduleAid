@@ -1,11 +1,11 @@
 import React from "react";
 
-import useHomeRequests from "../hooks/home-requests";
+import usePatientRequests from "../hooks/patient-requests";
 
 import '../css/delete-patient-modal.css';
 
 const DeletePatientModal = ({userId, accessToken, modalProps, closeModal}) => {
-  const { removePatient } = useHomeRequests();
+  const { removePatient } = usePatientRequests();
 
   const handleCancelDelete = () => {
     closeModal();

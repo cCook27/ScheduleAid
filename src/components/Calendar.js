@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 
 import { UserContext, AccessTokenContext } from '../context/context';
 import useDistanceRequests from '../hooks/distance-request';
-import useHomeRequests from '../hooks/home-requests.js';
+import usePatientRequests from '../hooks/patient-requests.js';
 import useScheduleRequests from '../hooks/schedule-requests';
 import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
@@ -31,7 +31,7 @@ function Calendar(props) {
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
-  const {getHomes} = useHomeRequests();
+  const {getPatients} = usePatientRequests();
   const {getTimeDistances} = useDistanceRequests();
   const {saveUserSchedule, getUserSchedule, deleteSchedule, deletePatientSchedule} = useScheduleRequests();
 
@@ -60,7 +60,7 @@ function Calendar(props) {
   const [viewEndDate, setViewEndDate] = useState(null);
 
   const { data: homes, homeStatus } = useQuery(["homes"], 
-    () => getHomes(user._id, accessToken)
+    () => getPatients(user._id, accessToken)
   );
 
   const { data: dbSchedule, dbScheduleStatus } = useQuery(["schedule"], 

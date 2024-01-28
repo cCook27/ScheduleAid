@@ -1,9 +1,9 @@
-function useHomeRequests () {
+function usePatientRequests () {
   const url = 'http://localhost:8080';
 
-  const getHomes = async (userId, accessToken) => {
+  const getPatients = async (userId, accessToken) => {
     try {
-      const response = await fetch(`${url}/homes/${userId}`, {
+      const response = await fetch(`${url}/patients/${userId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -13,9 +13,9 @@ function useHomeRequests () {
         throw new Error(`Request failed with status ${response.status}`);
       }
 
-      const homeData = await response.json();
+      const patientData = await response.json();
      
-      return homeData;
+      return patientData;
      
     } catch (error) {
       console.error('Error:', error);
@@ -86,7 +86,7 @@ function useHomeRequests () {
     }
   };
 
-  const addNewHome = async (home, userId, accessToken) => {
+  const addNewPatient = async (home, userId, accessToken) => {
     try {
       const options = {
         method: 'POST',
@@ -94,7 +94,7 @@ function useHomeRequests () {
         body: JSON.stringify(home)
       };
 
-      const response = await fetch(`${url}/homes/${userId}`, options);
+      const response = await fetch(`${url}/patients/${userId}`, options);
       const resData = await response.json();
 
       return resData;
@@ -123,13 +123,13 @@ function useHomeRequests () {
 
 
   return {
-   getHomes,
+   getPatients,
    viewPatient,
    updatePatient,
-   addNewHome,
+   addNewPatient,
    removePatient,
   }
 }
 
 
-export default useHomeRequests;
+export default usePatientRequests;

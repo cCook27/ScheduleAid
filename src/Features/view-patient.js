@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import PlacesAutocomplete from 'react-places-autocomplete';
 
 
-import useHomeRequests from '../hooks/home-requests';
+import usePatientRequests from '../hooks/patient-requests';
 import {UserContext, AccessTokenContext} from '../context/context';
 import { useAuth0 } from "@auth0/auth0-react";
 import Loading from "../pop-ups/loading";
@@ -22,7 +22,7 @@ const ViewPatient = ({openModal, isOpen}) => {
   const accessToken = useContext(AccessTokenContext);
   const { isLoading } = useAuth0();
 
-  const {viewPatient, updatePatient, removeHome} = useHomeRequests();
+  const {viewPatient, updatePatient, removePatient} = usePatientRequests();
   const { id } = useParams();
   const { data: patient, status, refetch } = useQuery('patient',
     () => viewPatient(user._id, id, accessToken)

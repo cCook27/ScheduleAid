@@ -4,11 +4,11 @@ import { useState, useContext } from 'react';
 import PlacesAutocomplete from 'react-places-autocomplete';
 import { v4 as uuidv4 } from 'uuid';
 
-import useHomeRequests from '../hooks/home-requests';
+import usePatientRequests from '../hooks/patient-requests';
 import {UserContext, AccessTokenContext} from '../context/context';
 
 function CreatePatient({close}) {
-  const {addNewHome} = useHomeRequests();
+  const {addNewPatient} = usePatientRequests();
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
@@ -78,7 +78,7 @@ function CreatePatient({close}) {
   };
 
   const handleSave = () => {
-    addNewHome(formData, user._id, accessToken);
+    addNewPatient(formData, user._id, accessToken);
     close();
     window.location.href = '/manage';
   };

@@ -2,12 +2,12 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
-import useHomeRequests from "../hooks/home-requests";
+import usePatientRequests from "../hooks/patient-requests";
 
 import '../css/patient-schedule-notes.css'
 
 const PatientScheduleNotes = ({userId, accessToken, modalProps, closeModal}) => {
-  const { updatePatient } = useHomeRequests();
+  const { updatePatient } = usePatientRequests();
 
   const [patientNote, setPatientNote] = useState({
     noteId: undefined,

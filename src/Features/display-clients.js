@@ -8,7 +8,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../css/display-clients.css';
 
 import CreatePatient from './create-patient';
-import useHomeRequests from '../hooks/home-requests';
+import usePatientRequests from '../hooks/patient-requests';
 import {UserContext, AccessTokenContext} from '../context/context';
 
 function DisplayClients() {
@@ -18,12 +18,12 @@ function DisplayClients() {
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
-  const { getHomes, removeHome } = useHomeRequests();
-  const { data: homes, status } = useQuery('homes', 
-    () => getHomes(user._id, accessToken)
+  const { getPatients, removePatient } = usePatientRequests();
+  const { data: patients, status } = useQuery('patients', 
+    () => getPatients(user._id, accessToken)
   );
 
-  const [filteredHomes, setFilteredHomes] = useState([]);
+  const [filteredPatients, setFilteredPatients] = useState([]);
   const [filter, setFilter] = useState(null);
   const [searchFilter, setSearchFilter] = useState(null);
   const [addPatinet, setAddPatient] = useState(false);
@@ -32,19 +32,19 @@ function DisplayClients() {
     setFilter(filterEvent);
 
     if(filterEvent === 'A-Z') {
-      const sortAZ = homes.sort((a, b) => a.lastName.localeCompare(b.lastName));
-      sortAZ.length > 0 ? setFilteredHomes(sortAZ) : window.alert('Add Patients!');
+      const sortAZ = patients.sort((a, b) => a.lastName.localeCompare(b.lastName));
+      sortAZ.length > 0 ? setFilteredPatients(sortAZ) : window.alert('Add Patients!');
     } else if(filterEvent === 'Z-A')  {
-      const sortZA = homes.sort((a, b) => b.lastName.localeCompare(a.lastName));
-      sortZA.length > 0 ? setFilteredHomes(sortZA) : window.alert('Add Patients!');
+      const sortZA = patients.sort((a, b) => b.lastName.localeCompare(a.lastName));
+      sortZA.length > 0 ? setFilteredPatients(sortZA) : window.alert('Add Patients!');
     } else if(filterEvent === 'Active') {
-      const filterActive = homes.filter((home) => home.active);
-      filterActive.length > 0 ? setFilteredHomes(filterActive) : window.alert('You have no Active patients');
+      const filterActive = patients.filter((patient) => patient.active);
+      filterActive.length > 0 ? setFilteredPatients(filterActive) : window.alert('You have no Active patients');
     } else if(filterEvent === 'Inactive') {
-      const filterInactive = homes.filter((home) => !home.active);
-      filterInactive.length > 0 ? setFilteredHomes(filterInactive) : window.alert('You have no Inactive patients');
+      const filterInactive = patients.filter((patient) => !patient.active);
+      filterInactive.length > 0 ? setFilteredPatients(filterInactive) : window.alert('You have no Inactive patients');
     } else if(filterEvent === 'All') {
-      setFilteredHomes(homes);
+      setFilteredPatients(patients);
     }
   };
 
@@ -53,9 +53,9 @@ function DisplayClients() {
   };
 
   const searchName = () => {
-    const isName = homes.filter((home) => home.firstName.toUpperCase() === searchFilter.toUpperCase() || home.lastName.toUpperCase() === searchFilter.toUpperCase());
+    const isName = patients.filter((patient) => patient.firstName.toUpperCase() === searchFilter.toUpperCase() || patient.lastName.toUpperCase() === searchFilter.toUpperCase());
 
-    isName.length > 0 ? setFilteredHomes(isName) : window.alert(`Sorry, it looks like there is no one by the name of ${searchFilter} in your patient list.`);
+    isName.length > 0 ? setFilteredPatients(isName) : window.alert(`Sorry, it looks like there is no one by the name of ${searchFilter} in your patient list.`);
 
     setFilter(null);
   };
@@ -64,12 +64,12 @@ function DisplayClients() {
     setAddPatient(!addPatinet);
   };
 
-  const deleteHome = useMutation({
+  const deletePatient = useMutation({
     mutationFn: (id) => 
-      removeHome(id, user._id, accessToken),
+      removePatient(id, user._id, accessToken),
       
     onSuccess: () => {
-      queryClient.invalidateQueries('homes');
+      queryClient.invalidateQueries('patients');
     },
   });
 
@@ -126,7 +126,7 @@ function DisplayClients() {
                 </div>
               </div>
               
-            ) : !homes ? 
+            ) : !patients ? 
             (
               <div className="row">
                 <div className="col">
@@ -134,7 +134,7 @@ function DisplayClients() {
                 </div>
               </div>
               
-            ) : filteredHomes.length > 0 ?
+            ) : filteredPatients.length > 0 ?
             (
               <div className="contacts-bg mb-3 d-flex flex-column">
                 <div className="row mt-2 contact-title-row py-2">
@@ -160,27 +160,27 @@ function DisplayClients() {
 
                 <div className="row">
                   <div className="col p-3 d-flex flex-column justify-content-center align-items-center">
-                    { filteredHomes.map((home) => (
-                      <div key={home._id} className="row pat-cont">
+                    { filteredPatients.map((patient) => (
+                      <div key={patient._id} className="row pat-cont">
                         <div className="col info-cont">
-                          <div className="pat-name me-1">{home.firstName}</div>
-                          <div className="pat-name">{home.lastName}</div>
+                          <div className="pat-name me-1">{patient.firstName}</div>
+                          <div className="pat-name">{patient.lastName}</div>
                         </div>
                         <div className="col info-cont">
-                          <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
+                          <div className="pat-active ellipsis-overflow">{patient.active ? 'Active' : 'Inactive'}</div>
                         </div>
                         <div className="col info-cont larger-cont">
-                          <div className="pat-address ellipsis-overflow">{home.address}</div>
+                          <div className="pat-address ellipsis-overflow">{patient.address}</div>
                         </div>
                         <div className="col info-cont">
-                          <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
+                          <div className="pat-frequency ellipsis-overflow">{patient.frequency}/Week</div>
                         </div>
                         <div className="col info-cont">
-                          <div className="pat-number ellipsis-overflow">{home.primaryNumber}</div>
+                          <div className="pat-number ellipsis-overflow">{patient.primaryNumber}</div>
                         </div>
                         <div className="col info-cont">
                           <button className='btn view-btn'>
-                            <Link className='link' to={`/manage/${home._id}`}>View</Link>
+                            <Link className='link' to={`/manage/${patient._id}`}>View</Link>
                           </button>
                         </div>
                       </div>
@@ -190,7 +190,7 @@ function DisplayClients() {
                 
               </div>
              
-            ) : filteredHomes.length === 0 && homes.length > 0 ?
+            ) : filteredPatients.length === 0 && patients.length > 0 ?
             (
               <div className="contacts-bg mb-3 d-flex flex-column">
                 <div className="row mt-2 contact-title-row py-2">
@@ -216,27 +216,27 @@ function DisplayClients() {
 
                 <div className="row">
                   <div className="col p-3 d-flex flex-column justify-content-center align-items-center">
-                    { homes.map((home) => (
-                      <div key={home._id} className="row pat-cont">
+                    { patients.map((patient) => (
+                      <div key={patient._id} className="row pat-cont">
                         <div className="col info-cont">
-                          <div className="pat-name me-1">{home.firstName}</div>
-                          <div className="pat-name">{home.lastName}</div>
+                          <div className="pat-name me-1">{patient.firstName}</div>
+                          <div className="pat-name">{patient.lastName}</div>
                         </div>
                         <div className="col info-cont">
-                          <div className="pat-active ellipsis-overflow">{home.active ? 'Active' : 'Inactive'}</div>
+                          <div className="pat-active ellipsis-overflow">{patient.active ? 'Active' : 'Inactive'}</div>
                         </div>
                         <div className="col info-cont larger-cont">
-                          <div className="pat-address ellipsis-overflow">{home.address}</div>
+                          <div className="pat-address ellipsis-overflow">{patient.address}</div>
                         </div>
                         <div className="col info-cont">
-                          <div className="pat-frequency ellipsis-overflow">{home.frequency}/Week</div>
+                          <div className="pat-frequency ellipsis-overflow">{patient.frequency}/Week</div>
                         </div>
                         <div className="col info-cont">
-                          <div className="pat-number ellipsis-overflow">{home.primaryNumber}</div>
+                          <div className="pat-number ellipsis-overflow">{patient.primaryNumber}</div>
                         </div>
                         <div className="col info-cont">
                           <button className='btn view-btn'>
-                            <Link className='link' to={`/manage/${home._id}`}>View</Link>
+                            <Link className='link' to={`/manage/${patient._id}`}>View</Link>
                           </button>
                         </div>
                       </div>
