@@ -41,25 +41,25 @@ router.get('/patients/:user', async (req, res) => {
       return res.status(404).send('User not found');
     }
 
-    const userHomes = user.homes.map((home) => {
-      if (home.hasOwnProperty('groupNumber')) {
+    const userPatients = user.patients.map((patient) => {
+      if (patient.hasOwnProperty('groupNumber')) {
         // Remove the property
-        delete home['groupNumber'];
+        delete patient['groupNumber'];
       }
-      return home;
+      return patient;
     });
 
     user.save();
     
-    if(userHomes.length === 0) {
+    if(userPatients.length === 0) {
       return res.send([]);
     }
 
-    res.send(userHomes);
+    res.send(userPatients);
 
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).send('An error occurred while looking for client homes.');
+    res.status(500).send('An error occurred while looking for patients.');
   }
 });
 
@@ -78,8 +78,8 @@ router.get('/patient/:user/:patient', async (req, res) => {
       return res.status(400).send('Bad request, Patient Id not sent.');
     }
 
-    const patientToReturn = user.homes.find((home) => {
-      return home._id === patientId;
+    const patientToReturn = user.patients.find((patient) => {
+      return patient._id === patientId;
     });
 
     if(!patientToReturn) {
@@ -90,7 +90,7 @@ router.get('/patient/:user/:patient', async (req, res) => {
 
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).send('An error occurred while looking for client homes.');
+    res.status(500).send('An error occurred while looking for patients.');
   }
 });
 
@@ -121,10 +121,10 @@ router.post('/grouping/auto/:user', async (req, res) => {
     let user = await User.findOne({ _id: userId });
     // therapist info needs to done differently
     const therapistHome = {lat: 33.269950, lng: -111.736540};
-    const homes = user.homes;
+    const patients = user.patients;
     let workingDays;
 
-    const activePatients = homes.filter((home) => home.active);
+    const activePatients = patients.filter((patient) => patient.active);
 
     const fulfillAllFrequecies = activePatients.map((patient) => {
       const patientFrequency = patient.frequency;
@@ -331,7 +331,7 @@ router.post('/user', async (req, res) => {
     const userToAdd = new User({
       name: newUser.name,
       _id: newUser._id,
-      homes: [],
+      patients: [],
       schedule: [],
       buffer: 5,
       designation: newUser.designation,
@@ -436,17 +436,17 @@ router.post('/patients/distanceMatrix', async (req, res) => {
 
 router.post('/patients/:user', async (req, res) => {
   try {
-    const newHomeInfo = req.body;
+    const newPatientInfo = req.body;
     const userId = req.params.user;
     let user = await User.findOne({_id: userId}); 
 
-    if(!newHomeInfo || !userId) {
+    if(!newPatientInfo || !userId) {
       return res.status(400).send('Bad request, Data not sent.');
     } else if(!user) {
       return res.status(404).send('User not found');
     };
 
-    const address = newHomeInfo.address;
+    const address = newPatientInfo.address;
 
     const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
       params: {
@@ -455,16 +455,16 @@ router.post('/patients/:user', async (req, res) => {
       }
     });
 
-    newHomeInfo['coordinates'] = response.data.results[0].geometry.location;
+    newPatientInfo['coordinates'] = response.data.results[0].geometry.location;
 
-    user.homes = [newHomeInfo, ...user.homes];
+    user.patients = [newPatientInfo, ...user.patients];
     const save = user.save();
 
-    res.status(201).json(newHomeInfo);
+    res.status(201).json(newPatientInfo);
 
   } catch (error) {
       console.error('Error:', error);
-      res.status(500).send('An error occurred while saving the client home.');
+      res.status(500).send('An error occurred while saving the patient.');
   }
 });
 
@@ -523,7 +523,7 @@ router.put('/updatePatient/:user', async (req, res) => {
     const userId = req.params.user;
     const user = await User.findOne({_id: userId});
 
-    const updatedPatientList = user.homes.map((patient) => {
+    const updatedPatientList = user.patients.map((patient) => {
       if(patient._id === patientInfo._id) {
         return patientInfo;
       };
@@ -531,7 +531,7 @@ router.put('/updatePatient/:user', async (req, res) => {
       return patient;
     });
 
-    user.homes = updatedPatientList;
+    user.patients = updatedPatientList;
 
     await user.save();
 
@@ -573,7 +573,7 @@ router.delete('/patients/:patient/:user', async (req,res) => {
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
-      { $pull: { homes: { _id: patientId } } },
+      { $pull: { patients: { _id: patientId } } },
       { new: true } 
     );
 
@@ -607,7 +607,7 @@ router.delete('/schedule/:user', async (req, res) => {
 
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).send('An error occurred while looking for client homes.');
+    res.status(500).send('An error occurred while looking for patients.');
   }
 });
 
@@ -630,7 +630,7 @@ router.delete('/schedule/patient/:user/', async (req, res) => {
 
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).send('An error occurred while looking for client homes.');
+    res.status(500).send('An error occurred while looking for patients.');
   }
 });
 

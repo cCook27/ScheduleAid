@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     name: String,
     _id: String,
-    homes: Array,
+    patients: Array,
     schedule: Array,
     autoGroups: {visits: [], visitOverflow: []},
     manualGroups: Array,
