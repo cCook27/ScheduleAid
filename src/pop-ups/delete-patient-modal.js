@@ -5,14 +5,14 @@ import useHomeRequests from "../hooks/home-requests";
 import '../css/delete-patient-modal.css';
 
 const DeletePatientModal = ({userId, accessToken, modalProps, closeModal}) => {
-  const { removeHome } = useHomeRequests();
+  const { removePatient } = useHomeRequests();
 
   const handleCancelDelete = () => {
     closeModal();
   };
 
   const finalRemove = () => {
-    removeHome(modalProps.patientId, userId, accessToken);
+    removePatient(modalProps.patientId, userId, accessToken);
     window.location.href = '/manage';
 
     if(window.location.href === '/manage') {

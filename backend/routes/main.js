@@ -562,18 +562,18 @@ router.put('/user/:user', async (req, res) => {
   
 });
 
-router.delete('/homes/:home/:user', async (req,res) => {
+router.delete('/patients/:patient/:user', async (req,res) => {
   try {
     const userId = req.params.user;
-    const homeId = req.params.home;
+    const patientId = req.params.patient;
 
-    if(!homeId || !userId) {
+    if(!patientId || !userId) {
       return res.status(400).send('Bad request, User information not sent.');
     } 
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
-      { $pull: { homes: { _id: homeId } } },
+      { $pull: { homes: { _id: patientId } } },
       { new: true } 
     );
 
@@ -585,7 +585,7 @@ router.delete('/homes/:home/:user', async (req,res) => {
     
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).send('An error occurred while looking for client homes.');
+    res.status(500).send('An error occurred while looking for your patient.');
   }
 });
 

@@ -1,7 +1,6 @@
 function useHomeRequests () {
   const url = 'http://localhost:8080';
 
-
   const getHomes = async (userId, accessToken) => {
     try {
       const response = await fetch(`${url}/homes/${userId}`, {
@@ -105,14 +104,14 @@ function useHomeRequests () {
     }
   };
 
-  const removeHome = async (homeId, userId, accessToken) => {
+  const removePatient = async (homeId, userId, accessToken) => {
     try {
       const options = {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
       };
       
-      const response = await fetch(`${url}/homes/${homeId}/${userId}`, options);
+      const response = await fetch(`${url}/patients/${homeId}/${userId}`, options);
       const resData = await response.json();
 
       return resData;
@@ -128,7 +127,7 @@ function useHomeRequests () {
    viewPatient,
    updatePatient,
    addNewHome,
-   removeHome,
+   removePatient,
   }
 }
 
