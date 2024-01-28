@@ -45,12 +45,12 @@ const EditPatientNotes = ({userId, accessToken, modalProps, closeModal}) => {
     }));
   };
 
-  const handleSaveNote = () => {
+  const handleSaveNote = async () => {
     const index = modalProps.patientData.notes.findIndex((note) => note.noteId === modalProps.editId);
     const patientToUpdate = {...modalProps.patientData};
     patientToUpdate.notes[index] = patientNote;
 
-    updatePatient(userId, patientToUpdate, accessToken);
+    await updatePatient(userId, patientToUpdate, accessToken);
     closeModal();
   };
 

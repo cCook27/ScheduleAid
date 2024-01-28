@@ -41,11 +41,11 @@ const PatientScheduleNotes = ({userId, accessToken, modalProps, closeModal}) => 
     }));
   };
 
-  const handleSaveNote = () => {
+  const handleSaveNote = async () => {
     const patientToUpdate = {...modalProps.patientData};
     patientToUpdate.notes = [patientNote, ...patientToUpdate.notes];
     
-    updatePatient(userId, patientToUpdate, accessToken);
+    await updatePatient(userId, patientToUpdate, accessToken);
     closeModal();
   };
 

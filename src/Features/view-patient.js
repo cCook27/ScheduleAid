@@ -43,7 +43,7 @@ const ViewPatient = ({openModal, isOpen}) => {
   },[patientData]);
 
   useEffect(() => {
-    refetch();
+    handleRefetch();
   }, [isOpen])
 
   const handleBack = () => {
@@ -152,6 +152,17 @@ const ViewPatient = ({openModal, isOpen}) => {
       ...prevData,
       notes: prevData.notes.filter((note) => note.noteId !== noteId)
     }));
+  };
+
+  const handleRefetch = async () => {
+    const { data, error, failureCount, isFetching } = await refetch();
+    if(data.error) {
+      console.log('this is working')
+    }
+
+    if(data) {
+      // setStillFetching(false);
+    }
   };
 
   const renderTooltip = (props) => (
