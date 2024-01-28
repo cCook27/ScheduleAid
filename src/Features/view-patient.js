@@ -13,7 +13,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import '../css/view-patient.css';
-import DeletePatientModal from '../pop-ups/delete-patient-modal';
+
 
 const ViewPatient = ({openModal, isOpen}) => {
   const queryClient = useQueryClient();
@@ -32,7 +32,6 @@ const ViewPatient = ({openModal, isOpen}) => {
     patientName: false,
     contactSide: false,
     scheduleSide: false,
-    deletePatient: false,
   });
   const [patientData, setPatientData] = useState(undefined);
 
@@ -47,11 +46,6 @@ const ViewPatient = ({openModal, isOpen}) => {
   useEffect(() => {
     refetch();
   }, [isOpen])
-  
-  const handleDeletePatient = () => {
-    removeHome(id, user._id, accessToken);
-    window.location.href = '/manage';
-  };
 
   const handleBack = () => {
     window.location.href = '/manage';
@@ -79,10 +73,12 @@ const ViewPatient = ({openModal, isOpen}) => {
   };
   
   const handleDeletePatientEdit = () => {
-    setEdit((prev) => ({
-      ...prev,
-      deletePatient: !prev.deletePatient,
-    }));
+    const deleteProps = {
+      patientData: patientData,
+      patientId: id,
+    };
+
+    openModal('DeletePatientModal', deleteProps);
   };
 
   const handleAddPatientNote = () => {
@@ -496,15 +492,7 @@ const ViewPatient = ({openModal, isOpen}) => {
                   </div>
                 </div>
               </div>
-            </div>
-            {edit.deletePatient && (
-              <div className='delete-modal'>
-                <DeletePatientModal patientData={patientData} 
-                handleDeletePatient={handleDeletePatient} 
-                handleDeletePatientEdit={handleDeletePatientEdit} />
-              </div>
-            )}
-           
+            </div> 
           </div>
         ) : null
       }
