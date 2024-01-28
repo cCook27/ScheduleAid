@@ -9,7 +9,7 @@ function useDistanceRequests () {
         body: JSON.stringify(events)
       };
 
-      const response = await fetch(`${url}/homes/distanceMatrix`, options);
+      const response = await fetch(`${url}/patients/distanceMatrix`, options);
       const scheduleViability = await response.json();
 
       return scheduleViability

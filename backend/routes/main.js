@@ -349,7 +349,7 @@ router.post('/user', async (req, res) => {
   
 });
 
-router.post('/homes/distanceMatrix', async (req, res) => {
+router.post('/patients/distanceMatrix', async (req, res) => {
   try {
     const selectedDaySchedule = Object.values(req.body);
 
