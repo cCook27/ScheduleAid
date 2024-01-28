@@ -2,12 +2,15 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
+import useHomeRequests from "../hooks/home-requests";
+
 import '../css/patient-schedule-notes.css'
 
-const EditPatientNotes = ({patientData, handleEditNote, editId, handleUpdatedNote}) => {
+const EditPatientNotes = ({userId, accessToken, modalProps, closeModal}) => {
+  const { updatePatient } = useHomeRequests();
 
   const [patientNote, setPatientNote] = useState({
-    noteId: editId,
+    noteId: modalProps.editId,
     noteDate: undefined,
     note: undefined
   });
@@ -22,8 +25,8 @@ const EditPatientNotes = ({patientData, handleEditNote, editId, handleUpdatedNot
 
     const date = `${month}/${day}/${year} ${hours}:${minutes}`
 
-    const noteValue = patientData.notes.find((note) => {
-      return note.noteId === editId;
+    const noteValue = modalProps.patientData.notes.find((note) => {
+      return note.noteId === modalProps.editId;
     });
 
     setPatientNote((prev) => ({
@@ -31,7 +34,7 @@ const EditPatientNotes = ({patientData, handleEditNote, editId, handleUpdatedNot
       noteDate: date,
       note: noteValue.note
     }));
-  }, [patientData]);
+  }, [modalProps.patientData]);
 
   const handleNoteChanges = (event) => {
     const {value} = event.target;
@@ -42,20 +45,25 @@ const EditPatientNotes = ({patientData, handleEditNote, editId, handleUpdatedNot
     }));
   };
 
+
   const handleSaveNote = () => {
-    handleUpdatedNote(patientNote);
-    handleEditNote();
+    const index = modalProps.patientData.notes.findIndex((note) => note.noteId === modalProps.editId);
+    const patientToUpdate = {...modalProps.patientData};
+    patientToUpdate.notes[index] = patientNote;
+
+    updatePatient(userId, patientToUpdate, accessToken);
+    closeModal()
   };
 
   const handleCancelNote = () => {
-    handleEditNote();
+    closeModal()
   };
 
   return (
     <div>
       <div className="p-notes-title-cont p-3">
         <div className="p-notes-title">
-          Shceduling Notes for <span className="p-notes-name">{patientData.firstName}</span>:
+          Shceduling Notes for <span className="p-notes-name">{modalProps.patientData.firstName}</span>:
         </div>
         <button onClick={handleCancelNote} type="button" className="btn-close close-all close-p-notes me-1" aria-label="Close"></button>
       </div>

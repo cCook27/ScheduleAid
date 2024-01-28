@@ -100,7 +100,7 @@ function App() {
                     <Route exact path="/profile" element={<Profile/>} />
                     <Route exact path="/logout" element={<LogoutButton/>} />
                     <Route exact path="/manage" element={<DisplayClients/>}  />
-                    <Route path="/manage/:id" element={<ViewPatient />} />
+                    <Route path="/manage/:id" element={<ViewPatient openModal={openModal}/>} />
                     <Route exact path="/scheduling" element={<Calendar />} />
                   </Routes>
                 </GroupsContext.Provider>
@@ -108,7 +108,7 @@ function App() {
             </UserContext.Provider>
           </Router>
         </div>
-        {isOpen ? <ModalWrapper modalType={modalType} modalProps={modalProps} closeModal={closeModal} /> : null}
+        {isOpen ? <ModalWrapper userId={userInfo._id} accessToken={accessToken} modalType={modalType} modalProps={modalProps} closeModal={closeModal} /> : null}
       </div>
     );
   } else if(isLoading) {

@@ -17,7 +17,7 @@ import DeletePatientModal from '../pop-ups/delete-patient-modal';
 import PatientScheduleNotes from '../pop-ups/patient-schedule-notes';
 import EditPatientNotes from '../pop-ups/edit-patient-note';
 
-const ViewPatient = () => {
+const ViewPatient = ({openModal}) => {
   const queryClient = useQueryClient();
   
   const user = useContext(UserContext);
@@ -93,10 +93,12 @@ const ViewPatient = () => {
   };
 
   const handleEditNote = (noteId) => {
-    setEdit((prev) => ({
-      ...prev,
-      editNote: noteId,
-    }));
+    const editProps = {
+      patientData: patientData,
+      editId: noteId
+    }
+
+    openModal('EditPatientNotes', editProps);
   };
 
   const saveScheduleChanges = () => {
@@ -161,18 +163,6 @@ const ViewPatient = () => {
     setPatientData((prevData) => ({
       ...prevData,
       notes: prevData.notes.filter((note) => note.noteId !== noteId)
-    }));
-  };
-
-  const handleUpdatedNote = (newNote) => {
-    const index = patientData.notes.findIndex((note) => note.noteId === newNote.noteId);
-
-    const patientNotes = [...patientData.notes];
-    patientNotes[index] = newNote;
-
-    setPatientData((prevData) => ({
-      ...prevData,
-      notes: patientNotes
     }));
   };
 
@@ -522,24 +512,12 @@ const ViewPatient = () => {
               </div>
             )}
            
-
             {edit.patientNotes && (
               <div key="patientNotes" className="p-notes-modal">
                 <PatientScheduleNotes
                   patientData={patientData}
                   handleEditPatientNotes={handleEditPatientNotes}
                   handleNoteAddition={handleNoteAddition}
-                />
-              </div>
-            )}
-
-            {edit.editNote && (
-              <div key="patientNotes" className="p-notes-modal">
-                <EditPatientNotes
-                  patientData={patientData}
-                  handleEditNote={handleEditNote}
-                  editId={edit.editNote}
-                  handleUpdatedNote={handleUpdatedNote}
                 />
               </div>
             )}
