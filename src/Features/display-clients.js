@@ -3,15 +3,15 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { Link } from 'react-router-dom';
+import {UserContext, AccessTokenContext} from '../context/context';
+import usePatientRequests from '../hooks/patient-requests';
+
+import Loading from '../pop-ups/loading';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/display-clients.css';
 
-import CreatePatient from './create-patient';
-import usePatientRequests from '../hooks/patient-requests';
-import {UserContext, AccessTokenContext} from '../context/context';
-
-function DisplayClients() {
+function DisplayClients({openModal, isOpen}) {
   const queryClient = useQueryClient();
 
   const { isLoading } = useAuth0();
@@ -19,7 +19,7 @@ function DisplayClients() {
   const accessToken = useContext(AccessTokenContext);
 
   const { getPatients, removePatient } = usePatientRequests();
-  const { data: patients, status } = useQuery('patients', 
+  const { data: patients, status, refetch } = useQuery('patients', 
     () => getPatients(user._id, accessToken)
   );
 
@@ -27,6 +27,12 @@ function DisplayClients() {
   const [filter, setFilter] = useState(null);
   const [searchFilter, setSearchFilter] = useState(null);
   const [addPatinet, setAddPatient] = useState(false);
+  const [stillFetching, setStillFetching] = useState(false);
+
+  useEffect(() => {
+    setStillFetching(true);
+    handleRefetch();
+  }, [isOpen]);
 
   const filterSelection = (filterEvent) => {
     setFilter(filterEvent);
@@ -61,7 +67,18 @@ function DisplayClients() {
   };
 
   const handleAddPatModal = () => {
-    setAddPatient(!addPatinet);
+    openModal('CreatePatient', {});
+  };
+
+  const handleRefetch = async () => {
+    const { data, error, failureCount, isFetching } = await refetch();
+    if(data.error) {
+      console.log('this is working')
+    }
+
+    if(data) {
+      setStillFetching(false);
+    }
   };
 
   const deletePatient = useMutation({
@@ -109,11 +126,11 @@ function DisplayClients() {
         <div className="row d-flex justify-content-center align-items-center">
           <div className="col-10 pt-4">
           {
-            isLoading ? 
+            isLoading || stillFetching ? 
             (
               <div className="row">
                 <div className="col">
-                  <div>Loading...</div>     
+                  <div><Loading /></div>     
                 </div>
               </div>
               
@@ -259,11 +276,11 @@ function DisplayClients() {
           </div>
         </div>
 
-        {addPatinet ?
+        {/* {addPatinet ?
           <div className="above-overlay-n">
               <CreatePatient close={handleAddPatModal} />
           </div> : null 
-        }
+        } */}
       </div>
     </div>
   );

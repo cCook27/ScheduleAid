@@ -14,7 +14,6 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 import '../css/view-patient.css';
 
-
 const ViewPatient = ({openModal, isOpen}) => {
   const queryClient = useQueryClient();
   
