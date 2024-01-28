@@ -100,7 +100,7 @@ function App() {
                     <Route exact path="/profile" element={<Profile/>} />
                     <Route exact path="/logout" element={<LogoutButton/>} />
                     <Route exact path="/manage" element={<DisplayClients/>}  />
-                    <Route path="/manage/:id" element={<ViewPatient openModal={openModal}/>} />
+                    <Route path="/manage/:id" element={<ViewPatient openModal={openModal} isOpen={isOpen}/>} />
                     <Route exact path="/scheduling" element={<Calendar />} />
                   </Routes>
                 </GroupsContext.Provider>

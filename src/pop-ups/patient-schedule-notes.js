@@ -2,9 +2,12 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
+import useHomeRequests from "../hooks/home-requests";
+
 import '../css/patient-schedule-notes.css'
 
-const PatientScheduleNotes = ({patientData, handleEditPatientNotes, handleNoteAddition}) => {
+const PatientScheduleNotes = ({userId, accessToken, modalProps, closeModal}) => {
+  const { updatePatient } = useHomeRequests();
 
   const [patientNote, setPatientNote] = useState({
     noteId: undefined,
@@ -39,19 +42,22 @@ const PatientScheduleNotes = ({patientData, handleEditPatientNotes, handleNoteAd
   };
 
   const handleSaveNote = () => {
-    handleNoteAddition(patientNote);
-    handleEditPatientNotes();
+    const patientToUpdate = {...modalProps.patientData};
+    patientToUpdate.notes = [patientNote, ...patientToUpdate.notes];
+    
+    updatePatient(userId, patientToUpdate, accessToken);
+    closeModal();
   };
 
   const handleCancelNote = () => {
-    handleEditPatientNotes();
+    closeModal();
   };
 
   return (
     <div>
       <div className="p-notes-title-cont p-3">
         <div className="p-notes-title">
-          Shceduling Notes for <span className="p-notes-name">{patientData.firstName}</span>:
+          Shceduling Notes for <span className="p-notes-name">{modalProps.patientData.firstName}</span>:
         </div>
         <button onClick={handleCancelNote} type="button" className="btn-close close-all close-p-notes me-1" aria-label="Close"></button>
       </div>

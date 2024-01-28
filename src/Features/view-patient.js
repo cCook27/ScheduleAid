@@ -14,10 +14,8 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 import '../css/view-patient.css';
 import DeletePatientModal from '../pop-ups/delete-patient-modal';
-import PatientScheduleNotes from '../pop-ups/patient-schedule-notes';
-import EditPatientNotes from '../pop-ups/edit-patient-note';
 
-const ViewPatient = ({openModal}) => {
+const ViewPatient = ({openModal, isOpen}) => {
   const queryClient = useQueryClient();
   
   const user = useContext(UserContext);
@@ -26,7 +24,7 @@ const ViewPatient = ({openModal}) => {
 
   const {viewPatient, updatePatient, removeHome} = useHomeRequests();
   const { id } = useParams();
-  const { data: patient, status } = useQuery('patient',
+  const { data: patient, status, refetch } = useQuery('patient',
     () => viewPatient(user._id, id, accessToken)
   );
 
@@ -35,8 +33,6 @@ const ViewPatient = ({openModal}) => {
     contactSide: false,
     scheduleSide: false,
     deletePatient: false,
-    patientNotes: false,
-    editNote: false,
   });
   const [patientData, setPatientData] = useState(undefined);
 
@@ -47,6 +43,10 @@ const ViewPatient = ({openModal}) => {
   useEffect(() => {
     saveChanges();
   },[patientData]);
+
+  useEffect(() => {
+    refetch();
+  }, [isOpen])
   
   const handleDeletePatient = () => {
     removeHome(id, user._id, accessToken);
@@ -85,11 +85,11 @@ const ViewPatient = ({openModal}) => {
     }));
   };
 
-  const handleEditPatientNotes = () => {
-    setEdit((prev) => ({
-      ...prev,
-      patientNotes: !prev.patientNotes,
-    }));
+  const handleAddPatientNote = () => {
+    const noteProps = {
+      patientData: patientData,
+    }
+    openModal('PatientScheduleNotes', noteProps);
   };
 
   const handleEditNote = (noteId) => {
@@ -152,13 +152,6 @@ const ViewPatient = ({openModal}) => {
     }));
   };
 
-  const handleNoteAddition = (newNote) => {
-    setPatientData((prevData) => ({
-      ...prevData,
-      notes: [ newNote, ...prevData.notes]
-    }));
-  };
-
   const handleNoteRemoval = (noteId) => {
     setPatientData((prevData) => ({
       ...prevData,
@@ -173,7 +166,7 @@ const ViewPatient = ({openModal}) => {
   );
 
   return (
-    <div className={`container ${edit.deletePatient || edit.patientNotes ? 'overlay' : ''}`}>
+    <div className="container">
       {
         isLoading ? (
           <div><Loading /></div>
@@ -255,11 +248,11 @@ const ViewPatient = ({openModal}) => {
                 <div className="d-flex notes-section flex-column">
                   <div className="d-flex notes-header">
                     <div className="notes-title">Notes:</div>
-                    <button onClick={handleEditPatientNotes} className="notes-add btn">Add</button>
+                    <button onClick={handleAddPatientNote} className="notes-add btn">Add</button>
                   </div>
                   <div className="container area-for-notes">
                     {
-                      !patientData ? (
+                      !patientData || status === 'loading' ? (
                         <div><Loading /></div>
                       ) : patientData.notes.length > 0 ?
                       (
@@ -512,21 +505,11 @@ const ViewPatient = ({openModal}) => {
               </div>
             )}
            
-            {edit.patientNotes && (
-              <div key="patientNotes" className="p-notes-modal">
-                <PatientScheduleNotes
-                  patientData={patientData}
-                  handleEditPatientNotes={handleEditPatientNotes}
-                  handleNoteAddition={handleNoteAddition}
-                />
-              </div>
-            )}
           </div>
         ) : null
       }
     </div>
   )
-}
-
+};
 
 export default ViewPatient;

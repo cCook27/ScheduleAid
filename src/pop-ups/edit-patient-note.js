@@ -45,18 +45,17 @@ const EditPatientNotes = ({userId, accessToken, modalProps, closeModal}) => {
     }));
   };
 
-
   const handleSaveNote = () => {
     const index = modalProps.patientData.notes.findIndex((note) => note.noteId === modalProps.editId);
     const patientToUpdate = {...modalProps.patientData};
     patientToUpdate.notes[index] = patientNote;
 
     updatePatient(userId, patientToUpdate, accessToken);
-    closeModal()
+    closeModal();
   };
 
   const handleCancelNote = () => {
-    closeModal()
+    closeModal();
   };
 
   return (
