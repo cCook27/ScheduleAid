@@ -126,7 +126,7 @@ const AutoGroups = ({ handleDragStart, patientGroups, homes, myEvents, start, en
             groups.length >= 1 && groups.length <= 7 ? 
             (
               groups.map((group, index) => (
-                <div className="col-3 d-flex flex-column group mx-3 my-2">
+                <div className="col-4 d-flex flex-column group mx-1 my-2">
                   <div className="group-number">Group {index + 1}</div>
                   <div className="d-flex justify-content-center align-items-center row">
 

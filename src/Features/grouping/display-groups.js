@@ -18,14 +18,18 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
   const {createAutoGroups} = useDistanceRequests();
 
   const [patientGroups, setPatientGroups] = useState(undefined);
-  const [groupType, setGroupType] = useState(null);
+  const [groupType, setGroupType] = useState(undefined);
+
+  useEffect(() => {
+    handleVisitGroups({target:{id:'visits'}});
+  }, []);
 
   const handleManualGroups = async (event) => {
     setGroupType(event.target.id);
   };
 
   const handleVisitGroups = async (event) => {
-    setPatientGroups(null);
+    setPatientGroups(undefined);
 
     const returnedGroups = await createAutoGroups(
       user._id, 
@@ -47,7 +51,7 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
               <input type="radio" className="btn-check group-view-btn" name="visits" id="visits" 
               checked={groupType === "visits"}  onChange={handleVisitGroups}
               />
-              <label className="view group-view left-rad" htmlFor="visits">Visits</label>
+              <label className="view group-view left-rad" htmlFor="visits">Auto</label>
 
               <input type="radio" className="btn-check group-view-btn" name="manual" id="manual" checked={groupType === "manual"}  onChange={handleManualGroups} />
               <label className="view group-view right-rad" htmlFor="manual">Manual</label>
