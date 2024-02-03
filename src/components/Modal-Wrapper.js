@@ -23,7 +23,12 @@ const ModalWrapper = (props) => {
 
   const SelectedModal = MODAL_COMPONENTS[props.modalType] || ErrorModal;
 
-  return <SelectedModal userId={props.userId} accessToken={props.accessToken} modalProps={props.modalProps} closeModal={props.closeModal}/>
+  return (
+    <div className="modal-wrapper">
+      <SelectedModal userId={props.userId} accessToken={props.accessToken} modalProps={props.modalProps} closeModal={props.closeModal}/>
+    </div>
+    
+  )
 };
 
 export default ModalWrapper;

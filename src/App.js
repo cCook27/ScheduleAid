@@ -88,7 +88,7 @@ function App() {
   
   if(validUser) {
     return (
-      <div className='overall'>
+      <div className={`overall ${isOpen ? 'modal-open' : ''}`}>
         <div>
           <Router>  
             {currentPath !== '/create-profile' ? <Navbar /> : null}
@@ -108,7 +108,7 @@ function App() {
             </UserContext.Provider>
           </Router>
         </div>
-        {isOpen ? <ModalWrapper userId={userInfo._id} accessToken={accessToken} modalType={modalType} modalProps={modalProps} closeModal={closeModal} /> : null}
+        {isOpen ? <ModalWrapper className="modal-wrapper" userId={userInfo._id} accessToken={accessToken} modalType={modalType} modalProps={modalProps} closeModal={closeModal} /> : null}
       </div>
     );
   } else if(isLoading) {
