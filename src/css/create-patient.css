@@ -1,11 +1,11 @@
-.page-cont {
+/* .page-cont {
   background: var(--personBg);
   border-radius: 5px;
   padding: 10px;
   border: 2px solid var(--borderColor);
   width: 800px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .overflow-cont {
   height: 325px;

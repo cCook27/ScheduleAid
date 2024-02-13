@@ -2,25 +2,28 @@ import React from "react";
 import { useEffect, useState } from "react";
 
 import useComparisonRequests from "../hooks/comparison-requests";
+import useScheduleRequests from "../hooks/schedule-requests";
 
 import '../css/patient-modal.css';
 
-const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, handleEventsUpdate, patients, view}) => {
+const PatientModal = ({accessToken, userId, modalProps, closeModal}) => {
 
   const { abbrevationFix } = useComparisonRequests();
+  const { deletePatientSchedule, saveUserSchedule } = useScheduleRequests();
 
   const [groupsAvailable, setGroupsAvailable] = useState([]);
   const [patient, setPatient] = useState(undefined);
+  const [patientSeeDays, setPatientSeeDays] = useState(false);
 
   useEffect(() => {
     let availableGroups = [];
-    const clientAddress = abbrevationFix(client.address);
+    const clientAddress = abbrevationFix(modalProps.client.address);
    
-    if(view === 'Group') {
-      groups.forEach((group, index) => {
+    if(modalProps.view === 'Group') {
+      modalProps.groups.forEach((group, index) => {
         const patientMatches = group.filter((patient) => {
           const patAddress = abbrevationFix(patient.address);
-          return patAddress === clientAddress && `${patient.firstName} ${patient.lastName}` === client.title && !patient.scheduled
+          return patAddress === clientAddress && `${patient.firstName} ${patient.lastName}` === modalProps.client.title && !patient.scheduled
         });
   
         if(patientMatches.length > 0) {
@@ -39,25 +42,44 @@ const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, hand
       setGroupsAvailable(availableGroups);
     }
 
-    const patientData = patients.find((patient) => {
+    const patientData = modalProps.patients.find((patient) => {
       const patAddress = abbrevationFix(patient.address);
-      return patAddress === clientAddress && `${patient.firstName} ${patient.lastName}` === client.title;
+      return patAddress === clientAddress && `${patient.firstName} ${patient.lastName}` === modalProps.client.title;
     });
 
     setPatient(patientData);
 
-  }, [client, groups, patients]);
+  }, [modalProps.client, modalProps.groups, modalProps.patients]);
+
+  useEffect(() => {
+    if (patient) {
+      const entries = Object.entries(patient.noSeeDays);
+      for (let i = 0; i < entries.length; i++) {
+        const [propertyName, propertyValue] = entries[i];
+        if (propertyValue) {
+          setPatientSeeDays(true);
+          break;
+        }
+      }
+    }
+  }, [patient])
 
   const handleAssignGroup = (group) => {
-    const updatedEvents = [...myEvents];
-    const index = updatedEvents.findIndex((ev) => ev.id === client.id);
+    const updatedEvents = [...modalProps.myEvents];
+    const index = updatedEvents.findIndex((ev) => ev.id === modalProps.client.id);
 
-    if(index !== -1) {
+    if (index !== -1) {
       updatedEvents[index].groupNumber = group;
-      handleEventsUpdate(updatedEvents);
+      saveUserSchedule(userId, updatedEvents, accessToken);
     }
 
     closeModal();
+  };
+
+  const removeFromCal = async () => {
+    const filteredState = modalProps.myEvents.filter((ev) => ev.id !== modalProps.client.id);
+    await deletePatientSchedule(userId, filteredState, accessToken);
+    closeModal()
   }
 
   return (
@@ -71,27 +93,28 @@ const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, hand
 
       <div className="row my-1">
         <div className="col">
-          <div className="pat-start-modal d-flex justify-content-end">{client.start}</div>
+          <div className="pat-start-modal d-flex justify-content-end">{modalProps.client.start}</div>
         </div>
       </div>
 
       <div className="row my-1">
         <div className="col">
           <div className="d-flex align-items-center justify-content-start pat-name-modal">
-            {client.title}
+            {modalProps.client.title}
           </div>
         </div>
       </div>
 
-      <div className="row my-3">
-        <div className="col-4">
-          <div className="p-modal-label">Cannot be Seen:</div>
-        </div>
-        <div className="col d-flex align-items-center">
-          <div className="row">
-            {
-              patient &&  Object.entries(patient.noSeeDays).length > 0 ? 
-                (
+   
+      {
+        patient &&  patientSeeDays ? 
+          (
+            <div className="row my-3">
+              <div className="col-4">
+                <div className="p-modal-label">Cannot be Seen:</div>
+              </div>
+              <div className="col d-flex align-items-center">
+                {
                   Object.entries(patient.noSeeDays).map(([propertyName, propertyValue]) =>(
                   propertyValue && (
                     <div className="col-6 d-flex p-modal-badge me-1 badge" key={propertyName}>
@@ -99,17 +122,26 @@ const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, hand
                     </div>
                   ) 
                   ))
-                ) : null
-            }
-          </div>
-         
-        </div>
-      </div>
+                }
+                
+              </div>
+            </div>
+          ) : null
+      }
+        
 
       {
         patient ? 
         (
           <div>
+            <div className="row my-3">
+              <div className="col-4">
+                <div className="p-modal-label">Primary Number:</div>
+              </div>
+              <div className="col">
+                <div className="p-modal-label pat-modal-info">{patient.primaryNumber || 'NA'}</div>
+              </div>
+            </div>
             <div className="row my-3">
               <div className="col-4">
                 <div className="p-modal-label">Frequency:</div>
@@ -132,7 +164,7 @@ const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, hand
       }
 
       {
-        view === 'Group' && groupsAvailable.length > 0 ? 
+        modalProps.view === 'Group' && groupsAvailable.length > 0 ? 
         (
           <div className="row p my-3 d-flex justify-content-center assign-row">
             <div className="col-4 d-flex align-items-center">
@@ -174,7 +206,7 @@ const PatientModal = ({client, removeFromCal, closeModal, groups, myEvents, hand
         <div className="col d-flex justify-content-center">
           <button 
             className='m-2 remove-cal btn' 
-            onClick={() => removeFromCal(client.id)}
+            onClick={removeFromCal}
           >
             Remove From Calendar
           </button>

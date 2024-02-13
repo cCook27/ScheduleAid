@@ -34,22 +34,6 @@
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
-.modal-wrapper {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-  width: 100%;
-  max-width: 500px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  border-radius: 8px;
-  background: var(--modalBg);
-  border-radius: var(--borderRad);
-  border: var(--customBorder);
-}
-
 .modal-open::before {
   content: "";
   position: fixed;

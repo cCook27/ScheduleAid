@@ -20,8 +20,6 @@ import { momentLocalizer, Calendar as BigCalendar } from 'react-big-calendar';
 import DisplayGroups from '../Features/grouping/display-groups.js';
 import DisplayPatients from '../Features/display-patients';
 import EditParameters from '../Features/edit-parameters.js';
-import ErrorModal from '../pop-ups/error-modal';
-import PatientModal from '../pop-ups/patient-modal';
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
 const localizer = momentLocalizer(moment);
@@ -37,11 +35,6 @@ function Calendar(props) {
 
   const [myEvents, setMyEvents] = useState([]);
   const [draggedClient, setDraggedClient] = useState();
-  const [modal, setModal] = useState({
-    patient: false,
-    group: false,
-    error: false,
-  });
   const [client, setClient] = useState(null);
   const [calViewChange, setCalViewChange] = useState(false);
   const [viewFocus, setViewFocus] = useState({
@@ -58,12 +51,13 @@ function Calendar(props) {
   });
   const [viewStartDate, setViewStartDate] = useState(null);
   const [viewEndDate, setViewEndDate] = useState(null);
+  const [stillFetching, setStillFetching] = useState(false);
 
   const { data: homes, homeStatus } = useQuery(["homes"], 
     () => getPatients(user._id, accessToken)
   );
 
-  const { data: dbSchedule, dbScheduleStatus } = useQuery(["schedule"], 
+  const { data: dbSchedule, dbScheduleStatus, refetch } = useQuery(["schedule"], 
     () => getUserSchedule(user._id, accessToken), {
       onSuccess: (data) => {
         fillInCalendar(data); 
@@ -125,7 +119,22 @@ function Calendar(props) {
         slotGroup.style.border = '1px solid #a5a4a4';
       }
     }
-  },[calViewChange]);
+  }, [calViewChange]);
+  
+  useEffect(() => {
+    handleRefetch();
+  }, [props.isOpen]);
+
+  const handleRefetch = async () => {
+    const { data, error, failureCount, isFetching } = await refetch();
+    if (data.error) {
+      console.log('this is working')
+    }
+
+    if (data) {
+      setStillFetching(false);
+    }
+  };
 
   const changeView = () => {
     setCalViewChange(!calViewChange);
@@ -177,8 +186,7 @@ function Calendar(props) {
     className = className.trim();
   
     return { className };
-  };
-  
+  }; 
 
   const handleEventsUpdate = (events) => {
     setMyEvents(events);
@@ -210,13 +218,7 @@ function Calendar(props) {
         });
 
       });
-    } else {
-      setModal(prev => ({
-        ...prev,
-        error: true
-      }));
-    }
-    
+    } 
   };
 
   const fillInCalendar = (dbSchedule) => {
@@ -358,22 +360,30 @@ function Calendar(props) {
 
       if(hours === 0) {
         hours = '12'
-      }
+    }
+    
+    const clientInfo = {
+      title: event.title,
+      address: event.address,
+      coordinates: event.coordinates,
+      id: event.id,
+      start: `${month}-${day}-${year} at ${hours}:${minutes}`,
+    };
 
-      setModal(prev => ({
-        ...prev,
-        patient: true
-      }));
+    setClient(clientInfo);
+    
+    const patientProps = {
+      client: clientInfo,
+      groups: groupsForPatientModal,
+      myEvents: myEvents,
+      patients: homes,
+      view: viewFocus.view
+    }
 
-      setClient({
-                title: event.title,
-                address: event.address,
-                coordinates: event.coordinates,
-                 id: event.id,
-                 start: `${month}-${day}-${year} at ${hours}:${minutes}`,
-                });
+    props.openModal('PatientModal', patientProps);
+    
   };
-  
+
   const viewCheck = async (event) => {
     if(event.target.id === 'Group') {
 
@@ -442,30 +452,6 @@ function Calendar(props) {
     }))
   };
 
-  const removeFromCal = (id) => {
-    setMyEvents((prev) => {
-      const filteredState = prev.filter((ev) => ev.id !== id);
-      deletePatientSchedule(user._id, filteredState, accessToken);
-      return [...filteredState];
-    });
-
-    setModal(prev => ({
-      ...prev,
-      patient: false
-    }));
-    setClient(null);
-  };
-
-  const closeModal = () => {
-    setModal(prev => ({
-      ...prev,
-      patient: false,
-      group: false,
-      error: false
-    }));
-    setClient(null);
-  };
-
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
       <div className="d-flex flex-column py-3">
@@ -486,7 +472,7 @@ function Calendar(props) {
   );
 
   return (
-    <div className={`container-fluid ${modal.patient | modal.group | modal.error | modal.additional ? 'overlay' : ''}`}>
+    <div className={"container-fluid"}>
       <div className="row">
         <div className="col-4 d-flex">
           <h2 className='sched-title'>Schedule Your Patients</h2>
@@ -507,21 +493,34 @@ function Calendar(props) {
       <div className="row">
         {/* Calendar */}
         <div className="col-7 dndCal-container">
-          <DnDCalendar {...props} 
-            localizer={localizer} 
-            events={myEvents} 
-            onDropFromOutside={onDropFromOutside}
-            onEventDrop={moveEvent}
-            onEventResize={moveEvent}
-            eventPropGetter={eventPropGetter}
-            onSelectEvent={selectEvent}
-            step={5}
-            defaultView="week" 
-            onNavigate={handleNavigate}
-            onView={changeView}
-            resizable
-            selectable
-          />
+          {
+            !stillFetching ?
+              (
+                <DnDCalendar {...props} 
+                localizer={localizer} 
+                events={myEvents} 
+                onDropFromOutside={onDropFromOutside}
+                onEventDrop={moveEvent}
+                onEventResize={moveEvent}
+                eventPropGetter={eventPropGetter}
+                onSelectEvent={selectEvent}
+                step={5}
+                defaultView="week" 
+                onNavigate={handleNavigate}
+                onView={changeView}
+                resizable
+                selectable
+                />
+              ) : 
+              (
+                <div className="row">
+                  <div className="col">
+                    <div><Loading /></div>     
+                  </div>
+                </div>
+              )
+            
+          }
         </div>
 
         {/* Display */}
@@ -583,9 +582,7 @@ function Calendar(props) {
                   </div>
               ) : viewFocus.groupParams ? (
                   <div>
-                    <EditParameters therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters}
-                    handleGrouping={handleGrouping}
-                    closeModal={closeModal} />
+                    <EditParameters therapistParameters={therapistParameters} handleTherapistParameters={handleTherapistParameters} />
                   </div>
               ) : null
               }
@@ -593,19 +590,6 @@ function Calendar(props) {
           </div>
         </div>
       </div>
-
-      {modal.patient ? 
-        <div className="above-overlay" >
-          <PatientModal client={client} removeFromCal={removeFromCal} closeModal={closeModal} groups={groupsForPatientModal} myEvents={myEvents} handleEventsUpdate={handleEventsUpdate} patients={homes} 
-          view={viewFocus.view} />
-        </div> : null
-      }
-
-      {modal.error ? 
-        <div className="above-overlay" >
-          <ErrorModal closeModal={closeModal} />
-        </div> : null
-      }
     </div>
   )
 };

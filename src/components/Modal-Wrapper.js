@@ -9,6 +9,8 @@ import PatientScheduleNotes from "../pop-ups/patient-schedule-notes";
 import CreatePatient from "../pop-ups/create-patient";
 import LoadingModal from "../pop-ups/loading-modal";
 
+import "../css/modal-wrapper.css";
+
 const ModalWrapper = (props) => {
   const MODAL_COMPONENTS = {
     DeletePatientModal: DeletePatientModal,
@@ -23,8 +25,16 @@ const ModalWrapper = (props) => {
 
   const SelectedModal = MODAL_COMPONENTS[props.modalType] || ErrorModal;
 
+  const isSmallerModal = () => {
+    if (SelectedModal === DeletePatientModal || SelectedModal === ErrorModal || SelectedModal === PatientModal) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+ 
   return (
-    <div className="modal-wrapper">
+    <div className={`modal-wrapper ${isSmallerModal() ? 'smaller-modal-wrapper' : ''}`}>
       <SelectedModal userId={props.userId} accessToken={props.accessToken} modalProps={props.modalProps} closeModal={props.closeModal}/>
     </div>
     
