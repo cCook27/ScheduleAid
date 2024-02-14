@@ -8,6 +8,7 @@ import PatientModal from "../pop-ups/patient-modal";
 import PatientScheduleNotes from "../pop-ups/patient-schedule-notes";
 import CreatePatient from "../pop-ups/create-patient";
 import LoadingModal from "../pop-ups/loading-modal";
+import InitiateGrouping from "../pop-ups/initiate-grouping";
 
 import "../css/modal-wrapper.css";
 
@@ -20,7 +21,8 @@ const ModalWrapper = (props) => {
     PatientModal: PatientModal,
     PatientScheduleNotes: PatientScheduleNotes,
     CreatePatient: CreatePatient,
-    LoadingModal: LoadingModal
+    LoadingModal: LoadingModal,
+    InitiateGrouping: InitiateGrouping
   };
 
   const SelectedModal = MODAL_COMPONENTS[props.modalType] || ErrorModal;

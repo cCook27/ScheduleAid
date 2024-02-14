@@ -6,12 +6,12 @@ import AutoGroups from "./auto-grouping";
 import useDistanceRequests from "../../hooks/distance-request";
 import { UserContext } from "../../context/context";
 import { AccessTokenContext } from "../../context/context";
-import useModalInfo from "../../hooks/modal-info";
 
 import "../../css/display-groups.css"
+import ManualGrouping from "./manual-grouping";
 
 
-const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups, therapistParameters, openModal }) => {
+const DisplayGroups = ({ openModal, handleDragStart, homes, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups, therapistParameters }) => {
 
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
@@ -66,9 +66,7 @@ const DisplayGroups = ({ handleDragStart, homes, myEvents, start, end, handleEve
             <AutoGroups handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
           ):  
           (
-            <div className="d-flex flex-column group-explain p-4">
-             
-            </div>
+            <ManualGrouping openModal={openModal} handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
           )
         }
       </div>

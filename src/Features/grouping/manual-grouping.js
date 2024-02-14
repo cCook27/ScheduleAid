@@ -1,9 +1,17 @@
 import React from "react";
 
-const ManualGrouping = () => {
+const ManualGrouping = ({ openModal, handleDragStart, patientGroups, homes, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups }) => {
+
+  const handleInitiateGrouping = () => {
+    const initiateProps = {
+      
+    }
+    openModal('InitiateGrouping', initiateProps)
+  }
+
   return (
     <div className="container">
-
+      <button onClick={handleInitiateGrouping}>Initiate Grouping</button>
     </div>
   )
 };
