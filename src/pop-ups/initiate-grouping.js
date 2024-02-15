@@ -1,11 +1,27 @@
 import React from "react";
 import { useState } from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 const InitiateGrouping = ({ userId, accessToken, modalProps, closeModal }) => {
   const [formData, setFormData] = useState({
+    manualGroupId: uuidv4(),
     week: modalProps.start,
     setName: '',
-  })
+  });
+
+  useState(() => {
+    const date = new Date(modalProps.start);
+    const day = date.getDate() + 1;
+    const month = (date.getMonth() + 1);
+    const year = date.getFullYear();
+
+    const formattedDate = month + '/' + day + '/' + year;
+
+    setFormData({
+      ...formData,
+      week: formattedDate
+    });
+  }, [modalProps]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -50,7 +66,7 @@ const InitiateGrouping = ({ userId, accessToken, modalProps, closeModal }) => {
             <label className='nPat-label my-2'>Set Name</label>
             <input
               className="form-control npat-input"
-              placeholder="West Group"
+              placeholder="e.g. West Group"
               id="setName"
               name="setName"
               value={formData.setName}

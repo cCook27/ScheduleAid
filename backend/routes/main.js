@@ -295,7 +295,11 @@ router.post('/grouping/retrieve/manual/:user', async (req, res) => {
    console.error('Error:', error);
    res.status(500).send('An error occurred while trying to save your groups, try again.');
  }
- });
+});
+ 
+router.post('/grouping/initiateGroupSet/:user', async => {
+
+});
 
 router.post('/grouping/manual/:user', async (req, res) => {
  try {

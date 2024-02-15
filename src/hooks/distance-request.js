@@ -1,3 +1,5 @@
+import ManualGrouping from "../Features/grouping/manual-grouping";
+
 function useDistanceRequests () {
   const url = 'http://localhost:8080';
 
@@ -77,10 +79,35 @@ function useDistanceRequests () {
     }
   };
 
+  const initiateGroupSet = async (userId, accessToken, groupSet) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify(groupSet)
+      };
+
+      const response = await fetch(`${url}/grouping/initiateGroupSet/${userId}`, options);
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const groupSetOk = await response.json();
+
+      return groupSetOk;
+
+    } catch (error) {
+      console.log(error);
+      return errorResponse;
+    }
+  };
+
   return {
    getTimeDistances,
    createAutoGroups,
-   checkGroups
+   checkGroups,
+   initiateGroupSet
   }
 }
 
