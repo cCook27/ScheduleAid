@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import useDistanceRequests from "../hooks/distance-request";
 
-const InitiateGrouping = ({ userId, accessToken, modalProps, closeModal }) => {
+const InitiateGroupingModal = ({ userId, accessToken, modalProps, closeModal }) => {
   const { initiateGroupSet } = useDistanceRequests();
   
   const [formData, setFormData] = useState({
@@ -89,4 +89,4 @@ const InitiateGrouping = ({ userId, accessToken, modalProps, closeModal }) => {
   )
 };
 
-export default InitiateGrouping;
+export default InitiateGroupingModal;

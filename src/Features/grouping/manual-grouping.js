@@ -6,7 +6,7 @@ const ManualGrouping = ({ openModal, handleDragStart, patientGroups, homes, myEv
     const initiateProps = {
       start: start
     }
-    openModal('InitiateGrouping', initiateProps)
+    openModal('InitiateGroupingModal', initiateProps)
   }
 
   return (
