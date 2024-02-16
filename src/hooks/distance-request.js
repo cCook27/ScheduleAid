@@ -1,5 +1,3 @@
-import ManualGrouping from "../Features/grouping/manual-grouping";
-
 function useDistanceRequests () {
   const url = 'http://localhost:8080';
 

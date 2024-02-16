@@ -297,32 +297,53 @@ router.post('/grouping/retrieve/manual/:user', async (req, res) => {
  }
 });
  
-router.post('/grouping/initiateGroupSet/:user', async => {
+router.post('/grouping/initiateGroupSet/:user', async (req, res) => {
+  try {
+    const userId = req.params.user;
+    const newSet = req.body;
 
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $push: { manualGroups: newSet } },
+      { new: true }
+    );
+
+    if(!updatedUser) {
+      return res.status(404).send('User not found');
+      };
+      
+    console.log(updatedUser.manualGroups);
+
+    return res.status(200).send({message: "New Set Established!"});
+
+  } catch(error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while trying to save your groups, try again.');
+  }
 });
 
-router.post('/grouping/manual/:user', async (req, res) => {
- try {
-  const userId = req.params.user;
-  const newFolder = req.body.groupFolder;
+// router.post('/grouping/manual/:user', async (req, res) => {
+//  try {
+//   const userId = req.params.user;
+//   const newFolder = req.body.groupFolder;
 
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    { $push: { manualGroups: newFolder } },
-    { new: true }
-  );
+//   const updatedUser = await User.findByIdAndUpdate(
+//     userId,
+//     { $push: { manualGroups: newFolder } },
+//     { new: true }
+//   );
 
-  if(!updatedUser) {
-    return res.status(404).send('User not found');
-  };
+//   if(!updatedUser) {
+//     return res.status(404).send('User not found');
+//   };
 
-  return res.status(200).send('New Group Successfully Added!');
+//   return res.status(200).send('New Group Successfully Added!');
 
- } catch(error) {
-  console.error('Error:', error);
-  res.status(500).send('An error occurred while trying to save your groups, try again.');
-}
-});
+//  } catch(error) {
+//   console.error('Error:', error);
+//   res.status(500).send('An error occurred while trying to save your groups, try again.');
+//   }
+// });
 
 router.post('/user', async (req, res) => {
   try{

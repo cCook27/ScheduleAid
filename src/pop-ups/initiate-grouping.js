@@ -2,11 +2,16 @@ import React from "react";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 
+import useDistanceRequests from "../hooks/distance-request";
+
 const InitiateGrouping = ({ userId, accessToken, modalProps, closeModal }) => {
+  const { initiateGroupSet } = useDistanceRequests();
+  
   const [formData, setFormData] = useState({
     manualGroupId: uuidv4(),
     week: modalProps.start,
     setName: '',
+    groups: []
   });
 
   useState(() => {
@@ -33,7 +38,7 @@ const InitiateGrouping = ({ userId, accessToken, modalProps, closeModal }) => {
   };
 
   const handleSave = async () => {
-    // save formData
+    initiateGroupSet(userId, accessToken, formData);
     closeModal();
   };
 
