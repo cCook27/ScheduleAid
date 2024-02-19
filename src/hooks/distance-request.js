@@ -101,11 +101,60 @@ function useDistanceRequests () {
     }
   };
 
+  const retrieveGroupSets = async (userId, accessToken) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+      };
+
+      const response = await fetch(`${url}/grouping/retrieveGroupSets/${userId}`, options);
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const groupSets = await response.json();
+
+      return groupSets;
+
+    } catch (error) {
+      console.log(error);
+      return errorResponse;
+    }
+  }
+
+  const getGroupSet = async (userId, accessToken, setId) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify(setId)
+      };
+
+      const response = await fetch(`${url}/grouping/groupSet/${userId}`, options);
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const groupSetOk = await response.json();
+
+      return groupSetOk;
+
+    } catch (error) {
+      console.log(error);
+      return errorResponse;
+    }
+  };
+
   return {
-   getTimeDistances,
-   createAutoGroups,
-   checkGroups,
-   initiateGroupSet
+    getTimeDistances,
+    createAutoGroups,
+    checkGroups,
+    initiateGroupSet,
+    retrieveGroupSets,
+    getGroupSet
   }
 }
 
