@@ -66,7 +66,7 @@ const DisplayGroups = ({ openModal, handleDragStart, homes, myEvents, start, end
             <AutoGroups handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
           ):  
           (
-            <ManualGrouping openModal={openModal} handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
+            <ManualGrouping openModal={openModal} patients={homes} myEvents={myEvents} start={start} end={end} />
           )
         }
       </div>

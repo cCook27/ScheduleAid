@@ -1,38 +1,114 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useQuery } from 'react-query';
 
 import useDistanceRequests from "../../hooks/distance-request";
-import {UserContext, AccessTokenContext} from '../../context/context';
+import { UserContext, AccessTokenContext } from '../../context/context';
 
-const ManualGrouping = ({ openModal, handleDragStart, patientGroups, homes, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups }) => {
+import "../../css/manual-grouping.css";
+
+const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
   const { getGroupSet, retrieveGroupSets } = useDistanceRequests();
   // const { data: patient, status, refetch } = useQuery('patient', () => viewPatient(user._id, id, accessToken));
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
-  const handleInitiateGrouping = () => {
-    const initiateProps = {
-      start: start
-    }
-    openModal('InitiateGroupingModal', initiateProps)
+  const [currentGroups, setCurrentGroups] = useState([]);
+
+  useEffect(() => {
+    console.log(currentGroups);
+  }, [currentGroups])
+
+  const handleAddGroup = () => {
+    setCurrentGroups([...currentGroups, {pats:[]}])
   };
 
-  const handleViewGroupSet = async () => {
-    const groupSets = await retrieveGroupSets(user._id, accessToken);
-    
+  const handleClose = (delIndex) => {
+    const filteredGroups = currentGroups.filter((group, index) => index !== delIndex);
+    setCurrentGroups(filteredGroups);
+  };
+
+  const startDrag = (event, patId) => {
+    event.dataTransfer.setData("patId", patId);
+  };
+
+  const onDrop = (event, groupIndex) => {
+    const patientId = event.dataTransfer.getData("patId");
+    const patientRetrieved = patients.filter((pat) => pat._id === patientId);
+    let groupToChange = [...currentGroups][groupIndex];
+    groupToChange.pats.push(patientRetrieved[0]);
+
+    const currentGroupsToUpdate = [...currentGroups];
+    currentGroupsToUpdate[groupIndex] = groupToChange;
+    setCurrentGroups(currentGroupsToUpdate);
   };
 
   return (
     <div className="container">
       <div className="row top-row">
         <div className="col">
-          <button onClick={handleViewGroupSet}>Select a Group Set</button>
-        </div>
-        <div className="col">
-          <button onClick={handleInitiateGrouping}>Initiate Grouping</button>
+          <button onClick={handleAddGroup}>Add Group</button>
         </div>
       </div>
-      {}
+      
+      <div className="row mid-section">
+        {
+          currentGroups.length > 0 ?
+            currentGroups.map((groupCont, index) => (
+              <div key={index} onDrop={(e) => onDrop(e, index)} className="col-4">
+                <div className="group-cont p-1">
+                  <div className="row">
+                    <div className="col">
+                      <div className="d-flex justify-content-start">
+                      <h6> Group { index+1 }</h6>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className='d-flex justify-content-end'>
+                        <button type="button" className="d-flex justify-content-end btn-close close-all close-all-custom btn-close-create" aria-label="Close"
+                        onClick={() => handleClose(index)}></button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="row">
+                    {
+                      groupCont.pats.length > 0 ?
+                        groupCont.pats.map((pat, index) => (
+                          <div key={index}>
+                            {pat.firstName}
+                          </div>
+                        )) : null
+                    }
+                  </div>
+                </div>
+                
+                
+              </div>
+            )) : null
+          
+        }
+      </div>
+
+      <div className="row pat-section">
+        {
+          currentGroups.length > 0 && patients && patients.length > 0 ?
+            patients.map((patient) => 
+            (   
+              <div key={patient._id} className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" >
+                <div 
+                  draggable 
+                  onDragStart={(e) => startDrag(e, patient._id)}
+                  className={`person-cont d-flex flex-column justify-content-center align-items-center ${patient.additional ? 'freq-fulfilled' : ''}`}
+                >
+                  <div className="name ellipsis-overflow"> <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span></div>
+                  <div className="address ellipsis-overflow">{patient.address}</div>
+                </div>
+              </div>
+            ) 
+          ): null
+        }
+      </div>
+
     </div>
   )
 };

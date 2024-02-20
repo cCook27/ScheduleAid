@@ -1,0 +1,6 @@
+.group-cont {
+  height: auto;
+  width: auto;
+  max-height: auto;
+  border: var(--customBorder);
+}
