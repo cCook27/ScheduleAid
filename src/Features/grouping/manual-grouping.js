@@ -14,10 +14,6 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
 
   const [currentGroups, setCurrentGroups] = useState([]);
 
-  useEffect(() => {
-    console.log(currentGroups);
-  }, [currentGroups])
-
   const handleAddGroup = () => {
     setCurrentGroups([...currentGroups, {pats:[]}])
   };
@@ -40,6 +36,17 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
     const currentGroupsToUpdate = [...currentGroups];
     currentGroupsToUpdate[groupIndex] = groupToChange;
     setCurrentGroups(currentGroupsToUpdate);
+  };
+
+  const delPatient = (patient, groupIndex) => {
+    const groupToUpdate = [...currentGroups][groupIndex].pats;
+    const indexToRemove = groupToUpdate.findIndex((pat) => pat._id == patient._id);
+    groupToUpdate.splice(indexToRemove, 1);
+
+    const updatedCurrentGroups = [...currentGroups];
+    updatedCurrentGroups[groupIndex].pats = groupToUpdate;
+
+    setCurrentGroups(updatedCurrentGroups);
   };
 
   return (
@@ -73,9 +80,23 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
                   <div className="row">
                     {
                       groupCont.pats.length > 0 ?
-                        groupCont.pats.map((pat, index) => (
-                          <div key={index}>
-                            {pat.firstName}
+                        groupCont.pats.map((pat, patIndex) => (
+                          <div key={patIndex} className="col">
+                            <div className="person-cont">
+                              <div className="row">
+                                <div className="col">
+                                  <div className='d-flex justify-content-end del-pat'>
+                                    <button onClick={() => delPatient(pat, index)} type="button" className="del-pat-x pb-0 pe-0 d-flex justify-content-end btn-close" aria-label="Close"></button>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="row">
+                                <div className="col">
+                                  <div className="name ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
+                                </div>
+                              </div>
+                            </div>
+                            
                           </div>
                         )) : null
                     }

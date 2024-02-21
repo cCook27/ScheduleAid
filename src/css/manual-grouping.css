@@ -4,3 +4,7 @@
   max-height: auto;
   border: var(--customBorder);
 }
+
+.del-pat-x {
+  font-size: 10px;
+}
