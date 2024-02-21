@@ -13,7 +13,7 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
-  const [groupSet, setGroupSet] = useState({setId: uuidv4(), week: start, groups: []});
+  const [groupSet, setGroupSet] = useState({setId: uuidv4(), weekStart: start, weekEnd: end, groups: []});
   const groupSetRef = useRef(groupSet);
 
    useEffect(() => {
@@ -23,7 +23,13 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
    useEffect(() => {
     return () => {
       if (groupSetRef.current.groups.length > 0) {
-        saveGroupSet(user._id, accessToken, groupSetRef.current);
+        if (groupSetRef.current.groups.length === 1) {
+          if (groupSetRef.current.groups[0].pats.length > 0) {
+            saveGroupSet(user._id, accessToken, groupSetRef.current);
+          }
+        } else {
+          saveGroupSet(user._id, accessToken, groupSetRef.current);
+        }
       }
     };
   }, []);
