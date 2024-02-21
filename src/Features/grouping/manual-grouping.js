@@ -1,5 +1,6 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext, useState, useRef } from "react";
 import { useQuery } from 'react-query';
+import { v4 as uuidv4 } from 'uuid';
 
 import useDistanceRequests from "../../hooks/distance-request";
 import { UserContext, AccessTokenContext } from '../../context/context';
@@ -7,20 +8,39 @@ import { UserContext, AccessTokenContext } from '../../context/context';
 import "../../css/manual-grouping.css";
 
 const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
-  const { getGroupSet, retrieveGroupSets } = useDistanceRequests();
+  const { saveGroupSet } = useDistanceRequests();
   // const { data: patient, status, refetch } = useQuery('patient', () => viewPatient(user._id, id, accessToken));
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
-  const [currentGroups, setCurrentGroups] = useState([]);
+  const [groupSet, setGroupSet] = useState({setId: uuidv4(), week: start, groups: []});
+  const groupSetRef = useRef(groupSet);
+
+   useEffect(() => {
+        groupSetRef.current = groupSet;
+    }, [groupSet]);
+
+   useEffect(() => {
+    return () => {
+      if (groupSetRef.current.groups.length > 0) {
+        saveGroupSet(user._id, accessToken, groupSetRef.current);
+      }
+    };
+  }, []);
 
   const handleAddGroup = () => {
-    setCurrentGroups([...currentGroups, {pats:[]}])
+    setGroupSet((prev) => ({
+      ...prev,
+      groups: [...prev.groups, { pats: [] }]
+    }));
   };
 
   const handleClose = (delIndex) => {
-    const filteredGroups = currentGroups.filter((group, index) => index !== delIndex);
-    setCurrentGroups(filteredGroups);
+    const filteredGroups = groupSet.groups.filter((group, index) => index !== delIndex);
+    setGroupSet((prev) => ({
+      ...prev,
+      groups: filteredGroups
+    }));
   };
 
   const startDrag = (event, patId) => {
@@ -30,23 +50,29 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
   const onDrop = (event, groupIndex) => {
     const patientId = event.dataTransfer.getData("patId");
     const patientRetrieved = patients.filter((pat) => pat._id === patientId);
-    let groupToChange = [...currentGroups][groupIndex];
+    let groupToChange = [...groupSet.groups][groupIndex];
     groupToChange.pats.push(patientRetrieved[0]);
 
-    const currentGroupsToUpdate = [...currentGroups];
-    currentGroupsToUpdate[groupIndex] = groupToChange;
-    setCurrentGroups(currentGroupsToUpdate);
+    const groupSetToUpdate = [...groupSet.groups];
+    groupSetToUpdate[groupIndex] = groupToChange;
+    setGroupSet((prev) => ({
+      ...prev,
+      groups: groupSetToUpdate
+    }));
   };
 
   const delPatient = (patient, groupIndex) => {
-    const groupToUpdate = [...currentGroups][groupIndex].pats;
+    const groupToUpdate = [...groupSet.groups][groupIndex].pats;
     const indexToRemove = groupToUpdate.findIndex((pat) => pat._id == patient._id);
     groupToUpdate.splice(indexToRemove, 1);
 
-    const updatedCurrentGroups = [...currentGroups];
-    updatedCurrentGroups[groupIndex].pats = groupToUpdate;
+    const updatedgroupSet = [...groupSet.groups];
+    updatedgroupSet[groupIndex].pats = groupToUpdate;
 
-    setCurrentGroups(updatedCurrentGroups);
+    setGroupSet((prev) => ({
+      ...prev,
+      groups: updatedgroupSet
+    }));
   };
 
   return (
@@ -59,8 +85,8 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
       
       <div className="row mid-section">
         {
-          currentGroups.length > 0 ?
-            currentGroups.map((groupCont, index) => (
+          groupSet.groups.length > 0 ?
+            groupSet.groups.map((groupCont, index) => (
               <div key={index} onDrop={(e) => onDrop(e, index)} className="col-4">
                 <div className="group-cont p-1">
                   <div className="row">
@@ -112,7 +138,7 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
 
       <div className="row pat-section">
         {
-          currentGroups.length > 0 && patients && patients.length > 0 ?
+          groupSet.groups.length > 0 && patients && patients.length > 0 ?
             patients.map((patient) => 
             (   
               <div key={patient._id} className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" >
