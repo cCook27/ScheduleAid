@@ -7,13 +7,15 @@ import { UserContext, AccessTokenContext } from '../../context/context';
 
 import "../../css/manual-grouping.css";
 
+// Would you like to add a group name also a save btn and edit/production btn
+
 const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
   const { saveGroupSet } = useDistanceRequests();
   // const { data: patient, status, refetch } = useQuery('patient', () => viewPatient(user._id, id, accessToken));
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
-  const [groupSet, setGroupSet] = useState({setId: uuidv4(), weekStart: start, weekEnd: end, groups: []});
+  const [groupSet, setGroupSet] = useState({name: undefined, setId: uuidv4(), weekStart: start, weekEnd: end, groups: []});
   const groupSetRef = useRef(groupSet);
 
    useEffect(() => {
@@ -22,18 +24,31 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
 
    useEffect(() => {
     return () => {
-      if (groupSetRef.current.groups.length > 0) {
-        if (groupSetRef.current.groups.length === 1) {
-          if (groupSetRef.current.groups[0].pats.length > 0) {
-            saveGroupSet(user._id, accessToken, groupSetRef.current);
-          }
-        } else {
+      // handleSaveGroupSet();
+    };
+   }, []);
+  
+  const handleSaveGroupSet = () => {
+    if (groupSetRef.current.groups.length > 0) {
+      if (groupSetRef.current.groups.length === 1) {
+        if (groupSetRef.current.groups[0].pats.length > 0) {
           saveGroupSet(user._id, accessToken, groupSetRef.current);
         }
+      } else {
+        saveGroupSet(user._id, accessToken, groupSetRef.current);
       }
-    };
-  }, []);
+    }
+  };
 
+  const handleSetName = (event) => {
+    const newName = event.target.value;
+
+    setGroupSet((prev) => ({
+      ...prev,
+      setName: newName
+    }));
+  };
+  
   const handleAddGroup = () => {
     setGroupSet((prev) => ({
       ...prev,
@@ -84,8 +99,15 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
   return (
     <div className="container">
       <div className="row top-row">
-        <div className="col">
+        <div className="col-6">
           <button onClick={handleAddGroup}>Add Group</button>
+        </div>
+        <div className="col-6">
+          <div className="d-flex">
+            <button onClick={handleSaveGroupSet}>Save</button>
+            <input onChange={handleSetName} className="form-control" placeholder="Name this Set of Groups"/>
+          </div>
+          
         </div>
       </div>
       
@@ -114,7 +136,7 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
                       groupCont.pats.length > 0 ?
                         groupCont.pats.map((pat, patIndex) => (
                           <div key={patIndex} className="col">
-                            <div className="person-cont">
+                            <div className="person-man-cont man-w-h">
                               <div className="row">
                                 <div className="col">
                                   <div className='d-flex justify-content-end del-pat'>
@@ -124,7 +146,7 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
                               </div>
                               <div className="row">
                                 <div className="col">
-                                  <div className="name ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
+                                  <div className="name-man ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
                                 </div>
                               </div>
                             </div>
@@ -147,13 +169,13 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
           groupSet.groups.length > 0 && patients && patients.length > 0 ?
             patients.map((patient) => 
             (   
-              <div key={patient._id} className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" >
+              <div key={patient._id} className="col-2 d-flex justify-content-center align-items-center flex-column patient-card" >
                 <div 
                   draggable 
                   onDragStart={(e) => startDrag(e, patient._id)}
-                  className={`person-cont d-flex flex-column justify-content-center align-items-center ${patient.additional ? 'freq-fulfilled' : ''}`}
+                  className={`person-man-cont d-flex flex-column justify-content-center align-items-center ${patient.additional ? 'freq-fulfilled' : ''}`}
                 >
-                  <div className="name ellipsis-overflow"> <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span></div>
+                  <div className="name-man ellipsis-overflow"> <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span></div>
                   <div className="address ellipsis-overflow">{patient.address}</div>
                 </div>
               </div>

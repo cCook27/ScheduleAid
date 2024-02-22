@@ -310,8 +310,8 @@ router.post('/grouping/saveGroupSet/:user', async (req, res) => {
 
     if(!updatedUser) {
       return res.status(404).send('User not found');
-      };
-      
+    };
+
     console.log(updatedUser.manualGroups);
 
     return res.status(200).send({message: "New Set Established!"});
