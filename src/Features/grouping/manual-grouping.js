@@ -15,20 +15,29 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
-  const [groupSet, setGroupSet] = useState({ name: undefined, setId: uuidv4(), weekStart: start, weekEnd: end, groups: [] });
+  const [groupSet, setGroupSet] = useState({ setName: undefined, setId: uuidv4(), weekStart: start, weekEnd: end, groups: [] });
   const [editMode, setEditMode] = useState(true);
+  const [groupChange, setGroupChange] = useState(false);
 
   const groupSetRef = useRef(groupSet);
+  const groupChangeRef = useRef(groupChange);
 
-   useEffect(() => {
-        groupSetRef.current = groupSet;
-    }, [groupSet]);
+  useEffect(() => {
+    groupSetRef.current = groupSet;
+    if (!groupChange) {
+      setGroupChange(true);
+    }
+  }, [groupSet]);
+  
+  useEffect(() => {
+    groupChangeRef.current = groupChange;
+  }, [groupChange]);
 
-   useEffect(() => {
-    return () => {
-      // handleSaveGroupSet();
-    };
-   }, []);
+  useEffect(() => {
+  return () => {
+    // handleSaveGroupSet();
+  };
+  }, []);
   
   useEffect(() => {
     if (!editMode) {
@@ -37,11 +46,13 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   }, [editMode]);
   
   const handleSaveGroupSet = () => {
-    if (groupSetRef.current.groups.length > 0) {
-      if (groupSetRef.current.groups.length === 1) {
-        if (groupSetRef.current.groups[0].pats.length > 0) {
-          saveGroupSet(user._id, accessToken, groupSetRef.current);
-        }
+    if (groupChangeRef) {
+      if (groupSetRef.current.groups.length > 0) {
+        if (groupSetRef.current.groups.length === 1) {
+          if (groupSetRef.current.groups[0].pats.length > 0 || groupSetRef.current.setName) {
+            saveGroupSet(user._id, accessToken, groupSetRef.current);
+          } 
+        } 
       } else {
         saveGroupSet(user._id, accessToken, groupSetRef.current);
       }
