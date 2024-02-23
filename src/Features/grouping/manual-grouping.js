@@ -9,13 +9,15 @@ import "../../css/manual-grouping.css";
 
 // Would you like to add a group name also a save btn and edit/production btn
 
-const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
+const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start, end, }) => {
   const { saveGroupSet } = useDistanceRequests();
   // const { data: patient, status, refetch } = useQuery('patient', () => viewPatient(user._id, id, accessToken));
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
-  const [groupSet, setGroupSet] = useState({name: undefined, setId: uuidv4(), weekStart: start, weekEnd: end, groups: []});
+  const [groupSet, setGroupSet] = useState({ name: undefined, setId: uuidv4(), weekStart: start, weekEnd: end, groups: [] });
+  const [editMode, setEditMode] = useState(true);
+
   const groupSetRef = useRef(groupSet);
 
    useEffect(() => {
@@ -27,6 +29,12 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
       // handleSaveGroupSet();
     };
    }, []);
+  
+  useEffect(() => {
+    if (!editMode) {
+      // handleSaveGroupSet()
+    }
+  }, [editMode]);
   
   const handleSaveGroupSet = () => {
     if (groupSetRef.current.groups.length > 0) {
@@ -47,6 +55,15 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
       ...prev,
       setName: newName
     }));
+  };
+
+  const handleModeSelection = (event) => {
+    const value = event.target.value;
+    if (value === 'Edit') {
+      setEditMode(true);
+    } else {
+      setEditMode(false);
+    }
   };
   
   const handleAddGroup = () => {
@@ -99,21 +116,26 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
   return (
     <div className="container">
       <div className="row top-row">
-        <div className="col-6">
-          <button onClick={handleAddGroup}>Add Group</button>
+        <div className="col-4">
+          {/* disabled if it's on schedule mode */}
+          <button disabled={!editMode} onClick={handleAddGroup}>Add Group</button>
         </div>
-        <div className="col-6">
-          <div className="d-flex">
-            <button onClick={handleSaveGroupSet}>Save</button>
-            <input onChange={handleSetName} className="form-control" placeholder="Name this Set of Groups"/>
-          </div>
-          
+
+        <div className="col-4">
+          <select onChange={handleModeSelection}>
+            <option value="Edit">Edit Mode</option>
+            <option value="Schedule">Schedule Mode</option>
+          </select>
+        </div>
+
+        <div className="col-4">
+          <button onClick={handleSaveGroupSet}>Save My Work</button>
         </div>
       </div>
       
-      <div className="row mid-section">
+      <div className="row edit-section">
         {
-          groupSet.groups.length > 0 ?
+          editMode && groupSet.groups.length > 0 ?
             groupSet.groups.map((groupCont, index) => (
               <div key={index} onDrop={(e) => onDrop(e, index)} className="col-4">
                 <div className="group-cont p-1">
@@ -166,7 +188,7 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
 
       <div className="row pat-section">
         {
-          groupSet.groups.length > 0 && patients && patients.length > 0 ?
+          editMode && groupSet.groups.length > 0 && patients && patients.length > 0 ?
             patients.map((patient) => 
             (   
               <div key={patient._id} className="col-2 d-flex justify-content-center align-items-center flex-column patient-card" >
@@ -181,6 +203,46 @@ const ManualGrouping = ({ openModal, patients, myEvents, start, end, }) => {
               </div>
             ) 
           ): null
+        }
+      </div>
+
+      <div className="row schedule-section">
+        {
+          !editMode && groupSet.groups.length > 0 ?
+            groupSet.groups.map((groupCont, index) => (
+              <div key={index} className="col-4">
+                <div className="group-cont p-1">
+                  <div className="row">
+                    <div className="col">
+                      <div className="d-flex justify-content-start">
+                      <h6> Group { index+1 }</h6>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="row">
+                    {
+                      groupCont.pats.length > 0 ?
+                        groupCont.pats.map((pat, patIndex) => (
+                          <div key={patIndex} className="col">
+                            <div className="person-man-cont man-w-h" draggable onDragStart={() => handleDragStart(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index)}>
+                              <div className="row">
+                                <div className="col">
+                                  <div className="name-man ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                          </div>
+                        )) : null
+                    }
+                  </div>
+                </div>
+                
+                
+              </div>
+            )) : null
+          
         }
       </div>
 
