@@ -16,7 +16,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   const accessToken = useContext(AccessTokenContext);
 
   const [groupSet, setGroupSet] = useState({ setName: undefined, setId: uuidv4(), weekStart: start, weekEnd: end, groups: [] });
-  const [editMode, setEditMode] = useState(true);
+  const [editMode, setEditMode] = useState("Edit");
   const [groupChange, setGroupChange] = useState(false);
 
   const groupSetRef = useRef(groupSet);
@@ -35,17 +35,29 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
 
   useEffect(() => {
   return () => {
-    // handleSaveGroupSet();
+    handleSaveGroupSet();
   };
   }, []);
   
   useEffect(() => {
     if (!editMode) {
-      // handleSaveGroupSet()
+      handleSaveGroupSet();
     }
   }, [editMode]);
+
+  const saveToLocalStorage = () => {
+    try {
+      const serializedData = JSON.stringify(groupSet.setId);
+      localStorage.setItem(setId, serializedData);
+    } catch (error) {
+      console.error("Error saving data to local storage", error);
+    }
+  };
+  
   
   const handleSaveGroupSet = () => {
+    setEditMode('Schedule');
+    saveToLocalStorage();
     if (groupChangeRef) {
       if (groupSetRef.current.groups.length > 0) {
         if (groupSetRef.current.groups.length === 1) {
@@ -70,11 +82,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
 
   const handleModeSelection = (event) => {
     const value = event.target.value;
-    if (value === 'Edit') {
-      setEditMode(true);
-    } else {
-      setEditMode(false);
-    }
+    setEditMode(value);
   };
   
   const handleAddGroup = () => {
@@ -128,12 +136,11 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
     <div className="container">
       <div className="row top-row">
         <div className="col-4">
-          {/* disabled if it's on schedule mode */}
-          <button disabled={!editMode} onClick={handleAddGroup}>Add Group</button>
+          <button disabled={editMode === 'Schedule'} onClick={handleAddGroup}>Add Group</button>
         </div>
 
         <div className="col-4">
-          <select onChange={handleModeSelection}>
+          <select value={editMode} onChange={handleModeSelection}>
             <option value="Edit">Edit Mode</option>
             <option value="Schedule">Schedule Mode</option>
           </select>
@@ -146,7 +153,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
       
       <div className="row edit-section">
         {
-          editMode && groupSet.groups.length > 0 ?
+          editMode === 'Edit' && groupSet.groups.length > 0 ?
             groupSet.groups.map((groupCont, index) => (
               <div key={index} onDrop={(e) => onDrop(e, index)} className="col-4">
                 <div className="group-cont p-1">
@@ -199,7 +206,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
 
       <div className="row pat-section">
         {
-          editMode && groupSet.groups.length > 0 && patients && patients.length > 0 ?
+          editMode === 'Edit' && groupSet.groups.length > 0 && patients && patients.length > 0 ?
             patients.map((patient) => 
             (   
               <div key={patient._id} className="col-2 d-flex justify-content-center align-items-center flex-column patient-card" >
@@ -219,7 +226,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
 
       <div className="row schedule-section">
         {
-          !editMode && groupSet.groups.length > 0 ?
+          editMode === 'Schedule' && groupSet.groups.length > 0 ?
             groupSet.groups.map((groupCont, index) => (
               <div key={index} className="col-4">
                 <div className="group-cont p-1">

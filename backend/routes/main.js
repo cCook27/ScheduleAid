@@ -302,15 +302,29 @@ router.post('/grouping/saveGroupSet/:user', async (req, res) => {
     const userId = req.params.user;
     const newSet = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { $push: { manualGroups: newSet } },
+    if(newSet.groups.length === 0) {
+      return res.status(200).send({message: "No Saving Needed"});
+    }
+
+    let updatedUser;
+
+    updatedUser = await User.findOneAndUpdate(
+      { _id: userId, "manualGroups.setId": newSet.setId },
+      { $set: { "manualGroups.$": newSet } },
       { new: true }
     );
 
     if(!updatedUser) {
-      return res.status(404).send('User not found');
-    };
+      updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $push: { manualGroups: newSet } },
+        { new: true }
+      );
+
+      if(!updatedUser) {
+        return res.status(404).send('User not found');
+      };
+    }
 
     console.log(updatedUser.manualGroups);
 
