@@ -34,9 +34,12 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   }, [groupChange]);
 
   useEffect(() => {
-  return () => {
-    handleSaveGroupSet();
-  };
+    const storedSetId = localStorage.getItem('setId');
+    console.log(storedSetId);
+
+    return () => {
+      handleSaveGroupSet();
+    };
   }, []);
   
   useEffect(() => {
@@ -47,8 +50,8 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
 
   const saveToLocalStorage = () => {
     try {
-      const serializedData = JSON.stringify(groupSet.setId);
-      localStorage.setItem(setId, serializedData);
+      const serializedData = JSON.stringify(groupSetRef.current.setId);
+      localStorage.setItem('setId', serializedData);
     } catch (error) {
       console.error("Error saving data to local storage", error);
     }
@@ -57,17 +60,15 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   
   const handleSaveGroupSet = () => {
     setEditMode('Schedule');
-    saveToLocalStorage();
     if (groupChangeRef) {
       if (groupSetRef.current.groups.length > 0) {
         if (groupSetRef.current.groups.length === 1) {
           if (groupSetRef.current.groups[0].pats.length > 0 || groupSetRef.current.setName) {
+            saveToLocalStorage();
             saveGroupSet(user._id, accessToken, groupSetRef.current);
           } 
         } 
-      } else {
-        saveGroupSet(user._id, accessToken, groupSetRef.current);
-      }
+      } 
     }
   };
 

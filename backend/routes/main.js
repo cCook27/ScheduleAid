@@ -326,8 +326,6 @@ router.post('/grouping/saveGroupSet/:user', async (req, res) => {
       };
     }
 
-    console.log(updatedUser.manualGroups);
-
     return res.status(200).send({message: "New Set Established!"});
 
   } catch(error) {
@@ -335,54 +333,6 @@ router.post('/grouping/saveGroupSet/:user', async (req, res) => {
     res.status(500).send('An error occurred while trying to save your groups, try again.');
   }
 });
-
-// router.post('/grouping/groupSet/:user', async (req, res) => {
-//   try {
-//     const userId = req.params.user;
-//     const setId = '328bd4dd-358b-4cb6-ad50-26787ffb0cb8';
-//     const blablah = req.body;
-
-//     User.findOne({ 
-//       _id: userId, 
-//       'manualGroups': { $elemMatch: { manualGroupId: setId } }
-//     }, { 'manualGroups.$': 1 })
-//     .then(user => {
-//         if (user && user.manualGroups.length > 0) {
-//             const manualGroup = user.manualGroups[0];
-//             console.log(manualGroup);
-//         } else {
-//             console.log('No matching manualGroup found');
-//         }
-//     })
-//     .catch(err => {
-//         return res.status(404).send({message: `${err}`});
-//     });
-
-//     return res.status(200).send({message: "New Set Established!"});
-
-//   } catch(error) {
-//     console.error('Error:', error);
-//     res.status(500).send('An error occurred while trying to save your groups, try again.');
-//   }
-// });
-
-// router.post('/grouping/retrieveGroupSets/:user', async (req, res) => {
-//   try {
-//     const userId = req.params.user;
-//     const user = await User.findOne({ _id: userId });
-
-//     if (!userId) {
-//       return res.status(400).send('Bad request, User Id not sent.');
-//     } else if (!user) {
-//       return res.status(404).send('User not found');
-//     }
-
-//     return res.status(200).json(user.manualGroups);
-//   } catch (error) {
-//     console.error('Error:', error);
-//     res.status(500).send('An error occurred while trying to retrieve your Group Sets, try again.');
-//   }
-// });
 
 router.post('/user', async (req, res) => {
   try{
