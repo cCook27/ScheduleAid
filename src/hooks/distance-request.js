@@ -101,28 +101,29 @@ function useDistanceRequests () {
     }
   };
 
-  // const retrieveGroupSets = async (userId, accessToken) => {
-  //   try {
-  //     const options = {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
-  //     };
+  const retrieveGroupSet = async (userId, accessToken, setId) => {
+    try {
+      const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify({setId: setId})
+      };
 
-  //     const response = await fetch(`${url}/grouping/retrieveGroupSets/${userId}`, options);
+      const response = await fetch(`${url}/grouping/retrieveGroupSet/${userId}`, options);
 
-  //     if (!response.ok) {
-  //       throw new Error(`Request failed with status ${response.status}`);
-  //     }
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
 
-  //     const groupSets = await response.json();
+      const groupSet = await response.json();
 
-  //     return groupSets;
+      return groupSet;
 
-  //   } catch (error) {
-  //     console.log(error);
-  //     return errorResponse;
-  //   }
-  // };
+    } catch (error) {
+      console.log(error);
+      return errorResponse;
+    }
+  };
 
   // const getGroupSet = async (userId, accessToken, setId) => {
   //   try {
@@ -153,7 +154,7 @@ function useDistanceRequests () {
     createAutoGroups,
     checkGroups,
     saveGroupSet,
-    // retrieveGroupSets,
+    retrieveGroupSet,
     // getGroupSet
   }
 }

@@ -10,7 +10,7 @@ import "../../css/manual-grouping.css";
 // Would you like to add a group name also a save btn and edit/production btn
 
 const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start, end, }) => {
-  const { saveGroupSet } = useDistanceRequests();
+  const { saveGroupSet, retrieveGroupSet } = useDistanceRequests();
   // const { data: patient, status, refetch } = useQuery('patient', () => viewPatient(user._id, id, accessToken));
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
@@ -35,7 +35,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
 
   useEffect(() => {
     const storedSetId = localStorage.getItem('setId');
-    console.log(storedSetId);
+    getGroupSet(storedSetId);
 
     return () => {
       handleSaveGroupSet();
@@ -48,10 +48,14 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
     }
   }, [editMode]);
 
+  const getGroupSet = async (storedSetId) => {
+    const groupSetReturned = await retrieveGroupSet(user._id, accessToken, storedSetId);
+    setGroupSet(groupSetReturned);
+  };
+
   const saveToLocalStorage = () => {
     try {
-      const serializedData = JSON.stringify(groupSetRef.current.setId);
-      localStorage.setItem('setId', serializedData);
+      localStorage.setItem('setId', groupSetRef.current.setId);
     } catch (error) {
       console.error("Error saving data to local storage", error);
     }

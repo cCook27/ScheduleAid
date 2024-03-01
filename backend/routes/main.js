@@ -334,6 +334,29 @@ router.post('/grouping/saveGroupSet/:user', async (req, res) => {
   }
 });
 
+router.post('/grouping/retrieveGroupSet/:user', async (req, res) => {
+  try {
+    const userId = req.params.user;
+    const idToRetrieve = req.body;
+    const user = await User.findOne({_id: userId});
+
+    if(!user) {
+      return res.status(404).send('user not found');
+    } 
+
+    const matchingSet = user.manualGroups.find((groupSets) => {
+      return groupSets.setId === idToRetrieve.setId;
+    });
+
+    return res.status(200).send(matchingSet);
+    
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred while trying to save your groups, try again.');
+  }
+  
+});
+
 router.post('/user', async (req, res) => {
   try{
     const newUser = req.body;
