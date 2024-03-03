@@ -87,7 +87,7 @@ const AutoGroups = ({ handleDragStart, patientGroups, homes, myEvents, start, en
   const uniformAddress = (address) => {
     const newAddress = address.replace(/,/g, '');
     return newAddress;
-  }
+  };
 
   const updateEvents = (event) => {
     const updatedEvents = [...myEvents];
@@ -102,7 +102,7 @@ const AutoGroups = ({ handleDragStart, patientGroups, homes, myEvents, start, en
 
   const checkForUnassigned = (patient) => {
     const unassignedEvents = currEv.filter((event) => {
-      return uniformAddress(event.address) === uniformAddress(patient.address) && event.groupNumber !== 0 && (event.groupNumber === undefined || event.groupNumber === null)
+      return uniformAddress(event.address) === uniformAddress(patient.address) && event.groupNumber !== 0 && (event.groupNumber === undefined || event.groupNumber === null);
     });
 
     return unassignedEvents.length > 0 ? true : false;

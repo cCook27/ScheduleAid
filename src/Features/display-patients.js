@@ -40,7 +40,7 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
           return patient;
         };
         
-        if(frequency < patientsEvents.length || frequency === patientsEvents.length){
+        if(frequency <= patientsEvents.length){
           patient.additional = true;
           return patient;
         };

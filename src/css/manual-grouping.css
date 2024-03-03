@@ -2,7 +2,7 @@
   height: auto;
   width: auto;
   max-height: auto;
-  border: var(--customBorder);
+  border: 2px solid var(--borderColor);
 }
 
 .del-group-x {

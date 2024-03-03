@@ -77,10 +77,3 @@ const DisplayGroups = ({ openModal, handleDragStart, homes, myEvents, start, end
 }
 
 export default DisplayGroups;
-
-
-// groupType === 'patients' ?
-//           (
-//             <GeoGroups handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups}/>
-//           ):
-

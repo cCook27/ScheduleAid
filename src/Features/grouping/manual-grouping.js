@@ -3,26 +3,68 @@ import { useQuery } from 'react-query';
 import { v4 as uuidv4 } from 'uuid';
 
 import useDistanceRequests from "../../hooks/distance-request";
+import useComparisonRequests from "../../hooks/comparison-requests";
 import { UserContext, AccessTokenContext } from '../../context/context';
 
 import add_group from './assets/add_group.svg';
 
 import "../../css/manual-grouping.css";
 
-// Would you like to add a group name also a save btn and edit/production btn
-
 const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start, end, }) => {
   const { saveGroupSet, retrieveGroupSet } = useDistanceRequests();
-  // const { data: patient, status, refetch } = useQuery('patient', () => viewPatient(user._id, id, accessToken));
+  const { abbrevationFix } = useComparisonRequests();
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
 
   const [groupSet, setGroupSet] = useState({ setName: undefined, setId: uuidv4(), weekStart: start, weekEnd: end, groups: [] });
   const [editMode, setEditMode] = useState("Edit");
   const [groupChange, setGroupChange] = useState(false);
+  const [remainingPatients, setRemainingPatients] = useState([]);
+  const [currentEvents, setCurrentEvents] = useState([]);
 
   const groupSetRef = useRef(groupSet);
   const groupChangeRef = useRef(groupChange);
+
+  useEffect(() => {
+
+    if(patients) {
+      const viewStart = new Date(start.setHours(0, 0, 0, 0)).getTime();
+      const viewEnd = new Date(end.setHours(23, 59, 59, 999)).getTime();
+
+      const activePatients = patients.filter((patient) => patient.active);
+      
+      const eventsUsed = myEvents.filter((event) => {
+        const eventStart = new Date(event.start).getTime();
+        return eventStart >= viewStart && eventStart <= viewEnd;
+      });
+
+      setCurrentEvents(eventsUsed);
+  
+      const patientsToReport = activePatients.map((patient) => {
+        const patAddress = abbrevationFix(patient.address);
+        const frequency = parseInt(patient.frequency);
+        
+        const patientsEvents =  eventsUsed.filter((event) => {
+          const evAddress = abbrevationFix(event.address);
+
+          return evAddress === patAddress && event.title === `${patient.firstName} ${patient.lastName}`
+        });
+      
+        if(frequency > patientsEvents.length) {
+          patient.additional = false;
+          return patient;
+        };
+        
+        if(frequency < patientsEvents.length || frequency === patientsEvents.length){
+          patient.additional = true;
+          return patient;
+        };
+      });
+  
+      setRemainingPatients(patientsToReport);
+    }
+  
+  },[myEvents, start]);
 
   useEffect(() => {
     groupSetRef.current = groupSet;
@@ -49,6 +91,19 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
       handleSaveGroupSet();
     }
   }, [editMode]);
+
+  useEffect(() => {
+    if(groupSet.groups !== 0) {
+      const allPatientArraysInGroups = groupSet.groups.map((obj) => {
+        return obj.pats;
+      });
+
+      const allPatients = allPatientArraysInGroups.flat();
+
+      // CurrentEvents compare it and then somehow translate it to the groups
+    }
+
+  }, [currentEvents]);
 
   const getGroupSet = async (storedSetId) => {
     const groupSetReturned = await retrieveGroupSet(user._id, accessToken, storedSetId);
@@ -147,6 +202,29 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
     }));
   };
 
+  const moveToCalendar = (patientName, patientAddress, patientCoordinates, index, patientId) => {
+    // do not use patientId in handleDragStart
+    handleDragStart(patientName, patientAddress, patientCoordinates, index); 
+
+    // const groupToChange = [...groupSet.groups][index].pats;
+    // let patientToChange = groupToChange.filter((pat) => pat._id === patientId)[0];
+    
+    // if(patientToChange) {
+    //   patientToChange.additional = true;
+    // }
+    // const patIndex = groupToChange.findIndex((pat) => pat._id === patientId);
+    // groupToChange[patIndex] = patientToChange;
+
+    // const groupsToReport = [...groupSet.groups];
+
+    // groupsToReport[index].pats = groupToChange;
+
+    // setGroupSet((prev) => ({
+    //   ...prev,
+    //   groups: groupsToReport
+    // }));
+  };
+
   return (
     <div className="container">
       <div className="row top-row">
@@ -236,7 +314,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
       <div className="row pat-section">
         {
           editMode === 'Edit' && groupSet.groups.length > 0 && patients && patients.length > 0 ?
-            patients.map((patient) => 
+          remainingPatients.map((patient) => 
             (   
               <div key={patient._id} className="col-2 d-flex justify-content-center align-items-center flex-column patient-card" >
                 <div 
@@ -272,7 +350,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                       {
                         groupCont.pats.length > 0 ?
                           groupCont.pats.map((pat, patIndex) => (
-                            <div key={patIndex} className="person-man-cont man-w-h" draggable onDragStart={() => handleDragStart(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index)}>
+                            <div key={patIndex} className={`person-man-cont man-w-h ${pat.additional ? 'freq-fulfilled' : ''}`} draggable onDragStart={() => moveToCalendar(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index, pat._id)}>
                               <div className="row">
                                 <div className="col">
                                   <div className="name-man d-flex justify-content-center ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
@@ -299,20 +377,3 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
 export default ManualGrouping;
 
 
-
-
-// <div key={patIndex} className="col d-flex justify-content-center">
-//                             <div key={patIndex} className="person-man-cont man-w-h">
-//                               <div className="row d-flex align-items-center pt-1">
-//                                 <div className="col-10">
-//                                   <div className="name-man ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
-//                                 </div>
-//                                 <div className="col-2">
-//                                   <div className='d-flex justify-content-end del-pat'>
-//                                     <button onClick={() => delPatient(pat, index)} type="button" className="del-pat-x btn-close" aria-label="Close"></button>
-//                                   </div>
-//                                 </div>
-//                               </div>
-//                             </div>
-                            
-//                           </div>
