@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import useDistanceRequests from "../../hooks/distance-request";
 import { UserContext, AccessTokenContext } from '../../context/context';
 
+import add_group from './assets/add_group.svg';
+
 import "../../css/manual-grouping.css";
 
 // Would you like to add a group name also a save btn and edit/production btn
@@ -61,7 +63,6 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
     }
   };
   
-  
   const handleSaveGroupSet = () => {
     setEditMode('Schedule');
     if (groupChangeRef) {
@@ -71,9 +72,12 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
             saveToLocalStorage();
             saveGroupSet(user._id, accessToken, groupSetRef.current);
           } 
-        } 
+        } else {
+          saveToLocalStorage();
+          saveGroupSet(user._id, accessToken, groupSetRef.current);
+        }
       } 
-    }
+    } 
   };
 
   const handleSetName = (event) => {
@@ -95,6 +99,12 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
       ...prev,
       groups: [...prev.groups, { pats: [] }]
     }));
+  };
+
+  const handleNewGroupSet = () => {
+    handleSaveGroupSet();
+    setGroupSet({ setName: undefined, setId: uuidv4(), weekStart: start, weekEnd: end, groups: [] });
+    setEditMode('Edit');
   };
 
   const handleClose = (delIndex) => {
@@ -140,65 +150,79 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   return (
     <div className="container">
       <div className="row top-row">
-        <div className="col-4">
-          <button disabled={editMode === 'Schedule'} onClick={handleAddGroup}>Add Group</button>
+        <div className="col-3 d-flex justify-content-center">
+          <button className="btn manual-btns">Find Groups</button>
         </div>
 
-        <div className="col-4">
-          <select value={editMode} onChange={handleModeSelection}>
-            <option value="Edit">Edit Mode</option>
-            <option value="Schedule">Schedule Mode</option>
+        <div className="col-3 d-flex justify-content-center">
+          <button className="btn manual-btns" onClick={handleNewGroupSet}>Start Fresh</button>
+        </div>
+
+        <div className="col-3 d-flex justify-content-center">
+          <select className="form-select" value={editMode} onChange={handleModeSelection}>
+            <option value="Edit">Edit</option>
+            <option value="Schedule">Schedule</option>
           </select>
         </div>
 
-        <div className="col-4">
-          <button onClick={handleSaveGroupSet}>Save My Work</button>
+        <div className="col-3 d-flex justify-content-center">
+          <button className="btn manual-btns" onClick={handleSaveGroupSet}>Save Work</button>
+        </div>
+      </div>
+
+      <div className="row py-3">
+        <div className="col d-flex justify-content-start">
+          {editMode === 'Edit' && <button className="btn add-man-group-btn d-flex align-items-center" onClick={handleAddGroup}>
+            <span className="d-flex align-items-center">
+              <img className="add-group-icon" src={add_group} alt="add" />
+            </span>
+            Add Group
+          </button>} 
         </div>
       </div>
       
-      <div className="row edit-section">
+      <div className="row edit-section pb-3">
         {
           editMode === 'Edit' && groupSet.groups.length > 0 ?
             groupSet.groups.map((groupCont, index) => (
               <div key={index} onDrop={(e) => onDrop(e, index)} className="col-4">
-                <div className="group-cont p-1">
+                <div className="group-cont p-1 mb-2">
                   <div className="row">
                     <div className="col">
-                      <div className="d-flex justify-content-start">
-                      <h6> Group { index+1 }</h6>
+                      <div className='d-flex justify-content-end'>
+                        <button type="button" className="del-group-x d-flex justify-content-end btn-close" aria-label="Close"
+                        onClick={() => handleClose(index)}></button>
                       </div>
                     </div>
+                  </div>
+                  <div className="row">
                     <div className="col">
-                      <div className='d-flex justify-content-end'>
-                        <button type="button" className="d-flex justify-content-end btn-close close-all close-all-custom btn-close-create" aria-label="Close"
-                        onClick={() => handleClose(index)}></button>
+                      <div className="d-flex justify-content-center">
+                      <h6> Group { index+1 }</h6>
                       </div>
                     </div>
                   </div>
                   
                   <div className="row">
-                    {
-                      groupCont.pats.length > 0 ?
-                        groupCont.pats.map((pat, patIndex) => (
-                          <div key={patIndex} className="col">
-                            <div className="person-man-cont man-w-h">
-                              <div className="row">
-                                <div className="col">
-                                  <div className='d-flex justify-content-end del-pat'>
-                                    <button onClick={() => delPatient(pat, index)} type="button" className="del-pat-x pb-0 pe-0 d-flex justify-content-end btn-close" aria-label="Close"></button>
+                    <div className="col d-flex justify-content-center align-items-center flex-column">
+                      {
+                        groupCont.pats.length > 0 ?
+                          groupCont.pats.map((pat, patIndex) => (
+                            <div key={patIndex} className="person-man-cont man-w-h">
+                              <div className="row d-flex align-items-center">
+                                <div className="col-10">
+                                  <div className="name-man ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
+                                </div>
+                                <div className="col-2">
+                                  <div className="d-flex justify-content-end">
+                                    <button onClick={() => delPatient(pat, index)} type="button" className="del-pat-x btn-close" aria-label="Close"></button>
                                   </div>
                                 </div>
                               </div>
-                              <div className="row">
-                                <div className="col">
-                                  <div className="name-man ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
-                                </div>
-                              </div>
                             </div>
-                            
-                          </div>
-                        )) : null
-                    }
+                          )) : null
+                      }
+                    </div>
                   </div>
                 </div>
                 
@@ -234,7 +258,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
           editMode === 'Schedule' && groupSet.groups.length > 0 ?
             groupSet.groups.map((groupCont, index) => (
               <div key={index} className="col-4">
-                <div className="group-cont p-1">
+                <div className="group-cont p-1 mb-2">
                   <div className="row">
                     <div className="col">
                       <div className="d-flex justify-content-start">
@@ -244,21 +268,20 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                   </div>
                   
                   <div className="row">
-                    {
-                      groupCont.pats.length > 0 ?
-                        groupCont.pats.map((pat, patIndex) => (
-                          <div key={patIndex} className="col">
-                            <div className="person-man-cont man-w-h" draggable onDragStart={() => handleDragStart(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index)}>
+                    <div className="col d-flex justify-content-start align-items-center flex-column">
+                      {
+                        groupCont.pats.length > 0 ?
+                          groupCont.pats.map((pat, patIndex) => (
+                            <div key={patIndex} className="person-man-cont man-w-h" draggable onDragStart={() => handleDragStart(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index)}>
                               <div className="row">
                                 <div className="col">
-                                  <div className="name-man ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
+                                  <div className="name-man d-flex justify-content-center ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
                                 </div>
                               </div>
                             </div>
-                            
-                          </div>
-                        )) : null
-                    }
+                          )) : null
+                      }
+                    </div>
                   </div>
                 </div>
                 
@@ -274,3 +297,22 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
 };
 
 export default ManualGrouping;
+
+
+
+
+// <div key={patIndex} className="col d-flex justify-content-center">
+//                             <div key={patIndex} className="person-man-cont man-w-h">
+//                               <div className="row d-flex align-items-center pt-1">
+//                                 <div className="col-10">
+//                                   <div className="name-man ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
+//                                 </div>
+//                                 <div className="col-2">
+//                                   <div className='d-flex justify-content-end del-pat'>
+//                                     <button onClick={() => delPatient(pat, index)} type="button" className="del-pat-x btn-close" aria-label="Close"></button>
+//                                   </div>
+//                                 </div>
+//                               </div>
+//                             </div>
+                            
+//                           </div>

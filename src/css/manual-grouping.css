@@ -5,8 +5,12 @@
   border: var(--customBorder);
 }
 
-.del-pat-x {
+.del-group-x {
   font-size: 10px;
+}
+
+.del-pat-x {
+  font-size: 12px;
 }
 
 .person-man-cont {
@@ -34,4 +38,31 @@
   font-weight: 700;
   font-size: 12px;
   color: var(--patientLetters);
+}
+
+.manual-btns {
+  background: var(--fulfilled);
+  color: #fff;
+  font-weight: 600;
+  border: var(--customBorder);
+  box-shadow: var(--enhanceBoxShadow);
+}
+
+.manual-btns:hover {
+  border: var(--customBorder);
+}
+
+.add-man-group-btn {
+  font-weight: 600;
+  color: var(--fulfilled);
+}
+
+.add-man-group-btn:hover {
+  color: var(--fulfilled);
+  transform: translateY(-2px);
+}
+
+.add-group-icon {
+  width: 20px;
+  height: 20px;
 }

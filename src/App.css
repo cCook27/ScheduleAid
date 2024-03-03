@@ -80,3 +80,11 @@ select:active {
   border-color: #6a9f6d;
   box-shadow: 0 0 0 0.2rem rgba(106, 159, 109, 0.25);
 }
+
+.btn-close:focus {
+  box-shadow: none;
+}
+
+.btn-close:active {
+  transform: translateY(2px);
+}
