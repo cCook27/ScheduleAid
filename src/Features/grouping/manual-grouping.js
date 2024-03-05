@@ -93,17 +93,58 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   }, [editMode]);
 
   useEffect(() => {
-    if(groupSet.groups !== 0) {
+    if(groupSet.groups.length !== 0) {
       const allPatientArraysInGroups = groupSet.groups.map((obj) => {
         return obj.pats;
       });
 
       const allPatients = allPatientArraysInGroups.flat();
+      let patientsAreScheduled = [];
 
-      // CurrentEvents compare it and then somehow translate it to the groups
+      for (let i = 0; i < allPatients.length; i++) {
+        const patient = allPatients[i];
+
+        currentEvents.forEach((event) => {
+          if(event.title === `${patient.firstName} ${patient.lastName}`) {
+            const eventAppearances = currentEvents.filter((ev) => ev.title === event.title).length;
+            const patientScheduledAppearances = patientsAreScheduled.filter((pat) => pat._id === patient._id).length;
+            const allPatientAppearances = allPatients.filter((pat) => pat._id === patient._id).length;
+
+            if(eventAppearances > patientScheduledAppearances && patientScheduledAppearances !== allPatientAppearances) {
+              patientsAreScheduled.push(patient);
+            }
+
+          }
+        })
+        
+      }
+      
+      const newGroups = groupSet.groups.map((groupObj) => {
+        const groupPats = groupObj.pats.map((pat) => {
+          const eventIndex = currentEvents.findIndex((event) => event.title === `${pat.firstName} ${pat.lastName}`);
+          if(eventIndex >= 0) {
+            pat.manualScheduled = true;
+            currentEvents.splice(eventIndex, 1);
+          } else {
+            pat.manualScheduled = false;
+          }
+          return pat;
+        });
+        return groupPats;
+      });
+
+      const finalGroupSet = groupSet.groups.map((obj, index) => {
+        obj.pats = newGroups[index];
+        return obj;
+      });
+
+      setGroupSet((prev) => ({
+        ...prev,
+        groups: finalGroupSet,
+      }));
     }
 
-  }, [currentEvents]);
+  }, [currentEvents, editMode]);
 
   const getGroupSet = async (storedSetId) => {
     const groupSetReturned = await retrieveGroupSet(user._id, accessToken, storedSetId);
@@ -350,7 +391,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                       {
                         groupCont.pats.length > 0 ?
                           groupCont.pats.map((pat, patIndex) => (
-                            <div key={patIndex} className={`person-man-cont man-w-h ${pat.additional ? 'freq-fulfilled' : ''}`} draggable onDragStart={() => moveToCalendar(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index, pat._id)}>
+                            <div key={patIndex} className={`person-man-cont man-w-h ${pat.manualScheduled ? 'freq-fulfilled' : ''}`} draggable onDragStart={() => moveToCalendar(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index, pat._id)}>
                               <div className="row">
                                 <div className="col">
                                   <div className="name-man d-flex justify-content-center ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
