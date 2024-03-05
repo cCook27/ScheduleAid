@@ -7,6 +7,8 @@ import useComparisonRequests from "../../hooks/comparison-requests";
 import { UserContext, AccessTokenContext } from '../../context/context';
 
 import add_group from './assets/add_group.svg';
+import check_mark from './assets/check_mark.svg';
+import x_mark from './assets/x_mark.svg';
 
 import "../../css/manual-grouping.css";
 
@@ -91,60 +93,6 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
       handleSaveGroupSet();
     }
   }, [editMode]);
-
-  useEffect(() => {
-    if(groupSet.groups.length !== 0) {
-      const allPatientArraysInGroups = groupSet.groups.map((obj) => {
-        return obj.pats;
-      });
-
-      const allPatients = allPatientArraysInGroups.flat();
-      let patientsAreScheduled = [];
-
-      for (let i = 0; i < allPatients.length; i++) {
-        const patient = allPatients[i];
-
-        currentEvents.forEach((event) => {
-          if(event.title === `${patient.firstName} ${patient.lastName}`) {
-            const eventAppearances = currentEvents.filter((ev) => ev.title === event.title).length;
-            const patientScheduledAppearances = patientsAreScheduled.filter((pat) => pat._id === patient._id).length;
-            const allPatientAppearances = allPatients.filter((pat) => pat._id === patient._id).length;
-
-            if(eventAppearances > patientScheduledAppearances && patientScheduledAppearances !== allPatientAppearances) {
-              patientsAreScheduled.push(patient);
-            }
-
-          }
-        })
-        
-      }
-      
-      const newGroups = groupSet.groups.map((groupObj) => {
-        const groupPats = groupObj.pats.map((pat) => {
-          const eventIndex = currentEvents.findIndex((event) => event.title === `${pat.firstName} ${pat.lastName}`);
-          if(eventIndex >= 0) {
-            pat.manualScheduled = true;
-            currentEvents.splice(eventIndex, 1);
-          } else {
-            pat.manualScheduled = false;
-          }
-          return pat;
-        });
-        return groupPats;
-      });
-
-      const finalGroupSet = groupSet.groups.map((obj, index) => {
-        obj.pats = newGroups[index];
-        return obj;
-      });
-
-      setGroupSet((prev) => ({
-        ...prev,
-        groups: finalGroupSet,
-      }));
-    }
-
-  }, [currentEvents, editMode]);
 
   const getGroupSet = async (storedSetId) => {
     const groupSetReturned = await retrieveGroupSet(user._id, accessToken, storedSetId);
@@ -264,6 +212,11 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
     //   ...prev,
     //   groups: groupsToReport
     // }));
+  };
+
+  const handleClickName = (patient, groupIndex, patIndex) => {
+    patient.manualScheduled = true;
+    groupSet.groups[groupIndex].pats[patIndex] = patient;
   };
 
   return (
@@ -393,8 +346,24 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                           groupCont.pats.map((pat, patIndex) => (
                             <div key={patIndex} className={`person-man-cont man-w-h ${pat.manualScheduled ? 'freq-fulfilled' : ''}`} draggable onDragStart={() => moveToCalendar(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index, pat._id)}>
                               <div className="row">
-                                <div className="col">
-                                  <div className="name-man d-flex justify-content-center ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
+                                <div className="col-10">
+                                  <div className="name-man d-flex justify-content-start ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
+                                </div>
+                                <div className="col-2 d-flex justify-content-end">
+
+                                  {
+                                    !pat.manualScheduled ? 
+                                    (
+                                      <button className="check-mark-btn d-flex align-items-center" onClick={() => handleClickName(pat, index, patIndex)}>
+                                        <img className="check-mark-icon" src={check_mark} alt="add" />  
+                                      </button>
+                                    ): 
+                                    (
+                                      <button className="check-mark-btn d-flex align-items-center" onClick={() => handleClickName(pat, index, patIndex)}>
+                                        <img className="check-mark-icon" src={x_mark} alt="add" />  
+                                       </button>
+                                    )
+                                  }                                 
                                 </div>
                               </div>
                             </div>
