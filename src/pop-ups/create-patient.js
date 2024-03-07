@@ -20,6 +20,8 @@ function CreatePatient({userId, accessToken, closeModal}) {
       secondaryNumber: '',
       email: '',
       _id: '',
+      autoId: '',
+      manualId: '',
       noSeeDays: {sunday: false, monday: false, tuesday: false, wednesday: false, thursday: false, friday: false, saturday: false},
       active: true,
       frequency: 1,
@@ -32,6 +34,8 @@ function CreatePatient({userId, accessToken, closeModal}) {
     setFormData((prevData) => ({
       ...prevData,
       _id: uuidv4(),
+      autoId: uuidv4(),
+      manualId: uuidv4(),
     }));
   }, []);
 

@@ -23,6 +23,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   const [groupChange, setGroupChange] = useState(false);
   const [remainingPatients, setRemainingPatients] = useState([]);
   const [currentEvents, setCurrentEvents] = useState([]);
+  const [onDeck, setOnDeck] = useState({patient: undefined, groupIndex: undefined, patIndex: undefined});
 
   const groupSetRef = useRef(groupSet);
   const groupChangeRef = useRef(groupChange);
@@ -64,6 +65,10 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
       });
   
       setRemainingPatients(patientsToReport);
+
+      if(onDeck.patient) {
+        handleCheckName(onDeck.patient, onDeck.groupIndex, onDeck.patIndex);
+      }
     }
   
   },[myEvents, start]);
@@ -191,32 +196,27 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
     }));
   };
 
-  const moveToCalendar = (patientName, patientAddress, patientCoordinates, index, patientId) => {
-    // do not use patientId in handleDragStart
-    handleDragStart(patientName, patientAddress, patientCoordinates, index); 
-
-    // const groupToChange = [...groupSet.groups][index].pats;
-    // let patientToChange = groupToChange.filter((pat) => pat._id === patientId)[0];
-    
-    // if(patientToChange) {
-    //   patientToChange.additional = true;
-    // }
-    // const patIndex = groupToChange.findIndex((pat) => pat._id === patientId);
-    // groupToChange[patIndex] = patientToChange;
-
-    // const groupsToReport = [...groupSet.groups];
-
-    // groupsToReport[index].pats = groupToChange;
-
-    // setGroupSet((prev) => ({
-    //   ...prev,
-    //   groups: groupsToReport
-    // }));
+  const moveToCalendar = (pat, index, patIndex) => {
+    handleDragStart(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index); 
+    setOnDeck({patient: pat, groupIndex: index, patIndex: patIndex});
   };
 
-  const handleClickName = (patient, groupIndex, patIndex) => {
+  const handleCheckName = (patient, groupIndex, patIndex) => {
     patient.manualScheduled = true;
     groupSet.groups[groupIndex].pats[patIndex] = patient;
+    const updatedPatient = { ...patient, manualScheduled: true };
+    const updatedGroup = [...groupSet.groups];
+    updatedGroup[groupIndex].pats[patIndex] = updatedPatient;
+    setGroupSet({ ...groupSet, groups: updatedGroup });
+  };
+
+  const handleUnCheckName = (patient, groupIndex, patIndex) => {
+    patient.manualScheduled = false;
+    groupSet.groups[groupIndex].pats[patIndex] = patient;
+    const updatedPatient = { ...patient, manualScheduled: false };
+    const updatedGroup = [...groupSet.groups];
+    updatedGroup[groupIndex].pats[patIndex] = updatedPatient;
+    setGroupSet({ ...groupSet, groups: updatedGroup });
   };
 
   return (
@@ -344,7 +344,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                       {
                         groupCont.pats.length > 0 ?
                           groupCont.pats.map((pat, patIndex) => (
-                            <div key={patIndex} className={`person-man-cont man-w-h ${pat.manualScheduled ? 'freq-fulfilled' : ''}`} draggable onDragStart={() => moveToCalendar(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index, pat._id)}>
+                            <div key={patIndex} className={`person-man-cont man-w-h ${pat.manualScheduled ? 'freq-fulfilled' : ''}`} draggable onDragStart={() => moveToCalendar(pat, index, patIndex)}>
                               <div className="row">
                                 <div className="col-10">
                                   <div className="name-man d-flex justify-content-start ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
@@ -354,12 +354,12 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                                   {
                                     !pat.manualScheduled ? 
                                     (
-                                      <button className="check-mark-btn d-flex align-items-center" onClick={() => handleClickName(pat, index, patIndex)}>
+                                      <button className="check-mark-btn d-flex align-items-center" onClick={() => handleCheckName(pat, index, patIndex)}>
                                         <img className="check-mark-icon" src={check_mark} alt="add" />  
                                       </button>
                                     ): 
                                     (
-                                      <button className="check-mark-btn d-flex align-items-center" onClick={() => handleClickName(pat, index, patIndex)}>
+                                      <button className="check-mark-btn d-flex align-items-center" onClick={() => handleUnCheckName(pat, index, patIndex)}>
                                         <img className="check-mark-icon" src={x_mark} alt="add" />  
                                        </button>
                                     )

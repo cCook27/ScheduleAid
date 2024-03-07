@@ -2,6 +2,7 @@ const User = require('../models/User-Model');
 const axios = require('axios');
 const _ = require('lodash');
 require('dotenv').config();
+const { v4: uuidv4 } = require('uuid');
 const apiKey = process.env.MAPS_API_KEY;
 const googleApiKey = process.env.GOOGLE_MAPS_API_KEY;
 const router = require("express").Router();
@@ -31,37 +32,40 @@ router.get('/user/:user', async (req, res) => {
 });
 
 router.get('/patients/:user', async (req, res) => {
-  try{
-    const userId = req.params.user;    
-    const user = await User.findOne({_id: userId});
-
-    if(!userId) {
+  try {
+    const userId = req.params.user;
+    if (!userId) {
       return res.status(400).send('Bad request, User Id not sent.');
-    } else if(!user) {
+    }
+
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
       return res.status(404).send('User not found');
     }
 
-    const userPatients = user.patients.map((patient) => {
+    let changesMade = false; // Flag to track if any changes were made
+
+    user.patients.forEach(patient => {
       if (patient.hasOwnProperty('groupNumber')) {
-        // Remove the property
-        delete patient['groupNumber'];
+        delete patient.groupNumber;
+        changesMade = true;
       }
-      return patient;
     });
 
-    user.save();
-    
-    if(userPatients.length === 0) {
-      return res.send([]);
+    // Only save if changes were made
+    if (changesMade) {
+      user.markModified('patients');
+      await user.save();
     }
 
-    res.send(userPatients);
+    res.send(user.patients);
 
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send('An error occurred while looking for patients.');
   }
 });
+
 
 router.get('/patient/:user/:patient', async (req, res) => {
   try {
