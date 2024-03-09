@@ -72,7 +72,7 @@ const DisplayPatients = ({ handleDragStart, homes, homeStatus, myEvents, start, 
               <div key={patient._id} className="col-4 d-flex justify-content-center align-items-center flex-column patient-card" >
                 <div 
                   draggable 
-                  onDragStart={() => handleDragStart(`${patient.firstName} ${patient.lastName}`, patient.address, patient.coordinates, patient.additional ? null : undefined, patient.additional)} 
+                  onDragStart={() => handleDragStart(`${patient.firstName} ${patient.lastName}`, patient.address, patient.coordinates, patient.additional ? null : undefined, patient.additional, null)} 
                   className={`person-cont d-flex flex-column justify-content-center align-items-center ${patient.additional ? 'freq-fulfilled' : ''}`}
                 >
                   <div className="name ellipsis-overflow"> <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span></div>

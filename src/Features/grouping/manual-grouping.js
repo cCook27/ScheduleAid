@@ -23,7 +23,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   const [groupChange, setGroupChange] = useState(false);
   const [remainingPatients, setRemainingPatients] = useState([]);
   const [currentEvents, setCurrentEvents] = useState([]);
-  const [onDeck, setOnDeck] = useState({patient: undefined, groupIndex: undefined, patIndex: undefined});
+  const [onDeck, setOnDeck] = useState({patient: undefined, groupIndex: undefined, patIndex: undefined, assignedEvent: undefined});
 
   const groupSetRef = useRef(groupSet);
   const groupChangeRef = useRef(groupChange);
@@ -66,12 +66,37 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   
       setRemainingPatients(patientsToReport);
 
-      if(onDeck.patient) {
-        handleCheckName(onDeck.patient, onDeck.groupIndex, onDeck.patIndex);
-      }
+      
     }
   
   },[myEvents, start]);
+
+  useEffect(() => {
+    if(groupSet.groups.length > 0 && editMode === 'Schedule') {
+      const allPatientGroups = groupSet.groups.map((groupObj) => groupObj.pats);
+
+      const newPatientGroups = allPatientGroups.map((group) => {
+        const patients = group.map((patient) => {
+          const isScheduled = currentEvents.find((ev) => {
+            return ev.id === patient.manualScheduled;
+          });
+          patient.isScheduled = isScheduled ? true : false;
+
+          return patient;
+        });
+        return patients;
+      });
+
+      setGroupSet(prev => {
+        const newGroups = prev.groups.map((groubObj, index) => {
+          const newPats = newPatientGroups[index];
+          return {...groubObj, pats: newPats};
+        });
+        return {...prev, groups: newGroups}
+      });
+    }
+
+  }, [currentEvents, editMode]);
 
   useEffect(() => {
     groupSetRef.current = groupSet;
@@ -197,26 +222,28 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   };
 
   const moveToCalendar = (pat, index, patIndex) => {
-    handleDragStart(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index); 
-    setOnDeck({patient: pat, groupIndex: index, patIndex: patIndex});
+    const eventId = uuidv4();
+    handleDragStart(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index, false, eventId); 
+    // setOnDeck({patient: pat, groupIndex: index, patIndex: patIndex, assignedEvent: eventId});
+    handleCheckName(pat, index, patIndex, eventId);
   };
 
-  const handleCheckName = (patient, groupIndex, patIndex) => {
-    patient.manualScheduled = true;
+  const handleCheckName = (patient, groupIndex, patIndex, eventId) => {
+    patient.manualScheduled = eventId;
     groupSet.groups[groupIndex].pats[patIndex] = patient;
-    const updatedPatient = { ...patient, manualScheduled: true };
+    const updatedPatient = { ...patient, manualScheduled: eventId };
     const updatedGroup = [...groupSet.groups];
     updatedGroup[groupIndex].pats[patIndex] = updatedPatient;
     setGroupSet({ ...groupSet, groups: updatedGroup });
   };
 
   const handleUnCheckName = (patient, groupIndex, patIndex) => {
-    patient.manualScheduled = false;
-    groupSet.groups[groupIndex].pats[patIndex] = patient;
-    const updatedPatient = { ...patient, manualScheduled: false };
-    const updatedGroup = [...groupSet.groups];
-    updatedGroup[groupIndex].pats[patIndex] = updatedPatient;
-    setGroupSet({ ...groupSet, groups: updatedGroup });
+    // patient.manualScheduled = false;
+    // groupSet.groups[groupIndex].pats[patIndex] = patient;
+    // const updatedPatient = { ...patient, manualScheduled: false };
+    // const updatedGroup = [...groupSet.groups];
+    // updatedGroup[groupIndex].pats[patIndex] = updatedPatient;
+    // setGroupSet({ ...groupSet, groups: updatedGroup });
   };
 
   return (
@@ -344,7 +371,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                       {
                         groupCont.pats.length > 0 ?
                           groupCont.pats.map((pat, patIndex) => (
-                            <div key={patIndex} className={`person-man-cont man-w-h ${pat.manualScheduled ? 'freq-fulfilled' : ''}`} draggable onDragStart={() => moveToCalendar(pat, index, patIndex)}>
+                            <div key={patIndex} className={`person-man-cont man-w-h ${pat.isScheduled ? 'freq-fulfilled' : ''}`} draggable onDragStart={() => moveToCalendar(pat, index, patIndex)}>
                               <div className="row">
                                 <div className="col-10">
                                   <div className="name-man d-flex justify-content-start ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>

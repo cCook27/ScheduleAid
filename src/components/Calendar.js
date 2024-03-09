@@ -250,12 +250,12 @@ function Calendar(props) {
 
       const end = new Date(start.getTime() + 60 * 60 * 1000);
 
-      const {client, address, coordinates, groupNumber, additional} = draggedClient;
+      const {client, address, coordinates, groupNumber, additional, eventId} = draggedClient;
       const calId = uuidv4();
 
       const event = {
         title: client,
-        id: calId,
+        id: eventId ? eventId : calId,
         address: address,
         coordinates: coordinates,
         groupNumber: groupNumber,
@@ -289,8 +289,8 @@ function Calendar(props) {
   );
 
   const handleDragStart = useCallback(
-    (name, address, coordinates, groupNumber, additional) => {
-      setDraggedClient({client: name, address: address, coordinates: coordinates, groupNumber: groupNumber, additional: additional});
+    (name, address, coordinates, groupNumber, additional, eventId) => {
+      setDraggedClient({client: name, address: address, coordinates: coordinates, groupNumber: groupNumber, additional: additional, eventId: eventId});
   },[])
   
   const testSchedule = async () => {

@@ -153,7 +153,7 @@ const AutoGroups = ({ handleDragStart, patientGroups, homes, myEvents, start, en
                     ) :
 
                     (
-                      <div className="col-6 d-flex patient-cont" key={patient._id} draggable onDragStart={() => handleDragStart(`${patient.firstName} ${patient.lastName}`, patient.address, patient.coordinates, index, additional)}>
+                      <div className="col-6 d-flex patient-cont" key={patient._id} draggable onDragStart={() => handleDragStart(`${patient.firstName} ${patient.lastName}`, patient.address, patient.coordinates, index, additional, null)}>
                         <div className="patient-name ellipsis-overflow">
                           <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
                         </div>
@@ -183,7 +183,7 @@ const AutoGroups = ({ handleDragStart, patientGroups, homes, myEvents, start, en
                 patientGroups.visitOverflow.length > 0 ? 
                 (
                   patientGroups.visitOverflow.map((flow) => (
-                    <div className="d-flex patient-cont" key={flow._id} draggable onDragStart={() => handleDragStart(`${flow.firstName} ${flow.lastName}`, flow.address, flow.coordinates, flow, additional)}>
+                    <div className="d-flex patient-cont" key={flow._id} draggable onDragStart={() => handleDragStart(`${flow.firstName} ${flow.lastName}`, flow.address, flow.coordinates, flow, additional, null)}>
                     <div className="patient-name ellipsis-overflow">
                       <span className="me-1">{flow.firstName}</span> <span>{flow.lastName}</span>
                     </div>
