@@ -23,7 +23,6 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   const [groupChange, setGroupChange] = useState(false);
   const [remainingPatients, setRemainingPatients] = useState([]);
   const [currentEvents, setCurrentEvents] = useState([]);
-  const [onDeck, setOnDeck] = useState({patient: undefined, groupIndex: undefined, patIndex: undefined, assignedEvent: undefined});
 
   const groupSetRef = useRef(groupSet);
   const groupChangeRef = useRef(groupChange);
@@ -76,15 +75,29 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
       const allPatientGroups = groupSet.groups.map((groupObj) => groupObj.pats);
 
       const newPatientGroups = allPatientGroups.map((group) => {
-        const patients = group.map((patient) => {
+        const newPatients = group.map((patient) => {
           const isScheduled = currentEvents.find((ev) => {
             return ev.id === patient.manualScheduled;
           });
-          patient.isScheduled = isScheduled ? true : false;
+
+          if(!isScheduled) {
+            const patAddress = abbrevationFix(patient.address);
+            const eventInstances = currentEvents.filter((event) => {
+              const evAddress = abbrevationFix(event.address);
+              return evAddress === patAddress && `${patient.firstName} ${patient.lastName}` === event.title;
+            });
+
+            const patientInstances = allPatientGroups.flat().filter((pat) => pat._id === patient._id);
+
+            patient.manualScheduled = eventInstances.length === 1 && patientInstances.length === 1 ? eventInstances[0].id : 'NONE';
+            patient.isScheduled = eventInstances.length === 1 && patientInstances.length === 1 ? true : false;
+          } else {
+            patient.isScheduled = true;
+          }
 
           return patient;
         });
-        return patients;
+        return newPatients;
       });
 
       setGroupSet(prev => {
@@ -95,7 +108,6 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
         return {...prev, groups: newGroups}
       });
     }
-
   }, [currentEvents, editMode]);
 
   useEffect(() => {
@@ -224,7 +236,6 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
   const moveToCalendar = (pat, index, patIndex) => {
     const eventId = uuidv4();
     handleDragStart(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index, false, eventId); 
-    // setOnDeck({patient: pat, groupIndex: index, patIndex: patIndex, assignedEvent: eventId});
     handleCheckName(pat, index, patIndex, eventId);
   };
 
@@ -235,15 +246,6 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
     const updatedGroup = [...groupSet.groups];
     updatedGroup[groupIndex].pats[patIndex] = updatedPatient;
     setGroupSet({ ...groupSet, groups: updatedGroup });
-  };
-
-  const handleUnCheckName = (patient, groupIndex, patIndex) => {
-    // patient.manualScheduled = false;
-    // groupSet.groups[groupIndex].pats[patIndex] = patient;
-    // const updatedPatient = { ...patient, manualScheduled: false };
-    // const updatedGroup = [...groupSet.groups];
-    // updatedGroup[groupIndex].pats[patIndex] = updatedPatient;
-    // setGroupSet({ ...groupSet, groups: updatedGroup });
   };
 
   return (
@@ -373,10 +375,10 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                           groupCont.pats.map((pat, patIndex) => (
                             <div key={patIndex} className={`person-man-cont man-w-h ${pat.isScheduled ? 'freq-fulfilled' : ''}`} draggable onDragStart={() => moveToCalendar(pat, index, patIndex)}>
                               <div className="row">
-                                <div className="col-10">
+                                <div className="col-12">
                                   <div className="name-man d-flex justify-content-start ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
                                 </div>
-                                <div className="col-2 d-flex justify-content-end">
+                                {/* <div className="col-2 d-flex justify-content-end">
 
                                   {
                                     !pat.manualScheduled ? 
@@ -391,7 +393,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                                        </button>
                                     )
                                   }                                 
-                                </div>
+                                </div> */}
                               </div>
                             </div>
                           )) : null
