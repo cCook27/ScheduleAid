@@ -89,8 +89,37 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
 
             const patientInstances = allPatientGroups.flat().filter((pat) => pat._id === patient._id);
 
-            patient.manualScheduled = eventInstances.length === 1 && patientInstances.length === 1 ? eventInstances[0].id : 'NONE';
-            patient.isScheduled = eventInstances.length === 1 && patientInstances.length === 1 ? true : false;
+            if(eventInstances.length === 1 && patientInstances.length === 1) {
+              patient.manualScheduled = eventInstances[0].id;
+              patient.isScheduled = true;
+            } else if(eventInstances.length === patientInstances.length) {
+              const noScheduledPairsPat = patientInstances.filter((patient) => {
+                const isPair = eventInstances.find((ev) => {
+                  return ev.id === patient.manualScheduled;
+                });
+
+                return !isPair;
+              });
+
+              const noScheduledPairsEvent = eventInstances.filter((ev) => {
+                const isPair = patientInstances.find((patient) => {
+                  return ev.id === patient.manualScheduled;
+                });
+
+                return !isPair;
+              });
+
+              if(noScheduledPairsPat.length === 1 && noScheduledPairsEvent.length === 1) {
+                patient.manualScheduled = noScheduledPairsEvent[0].id;
+                patient.isScheduled = true;
+              } else {
+                patient.manualScheduled = 'NONE';
+                patient.isScheduled = false;
+              }
+            } else {
+                patient.manualScheduled = 'NONE';
+                patient.isScheduled = false;
+            }
           } else {
             patient.isScheduled = true;
           }
@@ -378,6 +407,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                                 <div className="col-12">
                                   <div className="name-man d-flex justify-content-start ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>
                                 </div>
+                                {/* IF USED NO MORE DRAGGING */}
                                 {/* <div className="col-2 d-flex justify-content-end">
 
                                   {

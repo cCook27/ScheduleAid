@@ -175,11 +175,12 @@ function Calendar(props) {
       className += 'bothViable ';
     }
   
-    if (event.groupNumber === undefined && viewFocus.view === 'Group') {
-      className += 'assign-day ';
-    }
+    // if (event.groupNumber === undefined && viewFocus.view === 'Group') {
+    //   className += 'assign-day ';
+    // }
   
     if (event.additional) {
+      // & it's not on manual
       className += 'additional-day ';
     }
     
