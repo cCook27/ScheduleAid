@@ -34,8 +34,6 @@ function CreatePatient({userId, accessToken, closeModal}) {
     setFormData((prevData) => ({
       ...prevData,
       _id: uuidv4(),
-      autoId: uuidv4(),
-      manualId: uuidv4(),
     }));
   }, []);
 
