@@ -7,12 +7,10 @@ import useComparisonRequests from "../../hooks/comparison-requests";
 import { UserContext, AccessTokenContext } from '../../context/context';
 
 import add_group from './assets/add_group.svg';
-import check_mark from './assets/check_mark.svg';
-import x_mark from './assets/x_mark.svg';
 
 import "../../css/manual-grouping.css";
 
-const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start, end, }) => {
+const ManualGrouping = ({ isOpen, handleDragStart, openModal, patients, myEvents, start, end, }) => {
   const { saveGroupSet, retrieveGroupSet } = useDistanceRequests();
   const { abbrevationFix } = useComparisonRequests();
   const user = useContext(UserContext);
@@ -75,58 +73,61 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
       const allPatientGroups = groupSet.groups.map((groupObj) => groupObj.pats);
 
       const newPatientGroups = allPatientGroups.map((group) => {
-        const newPatients = group.map((patient) => {
-          const isScheduled = currentEvents.find((ev) => {
-            return ev.id === patient.manualScheduled;
-          });
-
-          if(!isScheduled) {
-            const patAddress = abbrevationFix(patient.address);
-            const eventInstances = currentEvents.filter((event) => {
-              const evAddress = abbrevationFix(event.address);
-              return evAddress === patAddress && `${patient.firstName} ${patient.lastName}` === event.title;
+        if(group) {
+            const newPatients = group.map((patient) => {
+            const isScheduled = currentEvents.find((ev) => {
+              return ev.id === patient.manualScheduled;
             });
 
-            const patientInstances = allPatientGroups.flat().filter((pat) => pat._id === patient._id);
-
-            if(eventInstances.length === 1 && patientInstances.length === 1) {
-              patient.manualScheduled = eventInstances[0].id;
-              patient.isScheduled = true;
-            } else if(eventInstances.length === patientInstances.length) {
-              const noScheduledPairsPat = patientInstances.filter((patient) => {
-                const isPair = eventInstances.find((ev) => {
-                  return ev.id === patient.manualScheduled;
-                });
-
-                return !isPair;
+            if(!isScheduled) {
+              const patAddress = abbrevationFix(patient.address);
+              const eventInstances = currentEvents.filter((event) => {
+                const evAddress = abbrevationFix(event.address);
+                return evAddress === patAddress && `${patient.firstName} ${patient.lastName}` === event.title;
               });
 
-              const noScheduledPairsEvent = eventInstances.filter((ev) => {
-                const isPair = patientInstances.find((patient) => {
-                  return ev.id === patient.manualScheduled;
-                });
+              const patientInstances = allPatientGroups.flat().filter((pat) => pat._id === patient._id);
 
-                return !isPair;
-              });
-
-              if(noScheduledPairsPat.length === 1 && noScheduledPairsEvent.length === 1) {
-                patient.manualScheduled = noScheduledPairsEvent[0].id;
+              if(eventInstances.length === 1 && patientInstances.length === 1) {
+                patient.manualScheduled = eventInstances[0].id;
                 patient.isScheduled = true;
+              } else if(eventInstances.length === patientInstances.length) {
+                const noScheduledPairsPat = patientInstances.filter((patient) => {
+                  const isPair = eventInstances.find((ev) => {
+                    return ev.id === patient.manualScheduled;
+                  });
+
+                  return !isPair;
+                });
+
+                const noScheduledPairsEvent = eventInstances.filter((ev) => {
+                  const isPair = patientInstances.find((patient) => {
+                    return ev.id === patient.manualScheduled;
+                  });
+
+                  return !isPair;
+                });
+
+                if(noScheduledPairsPat.length === 1 && noScheduledPairsEvent.length === 1) {
+                  patient.manualScheduled = noScheduledPairsEvent[0].id;
+                  patient.isScheduled = true;
+                } else {
+                  patient.manualScheduled = 'NONE';
+                  patient.isScheduled = false;
+                }
               } else {
-                patient.manualScheduled = 'NONE';
-                patient.isScheduled = false;
+                  patient.manualScheduled = 'NONE';
+                  patient.isScheduled = false;
               }
             } else {
-                patient.manualScheduled = 'NONE';
-                patient.isScheduled = false;
+              patient.isScheduled = true;
             }
-          } else {
-            patient.isScheduled = true;
-          }
 
-          return patient;
-        });
-        return newPatients;
+            return patient;
+          });
+
+          return newPatients;
+        }
       });
 
       setGroupSet(prev => {
@@ -152,12 +153,24 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
 
   useEffect(() => {
     const storedSetId = localStorage.getItem('setId');
-    getGroupSet(storedSetId);
+    if(storedSetId && storedSetId !== 'abc') {
+      getGroupSet(storedSetId);
+    }
+    
 
     return () => {
       handleSaveGroupSet();
     };
   }, []);
+
+  useEffect(() => {
+    if(!isOpen) {
+      const storedSetId = localStorage.getItem('setId');
+      if(storedSetId && storedSetId !== 'abc') {
+        getGroupSet(storedSetId);
+      }
+    }
+  }, [isOpen])
   
   useEffect(() => {
     if (!editMode) {
@@ -277,6 +290,18 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
     setGroupSet({ ...groupSet, groups: updatedGroup });
   };
 
+  const handleOpenModal = (patient, groupIndex, patientIndex) => {
+    const allPatients = groupSet.groups.map((groupObj) => groupObj.pats).flat();
+    const matchingPatients = allPatients.filter((p) => p._id === patient._id);
+
+    const availableEvents = currentEvents.filter((ev) => {
+      const isScheduled = matchingPatients.find((p) => p.manualScheduled === ev.id);
+      return !isScheduled && ev.title === `${patient.firstName} ${patient.lastName}`;
+    });
+
+    openModal('PatientGroupModal', {patient: patient, availableEvents: availableEvents, groupNum: groupIndex, groups: groupSet, patientIndex: patientIndex})
+  }
+
   return (
     <div className="container">
       <div className="row top-row">
@@ -336,7 +361,7 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                   <div className="row">
                     <div className="col d-flex justify-content-center align-items-center flex-column">
                       {
-                        groupCont.pats.length > 0 ?
+                        groupCont && groupCont.pats && groupCont.pats.length > 0 ?
                           groupCont.pats.map((pat, patIndex) => (
                             <div key={patIndex} className="person-man-cont man-w-h">
                               <div className="row d-flex align-items-center">
@@ -400,9 +425,12 @@ const ManualGrouping = ({ handleDragStart, openModal, patients, myEvents, start,
                   <div className="row">
                     <div className="col d-flex justify-content-start align-items-center flex-column">
                       {
-                        groupCont.pats.length > 0 ?
+                        groupCont && groupCont.pats && groupCont.pats.length > 0 ?
                           groupCont.pats.map((pat, patIndex) => (
-                            <div key={patIndex} className={`person-man-cont man-w-h ${pat.isScheduled ? 'freq-fulfilled' : ''}`} draggable onDragStart={() => moveToCalendar(pat, index, patIndex)}>
+                            <div key={patIndex} className={`person-man-cont man-w-h ${pat.isScheduled ? 'freq-fulfilled' : ''}`} 
+                              draggable onDragStart={() => moveToCalendar(pat, index, patIndex)}
+                              onClick={() => handleOpenModal(pat, index, patIndex)}
+                            >
                               <div className="row">
                                 <div className="col-12">
                                   <div className="name-man d-flex justify-content-start ellipsis-overflow"> <span className="me-1">{pat.firstName}</span> <span>{pat.lastName}</span></div>

@@ -9,6 +9,7 @@ import PatientScheduleNotes from "../pop-ups/patient-schedule-notes";
 import CreatePatient from "../pop-ups/create-patient";
 import LoadingModal from "../pop-ups/loading-modal";
 import InitiateGroupingModal from "../pop-ups/initiate-grouping-modal";
+import PatientGroupModal from "../pop-ups/patient-group-modal";
 
 import "../css/modal-wrapper.css";
 
@@ -22,13 +23,14 @@ const ModalWrapper = (props) => {
     PatientScheduleNotes: PatientScheduleNotes,
     CreatePatient: CreatePatient,
     LoadingModal: LoadingModal,
-    InitiateGroupingModal: InitiateGroupingModal
+    InitiateGroupingModal: InitiateGroupingModal,
+    PatientGroupModal: PatientGroupModal,
   };
 
   const SelectedModal = MODAL_COMPONENTS[props.modalType] || ErrorModal;
 
   const isSmallerModal = () => {
-    if (SelectedModal === DeletePatientModal || SelectedModal === ErrorModal || SelectedModal === PatientModal || SelectedModal === InitiateGroupingModal) {
+    if (SelectedModal === DeletePatientModal || SelectedModal === ErrorModal || SelectedModal === PatientModal || SelectedModal === InitiateGroupingModal || SelectedModal === PatientGroupModal) {
       return true;
     } else {
       return false;

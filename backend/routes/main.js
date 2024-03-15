@@ -66,7 +66,6 @@ router.get('/patients/:user', async (req, res) => {
   }
 });
 
-
 router.get('/patient/:user/:patient', async (req, res) => {
   try {
     const userId = req.params.user;

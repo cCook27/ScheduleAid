@@ -11,7 +11,7 @@ import "../../css/display-groups.css"
 import ManualGrouping from "./manual-grouping";
 
 
-const DisplayGroups = ({ openModal, handleDragStart, homes, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups, therapistParameters }) => {
+const DisplayGroups = ({ isOpen, openModal, handleDragStart, homes, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups, therapistParameters }) => {
 
   const user = useContext(UserContext);
   const accessToken = useContext(AccessTokenContext);
@@ -66,7 +66,7 @@ const DisplayGroups = ({ openModal, handleDragStart, homes, myEvents, start, end
             <AutoGroups handleDragStart={handleDragStart} patientGroups={patientGroups} homes={homes} myEvents={myEvents} start={start} end={end} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} />
           ):  
           (
-            <ManualGrouping handleDragStart={handleDragStart} openModal={openModal} patients={homes} myEvents={myEvents} start={start} end={end} />
+            <ManualGrouping isOpen={isOpen} handleDragStart={handleDragStart} openModal={openModal} patients={homes} myEvents={myEvents} start={start} end={end} />
           )
         }
       </div>
