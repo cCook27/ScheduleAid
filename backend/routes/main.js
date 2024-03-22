@@ -145,9 +145,14 @@ router.post('/grouping/auto/:user', async (req, res) => {
     const patientVisits = [].concat(...fulfillAllFrequecies);
 
     const checkSameness = (current, saved, overflow) => {
-      const sortedCurrent = current.sort((a, b) => a.lastName.localeCompare(b.lastName));
+      const sortedCurrentFull = current.sort((a, b) => a.lastName.localeCompare(b.lastName));
 
-      const sortedSaved = saved.flat().concat(overflow).sort((a, b) => a.lastName.localeCompare(b.lastName));
+      const sortedSavedFull = saved.flat().concat(overflow).sort((a, b) => a.lastName.localeCompare(b.lastName));
+
+      const keysToOmit = ['isScheduled', 'manualScheduled'];
+
+      const sortedCurrent = sortedCurrentFull.map(item => _.omit(item, keysToOmit));
+      const sortedSaved = sortedSavedFull.map(item => _.omit(item, keysToOmit));
 
       return _.isEqual(sortedCurrent, sortedSaved);;
     };
@@ -532,6 +537,27 @@ router.post('/schedule/:user', async (req, res) => {
   } catch {
       console.log('Error inserting document:');
       res.status(500).json({ error: 'Failed to save in database' });
+  }
+});
+
+router.put('/grouping/auto/:user', async (req, res) => {
+  const userId = req.params.user;
+  const updatedAutoGroups = req.body;
+
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId }, 
+      { autoGroups: updatedAutoGroups }, 
+      { new: true } 
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send('User not found');
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    return res.status(500).send(error.message);
   }
 });
 

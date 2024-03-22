@@ -1,203 +1,172 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useContext, useRef} from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 import Loading from "../../pop-ups/loading";
 import "../../css/display-groups.css"
 
 import useComparisonRequests from "../../hooks/comparison-requests";
+import useDistanceRequests from "../../hooks/distance-request";
+import { UserContext } from "../../context/context";
+import { AccessTokenContext } from "../../context/context";
 
-const AutoGroups = ({ handleDragStart, patientGroups, homes, myEvents, start, end, handleEventsUpdate, handleUpdatedGroups }) => {
+const AutoGroups = ({ handleDragStart, openModal, patientGroups, myEvents, start, end }) => {
 
   const { abbrevationFix } = useComparisonRequests();
+  const { saveAutoGroups } = useDistanceRequests();
 
-  const [groups, setGroups] = useState([]);
-  const [currEv, setCurrEv] = useState([]);
-  const additional = false;
- 
+  const user = useContext(UserContext);
+  const accessToken = useContext(AccessTokenContext);
+
+  const [currentEvents, setCurrentEvents] = useState([]); 
+  const [autoGroups, setAutoGroups] = useState({});
+
+  const isInitialMount = useRef(true);
+
   useEffect(() => {
-    if(patientGroups) {
-      const viewStart = new Date(start.setHours(0, 0, 0, 0)).getTime();
-      const viewEnd = new Date(end.setHours(23, 59, 59, 999)).getTime();
-      
-      const currentEvents = myEvents.filter((event) => {
-        const eventStart = new Date(event.start).getTime();
-        return eventStart >= viewStart && eventStart <= viewEnd;
-      });
+    const viewStart = new Date(start.setHours(0, 0, 0, 0)).getTime();
+    const viewEnd = new Date(end.setHours(23, 59, 59, 999)).getTime();
 
-      setCurrEv(currentEvents);
+    const eventsUsed = myEvents.filter((event) => {
+      const eventStart = new Date(event.start).getTime();
+      return eventStart >= viewStart && eventStart <= viewEnd;
+    });
 
-      const updatedGroups = patientGroups.visits.map((group, index) => {
-        const editGroup = group.map((patient) => {
-          if(patient.additional) {
-            patient.scheduled = true;
-          }
+    setCurrentEvents(eventsUsed);
+    setAutoGroups(patientGroups);
+  }, [myEvents, start]);
 
-          const frequency = parseInt(patient.frequency);
-          const isScheduled = currentEvents.filter((event) => {
-            const evAddress = abbrevationFix(event.address);
-            const patAddress = abbrevationFix(patient.address);
-            return evAddress === patAddress && `${patient.firstName} ${patient.lastName}` === event.title;
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false; 
+      return;
+    }
+
+    if(patientGroups.visits.length > 0) {
+      const newPatientGroups = patientGroups.visits.map((group) => {
+        const newPatients = group.map((patient) => {
+          const isScheduled = currentEvents.find((ev) => {
+            return ev.id === patient.manualScheduled;
           });
-        
 
-          if(isScheduled.length === 0) {
-            patient.scheduled = false;
-            return patient;
-          };
+          if(!isScheduled) {
+            const patAddress = abbrevationFix(patient.address);
+            const eventInstances = currentEvents.filter((event) => {
+              const evAddress = abbrevationFix(event.address);
+              return evAddress === patAddress && `${patient.firstName} ${patient.lastName}` === event.title;
+            });
 
-          if(isScheduled.length === 1 && frequency === 1) {
-            let schedEvent = isScheduled[0];
+            const patientInstances = patientGroups.visits.flat().filter((pat) => pat._id === patient._id);
 
-            if(schedEvent.groupNumber === undefined) {
-              schedEvent.groupNumber = index;
-              updateEvents(schedEvent);
-            };
+            if(eventInstances.length === 1 && patientInstances.length === 1) {
+              patient.manualScheduled = eventInstances[0].id;
+              patient.isScheduled = true;
+            } else if(eventInstances.length === patientInstances.length) {
+              const noScheduledPairsPat = patientInstances.filter((patient) => {
+                const isPair = eventInstances.find((ev) => {
+                  return ev.id === patient.manualScheduled;
+                });
 
-            if(schedEvent.groupNumber || schedEvent.groupNumber === 0) {
-              patient.scheduled = true;
-              return patient;
-            };
-          };
+                return !isPair;
+              });
 
-          if(isScheduled.length > 0) {
-            const hasGroupNum = isScheduled.filter((ev) => ev.groupNumber === index);
+              const noScheduledPairsEvent = eventInstances.filter((ev) => {
+                const isPair = patientInstances.find((patient) => {
+                  return ev.id === patient.manualScheduled;
+                });
 
-            if(hasGroupNum.length === 0) {
-              patient.scheduled = false;
-              return patient;
+                return !isPair;
+              });
+
+              if(noScheduledPairsPat.length === 1 && noScheduledPairsEvent.length === 1) {
+                patient.manualScheduled = noScheduledPairsEvent[0].id;
+                patient.isScheduled = true;
+              } else {
+                patient.manualScheduled = 'NONE';
+                patient.isScheduled = false;
+              }
+            } else {
+                patient.manualScheduled = 'NONE';
+                patient.isScheduled = false;
             }
-
-            if(hasGroupNum.length === 1) {
-              patient.scheduled = true;
-              return patient;
-            }
-          };
+          } else {
+            patient.isScheduled = true;
+          }
 
           return patient;
         });
-  
-        return editGroup;
+
+        return newPatients;
       });
-  
-      setGroups(updatedGroups);
-      handleUpdatedGroups(updatedGroups);
-    };
-    
-  }, [start, myEvents]);
 
-  const uniformAddress = (address) => {
-    const newAddress = address.replace(/,/g, '');
-    return newAddress;
-  };
-
-  const updateEvents = (event) => {
-    const updatedEvents = [...myEvents];
-    const index = updatedEvents.findIndex((ev) => ev.id === event.id);
-
-    if(index !== -1) {
-      updatedEvents[index] = event;
-
-      handleEventsUpdate(updatedEvents);
+      setAutoGroups((prev) => ({
+        ...prev,
+        visits: newPatientGroups
+      }));
     }
+  }, [currentEvents]);
+  
+  const moveToCalendar = (pat, index, patIndex) => {
+    const eventId = uuidv4();
+    handleDragStart(`${pat.firstName} ${pat.lastName}`, pat.address, pat.coordinates, index, false, eventId); 
+    handleCheckName(pat, index, patIndex, eventId);
   };
 
-  const checkForUnassigned = (patient) => {
-    const unassignedEvents = currEv.filter((event) => {
-      return uniformAddress(event.address) === uniformAddress(patient.address) && event.groupNumber !== 0 && (event.groupNumber === undefined || event.groupNumber === null);
+  const handleCheckName = (patient, groupIndex, patIndex, eventId) => {
+    patient.manualScheduled = eventId;
+    const newGroups = [...autoGroups.visits];
+    newGroups[groupIndex][patIndex] = patient;
+
+    setAutoGroups((prev) => ({
+      ...prev,
+      visits: newGroups
+    }));
+
+    saveChanges();
+  };
+
+  const saveChanges = async () => {
+    await saveAutoGroups(user._id, accessToken, patientGroups);
+  };
+
+  const handleOpenModal = (patient, groupIndex, patientIndex) => {
+    const allPatients = autoGroups.visits.flat();
+    const matchingPatients = allPatients.filter((p) => p._id === patient._id);
+
+    const availableEvents = currentEvents.filter((ev) => {
+      const isScheduled = matchingPatients.find((p) => p.manualScheduled === ev.id);
+      return !isScheduled && ev.title === `${patient.firstName} ${patient.lastName}`;
     });
 
-    return unassignedEvents.length > 0 ? true : false;
+    openModal('PatientGroupModal', {patient: patient, availableEvents: availableEvents, groupNum: groupIndex, groups: autoGroups.visits, patientIndex: patientIndex})
   };
-  
-  return (
+
+  return(
     <div className="container">
-      <div className="row d-flex justify-content-center align-items-center">
-        {!homes ? 
-          (
-            <div className="col">
-              <div>No Patients saved</div>     
-            </div>
-          ) : 
-          
-          !patientGroups ? 
-            (
-              <div><Loading /></div>
-            ) : 
-          
-            groups.length >= 1 && groups.length <= 7 ? 
-            (
-              groups.map((group, index) => (
-                <div className="col-4 d-flex flex-column group mx-1 my-2">
-                  <div className="group-number">Group {index + 1}</div>
-                  <div className="d-flex justify-content-center align-items-center row">
-
+      {
+        autoGroups.visits && autoGroups.visits.length > 0 ? 
+        (
+          <div className="row">
+            {
+            autoGroups.visits.map((group, index) => (
+              <div key={index} className="col-4 group">
                 {
-                  group.map((patient) => (
-                    patient.scheduled === true ? 
-
-                    (
-                      <div className="col-6 d-flex patient-cont used" key={patient._id} >
-                        <div className="patient-name ellipsis-overflow">
-                          <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
-                        </div>
-                      </div>
-                    ) : checkForUnassigned(patient) ? 
-
-                    (
-                      (
-                        <div className="col-6 d-flex patient-cont pat-cont-disabled" key={patient._id} >
-                          <div className="patient-name ellipsis-overflow">
-                            <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
-                          </div>
-                        </div>
-                      )
-                    ) :
-
-                    (
-                      <div className="col-6 d-flex patient-cont" key={patient._id} draggable onDragStart={() => handleDragStart(`${patient.firstName} ${patient.lastName}`, patient.address, patient.coordinates, index, additional, null)}>
-                        <div className="patient-name ellipsis-overflow">
-                          <span className="me-1">{patient.firstName}</span> <span>{patient.lastName}</span>
-                        </div>
-                      </div>
-                    ) 
-
+                  group.map((pat, patIndex) => (
+                    <div key={pat._id} 
+                    className={`person-man-cont man-w-h ${pat.isScheduled ? 'freq-fulfilled' : ''}`}
+                    draggable onDragStart={() => moveToCalendar(pat, index, patIndex)}
+                    onClick={() => handleOpenModal(pat, index, patIndex)}
+                    >
+                      {pat.firstName}
+                    </div>
                   ))
                 }
-
-                  </div>
-                </div>
-              ))
-            ) :
-
-            (
-              <div>contrary</div>
-            )
-        }
-      </div>
-      {
-        patientGroups && patientGroups.visitOverflow.length > 0 ? 
-        (
-          <div className="overflow-group mb-3 p-3">
-            <div className="overflow-group-des pb-2">Overflow:</div>
-            <div className="d-flex">
-              {
-                patientGroups.visitOverflow.length > 0 ? 
-                (
-                  patientGroups.visitOverflow.map((flow) => (
-                    <div className="d-flex patient-cont" key={flow._id} draggable onDragStart={() => handleDragStart(`${flow.firstName} ${flow.lastName}`, flow.address, flow.coordinates, flow, additional, null)}>
-                    <div className="patient-name ellipsis-overflow">
-                      <span className="me-1">{flow.firstName}</span> <span>{flow.lastName}</span>
-                    </div>
-                  </div>
-                  ))
-                ): null
-              }
-            </div>
-            
+              </div>
+            ))
+            }
           </div>
-        ): null
+        ) : <div>Nope</div>
       }
     </div>
-  
   )
 }
 

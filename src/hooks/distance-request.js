@@ -48,6 +48,33 @@ function useDistanceRequests () {
     }
   };
 
+  const saveAutoGroups = async (userId, accessToken, groups) => {
+    try {
+      const options = {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}`},
+        body: JSON.stringify(groups)
+      }
+      const response = await fetch(`${url}/grouping/auto/${userId}`, options);
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const groupData = await response.json();
+         
+    } catch (error) {
+      console.error('Error:', error);
+
+      const errorResponse = {
+        error: 'An error occurred while creating user data',
+        message: error.message 
+      };
+
+      return errorResponse;
+    }
+  };
+
   const checkGroups = async (userId, accessToken) => {
     try {
       const options = {
@@ -128,6 +155,7 @@ function useDistanceRequests () {
   return {
     getTimeDistances,
     createAutoGroups,
+    saveAutoGroups,
     checkGroups,
     saveGroupSet,
     retrieveGroupSet,

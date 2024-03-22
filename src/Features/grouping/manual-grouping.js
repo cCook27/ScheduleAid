@@ -1,5 +1,4 @@
 import React, { useEffect, useContext, useState, useRef } from "react";
-import { useQuery } from 'react-query';
 import { v4 as uuidv4 } from 'uuid';
 
 import useDistanceRequests from "../../hooks/distance-request";
@@ -62,8 +61,6 @@ const ManualGrouping = ({ isOpen, handleDragStart, openModal, patients, myEvents
       });
   
       setRemainingPatients(patientsToReport);
-
-      
     }
   
   },[myEvents, start]);
@@ -74,7 +71,7 @@ const ManualGrouping = ({ isOpen, handleDragStart, openModal, patients, myEvents
 
       const newPatientGroups = allPatientGroups.map((group) => {
         if(group) {
-            const newPatients = group.map((patient) => {
+          const newPatients = group.map((patient) => {
             const isScheduled = currentEvents.find((ev) => {
               return ev.id === patient.manualScheduled;
             });
@@ -300,7 +297,7 @@ const ManualGrouping = ({ isOpen, handleDragStart, openModal, patients, myEvents
     });
 
     openModal('PatientGroupModal', {patient: patient, availableEvents: availableEvents, groupNum: groupIndex, groups: groupSet, patientIndex: patientIndex})
-  }
+  };
 
   return (
     <div className="container">

@@ -11,36 +11,11 @@ const PatientModal = ({accessToken, userId, modalProps, closeModal}) => {
   const { abbrevationFix } = useComparisonRequests();
   const { deletePatientSchedule, saveUserSchedule } = useScheduleRequests();
 
-  const [groupsAvailable, setGroupsAvailable] = useState([]);
   const [patient, setPatient] = useState(undefined);
   const [patientSeeDays, setPatientSeeDays] = useState(false);
 
   useEffect(() => {
-    let availableGroups = [];
     const clientAddress = abbrevationFix(modalProps.client.address);
-   
-    if(modalProps.view === 'Group') {
-      modalProps.groups.forEach((group, index) => {
-        const patientMatches = group.filter((patient) => {
-          const patAddress = abbrevationFix(patient.address);
-          return patAddress === clientAddress && `${patient.firstName} ${patient.lastName}` === modalProps.client.title && !patient.scheduled
-        });
-  
-        if(patientMatches.length > 0) {
-          const groupsAvail = patientMatches.map((patient) => {
-            patient.group = index;
-            return patient;
-          });
-  
-          groupsAvail.forEach((element) => {
-            availableGroups.push(element);
-          });
-        }
-  
-      });
-  
-      setGroupsAvailable(availableGroups);
-    }
 
     const patientData = modalProps.patients.find((patient) => {
       const patAddress = abbrevationFix(patient.address);
@@ -63,18 +38,6 @@ const PatientModal = ({accessToken, userId, modalProps, closeModal}) => {
       }
     }
   }, [patient])
-
-  const handleAssignGroup = (group) => {
-    const updatedEvents = [...modalProps.myEvents];
-    const index = updatedEvents.findIndex((ev) => ev.id === modalProps.client.id);
-
-    if (index !== -1) {
-      updatedEvents[index].groupNumber = group;
-      saveUserSchedule(userId, updatedEvents, accessToken);
-    }
-
-    closeModal();
-  };
 
   const removeFromCal = async () => {
     const filteredState = modalProps.myEvents.filter((ev) => ev.id !== modalProps.client.id);
@@ -162,45 +125,6 @@ const PatientModal = ({accessToken, userId, modalProps, closeModal}) => {
           
         ):null
       }
-
-      {
-        modalProps.view === 'Group' && groupsAvailable.length > 0 ? 
-        (
-          <div className="row p my-3 d-flex justify-content-center assign-row">
-            <div className="col-4 d-flex align-items-center">
-              <div className="p-modal-label ">Assign a Group for this Event:</div>
-            </div>
-
-            <div className="col d-flex align-items-center">
-              <div className="row">
-                {
-                  groupsAvailable.length > 0 ? (
-                    groupsAvailable.map((patient, index) => (
-                      <div className="col-3">
-                        <div className="d-flex align-items-center pb-1">
-                          <button 
-                            className="group-btn-modal btn mx-3 mt-2" 
-                            key={index} 
-                            onClick={() => handleAssignGroup(patient.group)} 
-                          >
-                            {patient.group + 1}
-                          </button>
-                        </div>
-                        
-                      </div>
-                      
-                    ))
-                  ): null
-                }
-              </div>
-            </div>
-
-            
-      </div>
-        ): null
-      }
-
-      
 
       <div className="row my-2">
         <div className="col d-flex justify-content-center">

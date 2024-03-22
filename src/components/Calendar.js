@@ -43,7 +43,6 @@ function Calendar(props) {
     view: 'Patient'
   });
   const [testDay, setTestDay] = useState(undefined);
-  const [groupsForPatientModal, setGroupsForPatientModal] = useState([]);
   const [therapistParameters, setTherapistParameters] = useState({
     workingDays: 5,
     sessionLength: 60,
@@ -187,15 +186,7 @@ function Calendar(props) {
     className = className.trim();
   
     return { className };
-  }; 
-
-  const handleEventsUpdate = (events) => {
-    setMyEvents(events);
-  };  
-  
-  const handleUpdatedGroups = (groups) => {
-    setGroupsForPatientModal(groups);
-  };
+  };   
 
   const eventViability = (viabilityData) => {
     if(viabilityData) {
@@ -375,7 +366,6 @@ function Calendar(props) {
     
     const patientProps = {
       client: clientInfo,
-      groups: groupsForPatientModal,
       myEvents: myEvents,
       patients: homes,
       view: viewFocus.view
@@ -579,7 +569,7 @@ function Calendar(props) {
                 </div>
               ) : viewFocus.showGroups ? (
                   <div>
-                    <DisplayGroups isOpen={props.isOpen} openModal={props.openModal} handleDragStart={handleDragStart} homes={homes} myEvents={myEvents} start={viewStartDate} end={viewEndDate} handleEventsUpdate={handleEventsUpdate} handleUpdatedGroups={handleUpdatedGroups} therapistParameters={therapistParameters} />
+                    <DisplayGroups isOpen={props.isOpen} openModal={props.openModal} handleDragStart={handleDragStart} homes={homes} myEvents={myEvents} start={viewStartDate} end={viewEndDate} therapistParameters={therapistParameters} />
                   </div>
               ) : viewFocus.groupParams ? (
                   <div>
